@@ -35,9 +35,12 @@ class Command(BaseCommand):
         parser.add_argument("--clear", action="store_true", help="Limpia la tabla antes de importar.")
 
     def handle(self, *args, **options):
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from django.conf import settings
+        base_dir = getattr(settings, 'BASE_DIR', os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
         clean_json_path = os.path.join(base_dir, "expedientes_clean.json")
         json_path = os.path.join(base_dir, "expedientes_data.json")
+
+        self.stdout.write(f"Buscando archivos de datos en: {base_dir}")
 
         raw_records = []
         if os.path.exists(clean_json_path):
