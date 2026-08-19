@@ -19,7 +19,7 @@ class CustomLoginView(auth_views.LoginView):
 from afiliados.views import (
     dashboard, detalle_carpeta, borrar_documento, borrar_carpeta, 
     mapa_visual, gestion_documental, panel_reportes, exportar_excel_archivo,
-    historial_auditoria, exportar_auditoria_excel
+    historial_auditoria, exportar_auditoria_excel, api_buscar_afiliado
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,6 +28,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     # Interfaz de administración predeterminada de Django
     path('admin/', admin.site.urls),
+    # API JSON para Gestor de Escritorio remoto
+    path('api/buscar/', api_buscar_afiliado, name='api_buscar_afiliado'),
     # Página de inicio / Panel de control principal
     path('', dashboard, name='dashboard'),
     # Gestión de sesiones (Inicio y cierre de sesión)

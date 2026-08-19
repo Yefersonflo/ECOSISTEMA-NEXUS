@@ -31,6 +31,42 @@ def is_super(user):
     # Retorna True si es superusuario de Django O si su perfil tiene el rol 'SUPER'
     return user.is_superuser or (hasattr(user, 'profile') and user.profile.rol == 'SUPER')
 
+# API pública en formato JSON para consultas remotas del Gestor de Escritorio
+from django.http import JsonResponse
+
+def api_buscar_afiliado(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        return JsonResponse({'error': 'Parámetro q requerido'}, status=400)
+    
+    clean_q = re.sub(r"\D", "", query)
+    qs = Carpeta.objects.filter(categoria='TRABAJADOR')
+    if clean_q:
+        match = qs.filter(identificacion=clean_q).first()
+        if not match:
+            match = qs.filter(Q(identificacion__icontains=query) | Q(nombre__icontains=query)).first()
+    else:
+        match = qs.filter(nombre__icontains=query).first()
+        
+    if not match:
+        return JsonResponse({'encontrado': False, 'mensaje': 'Expediente no encontrado'}, status=404)
+        
+    data = {
+        'encontrado': True,
+        'Fecha': match.fecha or match.fecha_registro.strftime("%Y-%m-%d"),
+        'Tipo Identificación': match.tipo_identificacion or "CC",
+        'Cédula': match.identificacion,
+        'Nombre': match.nombre,
+        'Módulo': str(match.modulo),
+        'Estante': str(match.estante),
+        'Bandeja': str(match.bandeja),
+        'Cubículo': str(match.cubiculo),
+        'Número de Carpeta': str(match.numero_carpeta),
+        'Estado': match.estado or "ACTIVO",
+        'Fecha Retiro': match.fecha_retiro or "No aplica"
+    }
+    return JsonResponse(data)
+
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
 def dashboard(request):
