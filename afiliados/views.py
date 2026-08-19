@@ -2,6 +2,7 @@
 import os
 import re
 import datetime
+import json
 # Importa uuid para generar identificadores Ãºnicos universales (usado en radicados fÃ­sicos)
 import uuid
 # Importa funciones Ãºtiles de Django: renderizar templates, obtener objetos seguros y redireccionar
