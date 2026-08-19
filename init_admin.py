@@ -13,14 +13,22 @@ else:
     Profile.objects.update_or_create(user=user, defaults={'rol': 'SUPER', 'acceso_web': True})
     print("Superusuario admin actualizado.")
 
-# 2. Usuario Auxiliar Operativo (auxiliar / auxiliar123)
-if not User.objects.filter(username='auxiliar').exists():
-    user_aux = User.objects.create_user('auxiliar', 'auxiliar@comfacasanare.com.co', 'auxiliar123')
-    Profile.objects.update_or_create(user=user_aux, defaults={'rol': 'JEFE', 'acceso_web': True})
-    print("Usuario auxiliar creado exitosamente.")
-else:
-    user_aux = User.objects.get(username='auxiliar')
-    user_aux.set_password('auxiliar123')
-    user_aux.save()
-    Profile.objects.update_or_create(user=user_aux, defaults={'rol': 'JEFE', 'acceso_web': True})
-    print("Usuario auxiliar actualizado con contraseña auxiliar123.")
+# 2. Usuarios Auxiliares Operativos
+aux_users = [
+    ('SandraP', 'SandraP123', 'sandrap@comfacasanare.com.co'),
+    ('NicolasB', 'NicolasB123', 'nicolasb@comfacasanare.com.co'),
+    ('JairN', 'JairN123', 'jairn@comfacasanare.com.co'),
+    ('AndresL', 'AndresL123', 'andresl@comfacasanare.com.co'),
+]
+
+for username, password, email in aux_users:
+    if not User.objects.filter(username=username).exists():
+        u = User.objects.create_user(username=username, email=email, password=password)
+        Profile.objects.update_or_create(user=u, defaults={'rol': 'JEFE', 'acceso_web': True})
+        print(f"Usuario {username} creado exitosamente.")
+    else:
+        u = User.objects.get(username=username)
+        u.set_password(password)
+        u.save()
+        Profile.objects.update_or_create(user=u, defaults={'rol': 'JEFE', 'acceso_web': True})
+        print(f"Usuario {username} actualizado exitosamente.")
