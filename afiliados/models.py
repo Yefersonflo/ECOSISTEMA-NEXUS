@@ -5,9 +5,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Modelo que extiende la información del usuario de Django con roles y perfiles
 class Profile(models.Model):
     ROLES = [
-        ('SUPER', 'SuperUsuario'),
-        ('JEFE', 'Jefe de Área'),
-        ('USER', 'Usuario Consulta/Carga')
+        ('SUPER', 'SuperUsuario / Administrador'),
+        ('JEFE', 'Auxiliar de Registro y Digitalización'),
+        ('USER', 'Usuario Consulta')
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     rol = models.CharField(max_length=20, choices=ROLES, default='USER')
