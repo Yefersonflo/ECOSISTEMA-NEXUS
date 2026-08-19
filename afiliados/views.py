@@ -75,7 +75,7 @@ def api_buscar_afiliado(request):
         }
         return JsonResponse(data)
     except Exception as e:
-        return JsonResponse({'encontrado': False, 'error': str(e)}, status=500)
+        return JsonResponse({'encontrado': False, 'error': str(e)}, status=200)
 
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
