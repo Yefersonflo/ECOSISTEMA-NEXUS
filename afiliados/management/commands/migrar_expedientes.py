@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import sqlite3
 import pandas as pd
 from django.core.management.base import BaseCommand
@@ -29,14 +30,13 @@ def clean_int(value, default=1, minimum=1, maximum=None):
     return number
 
 class Command(BaseCommand):
-    help = "Migra expedientes desde la base SQLite local (base_datos.db) o los Excels particionados hacia PostgreSQL."
+    help = "Migra expedientes desde expedientes_data.json o base_datos.db local hacia PostgreSQL."
 
     def add_arguments(self, parser):
         parser.add_argument("--sqlite-db", default=None, help="Ruta al archivo base_datos.db local.")
         parser.add_argument("--clear", action="store_true", help="Limpia la tabla de carpetas antes de importar.")
 
     def handle(self, *args, **options):
-        # 1. Buscar base_datos.db
         db_path = options["sqlite_db"]
         if not db_path:
             desktop = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -45,7 +45,14 @@ class Command(BaseCommand):
                 db_path = possible_path
 
         records = []
-        if db_path and os.path.exists(db_path):
+        json_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "expedientes_data.json")
+        
+        if os.path.exists(json_path):
+            self.stdout.write(self.style.SUCCESS(f"Leyendo archivo de datos expedientes_data.json: {json_path}"))
+            with open(json_path, "r", encoding="utf-8") as f:
+                records = json.load(f)
+            self.stdout.write(self.style.SUCCESS(f"Total registros cargados de JSON: {len(records)}"))
+        elif db_path and os.path.exists(db_path):
             self.stdout.write(self.style.SUCCESS(f"Leyendo base de datos local SQLite: {db_path}"))
             conn = sqlite3.connect(db_path)
             conn.row_factory = sqlite3.Row
@@ -69,7 +76,7 @@ class Command(BaseCommand):
             conn.close()
             self.stdout.write(self.style.SUCCESS(f"Total registros leidos de SQLite: {len(records)}"))
         else:
-            self.stdout.write(self.style.WARNING("No se encontro SQLite local, buscando Excels particionados..."))
+            self.stdout.write(self.style.WARNING("No se encontro ni JSON ni SQLite local."))
 
         if not records:
             self.stdout.write(self.style.ERROR("No hay registros para migrar."))
@@ -83,7 +90,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             if options["clear"]:
                 Carpeta.objects.filter(categoria="TRABAJADOR").delete()
-                self.stdout.write("Base de datos en la nube limpiada antes de la importacion.")
+                self.stdout.write("Base de datos limpiada.")
 
             for r in records:
                 cedula = clean_cedula(r["Cédula"])
@@ -99,7 +106,6 @@ class Command(BaseCommand):
 
                 loc_key = (modulo_num, estante_num, bandeja_num, cubiculo_num, num_carpeta)
                 if loc_key in occupied_locations:
-                    # Ajustar numero de carpeta si hay colision de ubicacion
                     num_carpeta = (num_carpeta % 55) + 1
                     loc_key = (modulo_num, estante_num, bandeja_num, cubiculo_num, num_carpeta)
 
