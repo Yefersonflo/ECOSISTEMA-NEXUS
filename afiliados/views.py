@@ -161,18 +161,40 @@ def api_sincronizar_afiliados(request):
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
 def dashboard(request):
-    # Verifica si el usuario actual es administrador usando la función auxiliar
     es_admin = is_super(request.user)
-    
-    # Si es admin, obtiene los últimos 10 movimientos globales. Si no, solo los del usuario.
     historial = HistorialCarpeta.objects.all().order_by('-fecha')[:10] if es_admin else HistorialCarpeta.objects.filter(usuario=request.user)[:10]
 
-    # Renderiza la plantilla del dashboard enviando las variables calculadas al contexto HTML
+    # Estadísticas para el Dashboard Interactivo
+    total_carpetas = Carpeta.objects.count()
+    activos_cnt = Carpeta.objects.filter(estado='ACTIVO').count()
+    inactivos_cnt = Carpeta.objects.filter(estado='INACTIVO').count()
+    muertos_cnt = Carpeta.objects.filter(estado='MUERTO').count()
+    
+    # Calcular Alertas Naranja (+10 años inactivos)
+    hoy = datetime.date.today()
+    diez_anos_atras = hoy.year - 10
+    alertas_naranja = 0
+    
+    for c in Carpeta.objects.filter(estado='INACTIVO'):
+        fr = str(c.fecha_retiro or '')
+        years = re.findall(r'\b(19\d\d|20\d\d)\b', fr)
+        if years:
+            try:
+                y = int(years[0])
+                if y <= diez_anos_atras:
+                    alertas_naranja += 1
+            except Exception:
+                pass
+
     return render(request, 'dashboard/index.html', {
-        'total_carpetas': Carpeta.objects.count(), # Cuenta total de carpetas en custodia
-        'es_admin': es_admin,               # Booleano para mostrar opciones de admin
-        'historial': historial,             # Lista de últimos movimientos
-        'header_title': 'Panel Principal'   # Título de la cabecera
+        'total_carpetas': total_carpetas,
+        'activos_cnt': activos_cnt,
+        'inactivos_cnt': inactivos_cnt,
+        'muertos_cnt': muertos_cnt,
+        'alertas_naranja': alertas_naranja,
+        'es_admin': es_admin,
+        'historial': historial,
+        'header_title': 'Panel Principal'
     })
 
 # MÓDULOS DE VENTANILLA ÚNICA Y CORRESPONDENCIA DEBAJO ELIMINADOS
