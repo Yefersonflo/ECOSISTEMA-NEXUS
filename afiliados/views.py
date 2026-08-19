@@ -131,8 +131,11 @@ def api_sincronizar_afiliados(request):
                     except Exception:
                         modulo, estante, bandeja, cubiculo, num_carpeta = 1, 1, 1, 1, 1
 
-                    while Carpeta.objects.filter(categoria='TRABAJADOR', modulo=modulo, estante=estante, bandeja=bandeja, cubiculo=cubiculo, numero_carpeta=num_carpeta).exists():
-                        num_carpeta = (num_carpeta % 55) + 1
+                    used_nums = set(Carpeta.objects.filter(categoria='TRABAJADOR', modulo=modulo, estante=estante, bandeja=bandeja, cubiculo=cubiculo).values_list('numero_carpeta', flat=True))
+                    while num_carpeta in used_nums and num_carpeta <= 55:
+                        num_carpeta += 1
+                    if num_carpeta > 55:
+                        num_carpeta = (len(used_nums) % 55) + 1
 
                     Carpeta.objects.create(
                         identificacion=cedula,
