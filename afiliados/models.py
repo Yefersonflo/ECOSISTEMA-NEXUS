@@ -67,21 +67,21 @@ class Carpeta(models.Model):
 
         super().save(*args, **kwargs)
 
-        modulo_val = str(self.modulo)
-        estante_val = str(self.estante)
-        bandeja_val = str(self.bandeja)
-        cubiculo_val = str(self.cubiculo)
-        num_carpeta_val = str(self.numero_carpeta)
-        fecha_val = self.fecha_registro.strftime("%Y-%m-%d %H:%M:%S") if getattr(self, 'fecha_registro', None) else datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
         try:
+            modulo_val = str(self.modulo)
+            estante_val = str(self.estante)
+            bandeja_val = str(self.bandeja)
+            cubiculo_val = str(self.cubiculo)
+            num_carpeta_val = str(self.numero_carpeta)
+            fecha_val = self.fecha_registro.strftime("%Y-%m-%d %H:%M:%S") if getattr(self, 'fecha_registro', None) else datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
             with connection.cursor() as cursor:
                 if original_identificacion and original_identificacion != self.identificacion:
                     cursor.execute('DELETE FROM expedientes WHERE "Cédula" = %s', [original_identificacion])
 
                 cursor.execute('INSERT OR REPLACE INTO expedientes ("Fecha", "Tipo Identificación", "Cédula", "Nombre", "Módulo", "Estante", "Bandeja", "Cubículo", "Número de Carpeta", "Estado", "Fecha Retiro") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (self.fecha or fecha_val, self.tipo_identificacion or "CC", self.identificacion, self.nombre.upper(), modulo_val, estante_val, bandeja_val, cubiculo_val, num_carpeta_val, self.estado or "ACTIVO", self.fecha_retiro or ""))
-        except Exception as e:
-            print(f"Tabla expedientes no sincronizada: {e}")
+        except Exception:
+            pass
 
         try:
             from .excel_sync import sync_to_excel
@@ -99,8 +99,8 @@ class Carpeta(models.Model):
                 "Fecha Retiro": self.fecha_retiro or ""
             }
             sync_to_excel("SAVE", record_data, original_cedula=original_identificacion)
-        except Exception as e:
-            print(f"Error al sincronizar a Excel: {e}")
+        except Exception:
+            pass
 
     def delete(self, *args, **kwargs):
         identificacion = self.identificacion
@@ -108,14 +108,14 @@ class Carpeta(models.Model):
         try:
             with connection.cursor() as cursor:
                 cursor.execute('DELETE FROM expedientes WHERE "Cédula" = %s', [identificacion])
-        except Exception as e:
-            print(f"Tabla expedientes no sincronizada al borrar: {e}")
+        except Exception:
+            pass
 
         try:
             from .excel_sync import sync_to_excel
             sync_to_excel("DELETE", {"Cédula": identificacion})
-        except Exception as e:
-            print(f"Error al borrar en Excel: {e}")
+        except Exception:
+            pass
 
 # Modelo para registrar el historial de acciones realizadas sobre las carpetas
 class HistorialCarpeta(models.Model):
