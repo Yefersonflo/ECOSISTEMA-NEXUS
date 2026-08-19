@@ -61,10 +61,17 @@
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">    
 
             <!-- INICIO -->
+            {% if user.profile.rol == 'SUPER' or user.is_superuser %}
             <a href="/" class="flex items-center space-x-4 p-4 rounded-xl text-white font-bold transition-all hover:bg-white/10 {% if request.path == '/' %}nav-item-active{% endif %}">
+                <i class="fas fa-house-chimney w-8 text-center text-xl text-comfaYellow"></i>
+                <span class="sidebar-text text-xs uppercase tracking-widest">Inicio / Dashboard</span>
+            </a>
+            {% else %}
+            <a href="{% url 'gestion_documental' %}" class="flex items-center space-x-4 p-4 rounded-xl text-white font-bold transition-all hover:bg-white/10 {% if request.path == '/gestion-documental/' %}nav-item-active{% endif %}">
                 <i class="fas fa-house-chimney w-8 text-center text-xl text-comfaYellow"></i>
                 <span class="sidebar-text text-xs uppercase tracking-widest">Inicio</span>
             </a>
+            {% endif %}
 
             <!-- ARCHIVO CENTRAL -->
             <div class="pt-4 pb-2 text-center group-hover:text-left transition-all">

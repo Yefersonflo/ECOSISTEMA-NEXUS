@@ -162,7 +162,13 @@ def api_sincronizar_afiliados(request):
 @login_required
 def dashboard(request):
     es_admin = is_super(request.user)
-    historial = HistorialCarpeta.objects.all().order_by('-fecha')[:10] if es_admin else HistorialCarpeta.objects.filter(usuario=request.user)[:10]
+    
+    # Redirección Inteligente por Rol:
+    # Si el usuario es Auxiliar (JEFE) o Usuario de Consulta, entra directo a Gestión Documental
+    if not es_admin:
+        return redirect('gestion_documental')
+        
+    historial = HistorialCarpeta.objects.all().order_by('-fecha')[:10]
 
     # Estadísticas para el Dashboard Interactivo
     total_carpetas = Carpeta.objects.count()
