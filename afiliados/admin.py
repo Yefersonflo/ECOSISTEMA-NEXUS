@@ -9,11 +9,20 @@ class ProfileInline(admin.StackedInline):
     verbose_name_plural = 'Perfil de Usuario'
 
 class UserAdmin(BaseUserAdmin):
-    inlines = [ProfileInline]
+    inlines = (ProfileInline,)
 
-# Re-registrar el modelo de Usuario con el perfil embebido
-admin.site.unregister(User)
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
+
 admin.site.register(User, UserAdmin)
 
-admin.site.register(Carpeta)
-admin.site.register(HistorialCarpeta)
+@admin.register(Carpeta)
+class CarpetaAdmin(admin.ModelAdmin):
+    search_fields = ('identificacion', 'nombre')
+    list_display = ('identificacion', 'nombre', 'modulo', 'estante', 'bandeja', 'cubiculo', 'numero_carpeta', 'estado')
+
+@admin.register(HistorialCarpeta)
+class HistorialCarpetaAdmin(admin.ModelAdmin):
+    list_display = ('fecha', 'usuario', 'accion', 'carpeta')
