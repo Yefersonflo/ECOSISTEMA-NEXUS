@@ -113,36 +113,46 @@ def api_sincronizar_afiliados(request):
                 estado = str(r.get('estado') or r.get('Estado') or 'ACTIVO')
                 fecha_retiro = str(r.get('fecha_retiro') or r.get('Fecha Retiro') or '')
                 
-                try:
-                    modulo = int(r.get('modulo') or r.get('Módulo') or 1)
-                    estante = int(r.get('estante') or r.get('Estante') or 1)
-                    bandeja = min(max(int(r.get('bandeja') or r.get('Bandeja') or 1), 1), 6)
-                    cubiculo = min(max(int(r.get('cubiculo') or r.get('Cubículo') or 1), 1), 6)
-                    num_carpeta = min(max(int(r.get('numero_carpeta') or r.get('Número de Carpeta') or 1), 1), 55)
-                except Exception:
-                    modulo, estante, bandeja, cubiculo, num_carpeta = 1, 1, 1, 1, 1
+                existing = Carpeta.objects.filter(identificacion=cedula, categoria='TRABAJADOR').first()
+                if existing:
+                    existing.nombre = nombre or existing.nombre
+                    if fecha: existing.fecha = fecha
+                    if estado: existing.estado = estado
+                    if fecha_retiro: existing.fecha_retiro = fecha_retiro
+                    existing.save()
+                    updated += 1
+                else:
+                    try:
+                        modulo = int(r.get('modulo') or r.get('Módulo') or 1)
+                        estante = int(r.get('estante') or r.get('Estante') or 1)
+                        bandeja = min(max(int(r.get('bandeja') or r.get('Bandeja') or 1), 1), 6)
+                        cubiculo = min(max(int(r.get('cubiculo') or r.get('Cubículo') or 1), 1), 6)
+                        num_carpeta = min(max(int(r.get('numero_carpeta') or r.get('Número de Carpeta') or 1), 1), 55)
+                    except Exception:
+                        modulo, estante, bandeja, cubiculo, num_carpeta = 1, 1, 1, 1, 1
 
-                Carpeta.objects.update_or_create(
-                    identificacion=cedula,
-                    categoria='TRABAJADOR',
-                    defaults={
-                        'nombre': nombre,
-                        'fecha': fecha,
-                        'tipo_identificacion': tipo_id,
-                        'estado': estado,
-                        'fecha_retiro': fecha_retiro,
-                        'modulo': modulo,
-                        'estante': estante,
-                        'bandeja': bandeja,
-                        'cubiculo': cubiculo,
-                        'numero_carpeta': num_carpeta,
-                    }
-                )
-                updated += 1
+                    while Carpeta.objects.filter(categoria='TRABAJADOR', modulo=modulo, estante=estante, bandeja=bandeja, cubiculo=cubiculo, numero_carpeta=num_carpeta).exists():
+                        num_carpeta = (num_carpeta % 55) + 1
+
+                    Carpeta.objects.create(
+                        identificacion=cedula,
+                        categoria='TRABAJADOR',
+                        nombre=nombre,
+                        fecha=fecha,
+                        tipo_identificacion=tipo_id,
+                        estado=estado,
+                        fecha_retiro=fecha_retiro,
+                        modulo=modulo,
+                        estante=estante,
+                        bandeja=bandeja,
+                        cubiculo=cubiculo,
+                        numero_carpeta=num_carpeta,
+                    )
+                    updated += 1
                 
         return JsonResponse({'exito': True, 'sincronizados': updated})
     except Exception as e:
-        return JsonResponse({'exito': False, 'error': str(e)}, status=500)
+        return JsonResponse({'exito': False, 'error': str(e)}, status=200)
 
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
