@@ -5,3 +5,4 @@ dj-database-url>=2.1.0
 whitenoise>=6.6.0
 pandas>=2.0.0
 openpyxl>=3.1.0
+django-smart-selects>=1.5.9
