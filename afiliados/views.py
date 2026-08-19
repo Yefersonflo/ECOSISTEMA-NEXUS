@@ -80,6 +80,70 @@ def api_buscar_afiliado(request):
     except Exception as e:
         return JsonResponse({'encontrado': False, 'resultados': [], 'error': str(e)}, status=200)
 
+from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
+
+@csrf_exempt
+def api_sincronizar_afiliados(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Metodo no permitido'}, status=405)
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        records = data.get('registros', [])
+        secret = data.get('secret', '')
+        if secret != 'nexus_cloud_sync_secret_2026':
+            return JsonResponse({'error': 'No autorizado'}, status=401)
+            
+        if not records:
+            return JsonResponse({'mensaje': 'No hay registros para sincronizar', 'sincronizados': 0})
+            
+        updated = 0
+        with transaction.atomic():
+            if data.get('clear'):
+                Carpeta.objects.filter(categoria='TRABAJADOR').delete()
+                
+            for r in records:
+                cedula = re.sub(r"\D", "", str(r.get('cedula') or r.get('Cédula') or ''))
+                if not cedula:
+                    continue
+                    
+                nombre = str(r.get('nombre') or r.get('Nombre') or 'SIN NOMBRE').upper().strip()
+                fecha = str(r.get('fecha') or r.get('Fecha') or '')
+                tipo_id = str(r.get('tipo_identificacion') or r.get('Tipo Identificación') or 'CC')
+                estado = str(r.get('estado') or r.get('Estado') or 'ACTIVO')
+                fecha_retiro = str(r.get('fecha_retiro') or r.get('Fecha Retiro') or '')
+                
+                try:
+                    modulo = int(r.get('modulo') or r.get('Módulo') or 1)
+                    estante = int(r.get('estante') or r.get('Estante') or 1)
+                    bandeja = min(max(int(r.get('bandeja') or r.get('Bandeja') or 1), 1), 6)
+                    cubiculo = min(max(int(r.get('cubiculo') or r.get('Cubículo') or 1), 1), 6)
+                    num_carpeta = min(max(int(r.get('numero_carpeta') or r.get('Número de Carpeta') or 1), 1), 55)
+                except Exception:
+                    modulo, estante, bandeja, cubiculo, num_carpeta = 1, 1, 1, 1, 1
+
+                Carpeta.objects.update_or_create(
+                    identificacion=cedula,
+                    categoria='TRABAJADOR',
+                    defaults={
+                        'nombre': nombre,
+                        'fecha': fecha,
+                        'tipo_identificacion': tipo_id,
+                        'estado': estado,
+                        'fecha_retiro': fecha_retiro,
+                        'modulo': modulo,
+                        'estante': estante,
+                        'bandeja': bandeja,
+                        'cubiculo': cubiculo,
+                        'numero_carpeta': num_carpeta,
+                    }
+                )
+                updated += 1
+                
+        return JsonResponse({'exito': True, 'sincronizados': updated})
+    except Exception as e:
+        return JsonResponse({'exito': False, 'error': str(e)}, status=500)
+
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
 def dashboard(request):
