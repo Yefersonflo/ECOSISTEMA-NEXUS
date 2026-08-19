@@ -1,0 +1,248 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Expediente: {{ carpeta.identificacion }} | Nexus{% endblock %}
+
+{% block header_title %}Central de Control: {{ carpeta.identificacion }}{% endblock %}
+
+{% block current_location %}{{ carpeta.get_categoria_display }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+    <!-- COLUMNA 1: EDICIÓN E INFORMACIÓN -->
+    <div class="lg:col-span-1 space-y-8">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl border-t-8 border-comfaBlue overflow-hidden">
+            <div class="p-8 bg-slate-50 border-b">
+                <h3 class="text-sm font-black text-comfaBlue uppercase tracking-widest flex items-center">
+                    <i class="fas fa-edit mr-3 text-comfaRed"></i> Datos del Expediente
+                </h3>
+            </div>
+            
+            {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' %}
+            <form method="POST" class="p-8 space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="editar_carpeta" value="1">
+                
+                <div class="space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nombre / Razón Social</label>
+                        {{ form.nombre }}
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Identificación (ID/NIT)</label>
+                        {{ form.identificacion }}
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Carpeta Número</label>
+                        {{ form.numero_carpeta }}
+                    </div>
+                </div>
+
+                <!-- UBICACIÓN AZUL -->
+                <div class="pt-6 border-t border-slate-100">
+                    <p class="text-[9px] font-black text-comfaBlue uppercase tracking-widest mb-4">Ubicación Física</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Módulo</label>
+                            {{ form.modulo }}
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Estante</label>
+                            {{ form.estante }}
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Bandeja (1-6)</label>
+                            {{ form.bandeja }}
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Cubículo (1-6)</label>
+                            {{ form.cubiculo }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-5 bg-comfaBlue text-white font-black rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[10px] tracking-widest">
+                    Guardar Cambios <i class="fas fa-save ml-2"></i>
+                </button>
+            </form>
+            {% else %}
+            <div class="p-8 space-y-6">
+                <div class="space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nombre / Razón Social</label>
+                        <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.nombre }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Identificación (ID/NIT)</label>
+                        <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.identificacion }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Carpeta Número</label>
+                        <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.numero_carpeta }}</p>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-slate-100">
+                    <p class="text-[9px] font-black text-comfaBlue uppercase tracking-widest mb-4">Ubicación Física</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Módulo</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.modulo }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Estante</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.estante }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Bandeja</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.bandeja }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Cubículo</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.cubiculo }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        
+        <a href="/gestion-documental/?cat={{ carpeta.categoria }}" class="inline-flex items-center space-x-3 px-8 py-4 bg-white text-slate-500 font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl shadow-sm border border-slate-100 hover:bg-comfaBlue hover:text-white transition-all group">
+            <i class="fas fa-chevron-left group-hover:-translate-x-1 transition-transform"></i>
+            <span>Volver al listado general</span>
+        </a>
+    </div>
+
+    <!-- COLUMNA 2 Y 3: CARGA Y BODEGA DIGITAL -->
+    <div class="lg:col-span-2 space-y-8">
+        
+        <!-- PANEL DE ADICIÓN -->
+        <div class="bg-white p-8 rounded-[3rem] shadow-xl border-2 border-dashed border-comfaBlue/20">
+            <h3 class="text-sm font-black text-comfaBlue uppercase tracking-widest mb-8 flex items-center">
+                <i class="fas fa-cloud-arrow-up mr-3 text-comfaRed"></i> Adicionar a la Bodega Digital
+            </h3>
+            
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="subir_doc" value="1">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nombre descriptivo del archivo</label>
+                        <input type="text" name="nombre_doc" required class="w-full p-4 bg-slate-50 border-2 border-comfaBlue/20 rounded-2xl font-bold text-comfaBlue" placeholder="Ej: Copia Cédula, Acta de Afiliación...">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Seleccionar Archivo (PDF o Imagen)</label>
+                        <input type="file" name="archivo" required class="w-full text-xs font-bold text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-comfaBlue file:text-white hover:file:bg-comfaRed transition-all">
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 pt-2">
+                    <button type="submit" class="flex-1 py-5 bg-comfaBlue text-white font-black rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest">
+                        SUBIR A BODEGA <i class="fas fa-upload ml-2"></i>
+                    </button>
+                    <button type="reset" class="px-8 py-5 bg-slate-100 text-slate-400 font-black rounded-2xl hover:bg-slate-200 transition-all uppercase text-[10px]">
+                        LIMPIAR
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+        <!-- BODEGA DIGITAL (VISUALIZACIÓN MEJORADA) -->
+        <div class="bg-white rounded-[3rem] shadow-xl overflow-hidden border border-slate-100">
+            <div class="p-8 bg-slate-800 text-white flex justify-between items-center border-b-8 border-comfaYellow">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-comfaYellow rounded-xl flex items-center justify-center text-comfaBlue">
+                        <i class="fas fa-vault text-xl"></i>
+                    </div>
+                    <h3 class="text-xs font-black uppercase tracking-[0.3em]">Bodega de Archivos Digitales</h3>
+                </div>
+                <span class="bg-white/10 px-4 py-1.5 rounded-full text-[9px] font-black uppercase shadow-lg border border-white/10">{{ documentos.count }} Archivos en el Expediente</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-8 bg-slate-50/50">
+                {% for doc in documentos %}
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl {% if doc.tipo_archivo == 'pdf' %}bg-red-50 text-comfaRed{% else %}bg-comfaBlue/5 text-comfaBlue{% endif %} flex items-center justify-center border shadow-inner">
+                                <i class="fas {% if doc.tipo_archivo == 'pdf' %}fa-file-pdf{% else %}fa-file-image{% endif %} text-3xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-black text-comfaBlue uppercase text-[11px] truncate leading-tight mb-1">{{ doc.nombre }}</h4>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase">{{ doc.fecha_creacion|date:"d M Y" }}</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-slate-100 rounded text-[8px] font-black text-slate-500 uppercase">{{ doc.tipo_archivo }}</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <!-- OPCIÓN PARA VER EL CONTENIDO -->
+                        <a href="{{ doc.archivo.url }}" target="_blank" class="flex-1 py-3 bg-comfaBlue text-white text-[9px] font-black rounded-xl hover:bg-comfaRed transition-all uppercase text-center tracking-widest shadow-md">
+                            VER CONTENIDO <i class="fas fa-eye ml-1"></i>
+                        </a>
+                        <!-- OPCIÓN PARA ELIMINAR -->
+                        {% if user.profile.rol == 'SUPER' %}
+                        <a href="{% url 'borrar_documento' doc.id %}" onclick="return confirm('¿Seguro que desea ELIMINAR este archivo de la bodega?')" 
+                            class="w-12 h-10 bg-red-50 text-comfaRed rounded-xl flex items-center justify-center hover:bg-comfaRed hover:text-white transition-all border border-red-100">
+                            <i class="fas fa-trash-can"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-2 py-24 text-center">
+                    <i class="fas fa-folder-open text-6xl text-slate-100 mb-6 block"></i>
+                    <p class="text-slate-300 font-black uppercase tracking-widest italic">La bodega digital está vacía</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- SEMÁFORO DE AUDITORÍA (COMPACTO) -->
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100">
+            <div class="px-5 py-3 bg-slate-700 text-white flex justify-between items-center border-b-4 border-emerald-400">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-traffic-light text-emerald-400 text-sm"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Auditoría</span>
+                </div>
+                <span class="bg-white/10 px-3 py-1 rounded-full text-[8px] font-black uppercase">{{ historial_carpeta|length }} evento{{ historial_carpeta|length|pluralize:"s" }}</span>
+            </div>
+            <div class="divide-y divide-slate-50 max-h-[220px] overflow-y-auto custom-scrollbar">
+                {% for evento in historial_carpeta %}
+                <div class="flex items-center space-x-3 px-5 py-2.5 hover:bg-slate-50/80 transition-colors">
+                    {% if evento.accion == 'CREACION' %}
+                    <span class="w-6 h-6 rounded-lg bg-emerald-50 border border-emerald-300 flex items-center justify-center flex-shrink-0"><i class="fas fa-plus text-emerald-500 text-[8px]"></i></span>
+                    {% elif evento.accion == 'EDICION' %}
+                    <span class="w-6 h-6 rounded-lg bg-amber-50 border border-amber-300 flex items-center justify-center flex-shrink-0"><i class="fas fa-pen text-amber-500 text-[8px]"></i></span>
+                    {% elif evento.accion == 'DOCUMENTO' %}
+                    <span class="w-6 h-6 rounded-lg bg-blue-50 border border-blue-300 flex items-center justify-center flex-shrink-0"><i class="fas fa-file-arrow-up text-blue-500 text-[8px]"></i></span>
+                    {% elif evento.accion == 'ELIMINACION' %}
+                    <span class="w-6 h-6 rounded-lg bg-red-50 border border-red-300 flex items-center justify-center flex-shrink-0"><i class="fas fa-trash text-red-500 text-[8px]"></i></span>
+                    {% else %}
+                    <span class="w-6 h-6 rounded-lg bg-slate-50 border border-slate-300 flex items-center justify-center flex-shrink-0"><i class="fas fa-circle-info text-slate-400 text-[8px]"></i></span>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-black uppercase{% if evento.accion == 'CREACION' %} text-emerald-600{% elif evento.accion == 'EDICION' %} text-amber-600{% elif evento.accion == 'DOCUMENTO' %} text-blue-600{% elif evento.accion == 'ELIMINACION' %} text-red-600{% else %} text-slate-500{% endif %}">{% if evento.accion == 'CREACION' %}🟢 Nuevo{% elif evento.accion == 'EDICION' %}🟡 Edición{% elif evento.accion == 'DOCUMENTO' %}🔵 Documento{% elif evento.accion == 'ELIMINACION' %}🔴 Eliminado{% else %}{{ evento.accion }}{% endif %}</span>
+                            <span class="text-[8px] font-bold text-slate-400">{{ evento.fecha|date:"d/M/Y H:i" }}</span>
+                        </div>
+                        {% if evento.observaciones %}<p class="text-[9px] text-slate-400 truncate leading-tight">{{ evento.observaciones }}</p>{% endif %}
+                    </div>
+                    <span class="text-[8px] font-black text-comfaBlue uppercase flex-shrink-0">{{ evento.usuario.username }}</span>
+                </div>
+                {% empty %}
+                <div class="py-8 text-center">
+                    <i class="fas fa-clock-rotate-left text-3xl text-slate-100 mb-2 block"></i>
+                    <p class="text-slate-300 font-bold uppercase tracking-widest text-[9px] italic">Sin eventos aún</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

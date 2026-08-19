@@ -1,0 +1,56 @@
+﻿============================================================
+NEXUS - ECOSISTEMA DE GESTIÓN INTEGRAL
+HOJA DE RUTA PARA ESCALABILIDAD CORPORATIVA
+============================================================
+
+A continuación se detallan las 9 propuestas estratégicas para elevar el software a un nivel comercial y asegurar el cumplimiento de estándares institucionales:
+
+1. SISTEMA DE NOTIFICACIONES AUTOMÁTICAS
+   - Al radicar una PQRSF, el ciudadano recibe un email automático con su radicado.
+   - Al responderse, el sistema envía la solución de inmediato al correo registrado.
+   - Valor: Eficiencia tecnológica y reducción de carga operativa.
+
+2. GENERACIÓN DE ETIQUETAS QR PARA ARCHIVO FÍSICO
+   - Botón para imprimir etiquetas con código QR para cada carpeta.
+   - Al escanear con móvil, abre directamente el expediente digital.
+   - Valor: Puente inmediato entre la bodega física y el software digital.
+
+3. TABLERO DE CONTROL DE RENDIMIENTO (KPIs)
+   - Panel administrativo que mide tiempos de respuesta por oficina.
+   - Identificación de cuellos de botella y trámites represados.
+   - Valor: Herramienta clave para la toma de decisiones gerenciales.
+
+4. AUDITORÍA DE ACTIVIDAD (LOGS DE SEGURIDAD)
+   - Registro inmutable de ingresos, consultas y cambios por cada usuario.
+   - "Quién, qué y cuándo" para cada documento del sistema.
+   - Valor: Seguridad de grado institucional y control de privacidad.
+
+5. SISTEMA DE BACKUP UNIFICADO
+   - Función para descargar en un solo archivo toda la BD y archivos digitales.
+   - Programación de respaldos automáticos.
+   - Valor: Garantía absoluta contra pérdida de información.
+
+6. SEMÁFORO DE VENCIMIENTO LEGAL
+   - Alertas por colores (Verde/Amarillo/Rojo) según términos de ley.
+   - Notificación prioritaria de trámites próximos a vencer.
+   - Valor: Prevención de sanciones legales por respuestas extemporáneas.
+
+7. FIRMA DIGITAL Y SELLOS DE TIEMPO
+   - Integración de firmas digitales para funcionarios en las respuestas.
+   - Inmutabilidad legal de los documentos generados.
+   - Valor: Despapelización total y validez jurídica del proceso digital.
+
+8. CARGA MASIVA "DRAG & DROP"
+   - Capacidad de subir múltiples archivos a la bóveda digital simultáneamente.
+   - Procesamiento de lotes de digitalización.
+   - Valor: Incremento drástico en la productividad del personal de archivo.
+
+9. PORTAL DE TRAZABILIDAD PARA EL CIUDADANO
+   - Interfaz pública para consulta de estado mediante radicado y cédula.
+   - Visualización del mapa de tiempo del trámite para el solicitante.
+   - Valor: Transparencia institucional y descongestión de canales físicos.
+
+------------------------------------------------------------
+Documento preparado para presentación a Gerencia.
+Abril 2026 - Nexus Service.
+============================================================

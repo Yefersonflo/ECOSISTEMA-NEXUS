@@ -1,0 +1,16 @@
+<h2>Agregar Documento</h2>
+
+<p><strong>Afiliado:</strong> {{ carpeta.nombre }}</p>
+<p><strong>Identificación:</strong> {{ carpeta.identificacion }}</p>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Nombre del documento:</label><br>
+    <input type="text" name="nombre"><br><br>
+
+    <label>Seleccionar PDF:</label><br>
+    <input type="file" name="archivo"><br><br>
+
+    <button type="submit">Guardar Documento</button>
+</form>

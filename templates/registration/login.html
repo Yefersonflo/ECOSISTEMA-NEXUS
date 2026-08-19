@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingreso Segura | Comfacasanare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        comfaBlue: '#004a87',
+                        comfaRed: '#e30613',
+                        comfaYellow: '#ffde00',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-montserrat h-full flex items-center justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
+
+    <div class="w-full max-w-md">
+        <!-- Tarjeta de Login -->
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-b-8 border-comfaYellow">
+            
+            <!-- Header con Logo -->
+            <div class="bg-comfaBlue p-10 text-center relative">
+                <div class="bg-white p-4 rounded-2xl shadow-xl inline-block mb-4">
+                    <img src="{% static 'logo_comfa_transparent.png' %}" alt="Comfacasanare" class="h-16">
+                </div>
+                <h2 class="text-white font-black text-xl tracking-tighter uppercase">Gestión Nexus</h2>
+                <p class="text-comfaYellow text-[9px] font-bold tracking-[0.4em] uppercase mt-1">Acceso Centralizado</p>
+            </div>
+
+            <!-- Formulario -->
+            <form method="POST" class="p-10 space-y-6">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="p-4 bg-red-50 rounded-xl border border-red-100 text-red-600 text-xs font-bold text-center uppercase tracking-widest">
+                    Credenciales Incorrectas
+                </div>
+                {% endif %}
+
+                <div class="space-y-4">
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-5 top-4 text-slate-300"></i>
+                        <input type="text" name="username" required placeholder="Usuario" 
+                            class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-5 top-4 text-slate-300"></i>
+                        <input type="password" name="password" required placeholder="Contraseña" 
+                            class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-5 bg-comfaBlue hover:bg-comfaRed text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-[0.3em] text-xs transform active:scale-95">
+                    Entrar al Sistema <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+
+            </form>
+        </div>
+
+        <p class="text-center mt-8 text-[9px] font-bold text-slate-400 uppercase tracking-[0.4em]">© 2026 Comfacasanare - Nexus Archive</p>
+    </div>
+
+</body>
+</html>

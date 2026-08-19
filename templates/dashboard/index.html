@@ -1,0 +1,68 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Inicio | Nexus Comfacasanare{% endblock %}
+
+{% block header_title %}Panel Principal{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-12 py-10">
+
+    <!-- SECCIÓN DE BIENVENIDA -->
+    <div class="relative overflow-hidden bg-white p-12 rounded-[3.5rem] shadow-2xl border border-slate-100">
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-comfaBlue/5 rounded-full blur-3xl"></div>
+        <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-comfaRed/5 rounded-full blur-3xl"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div class="space-y-4 text-center md:text-left">
+                <h1 class="text-4xl md:text-5xl font-black text-comfaBlue leading-tight tracking-tighter">
+                    ¡HOLA, <span class="text-comfaRed uppercase">{{ user.first_name|default:user.username }}</span>!
+                </h1>
+                <p class="text-lg text-slate-400 font-bold uppercase tracking-[0.2em]">Centro de Control Nexus</p>
+                <div class="flex items-center space-x-3 justify-center md:justify-start pt-2">
+                    <span class="w-3 h-3 bg-green-500 rounded-full animate-ping"></span>
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sistema en Línea</span>
+                </div>
+            </div>
+            
+            <div class="bg-comfaBlue p-8 rounded-[2.5rem] text-white shadow-xl text-center min-w-[200px]">
+                <p class="text-[10px] font-black uppercase opacity-60 mb-2">Carpetas Custodiadas</p>
+                <h4 class="text-5xl font-black text-comfaYellow">{{ total_carpetas }}</h4>
+                <p class="text-[9px] font-bold mt-2 uppercase tracking-widest">Rol: {{ user.profile.get_rol_display }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCESOS DIRECTOS DINÁMICOS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- GESTIÓN DOCUMENTAL -->
+        <a href="{% url 'gestion_documental' %}" class="group bg-white p-10 rounded-[3rem] shadow-xl border-b-8 border-comfaYellow hover:scale-105 transition-all duration-500">
+            <div class="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-comfaBlue group-hover:text-white transition-all shadow-inner">
+                <i class="fas fa-boxes-stacked text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-black text-comfaBlue uppercase mb-2">Gestión Documental</h3>
+            <p class="text-xs text-slate-400 font-medium leading-relaxed">Administre las carpetas físicas, expedientes y digitalización.</p>
+        </a>
+
+        <!-- VISOR DE BODEGA -->
+        <a href="{% url 'mapa_visual' %}" class="group bg-white p-10 rounded-[3rem] shadow-xl border-b-8 border-orange-400 hover:scale-105 transition-all duration-500">
+            <div class="w-20 h-20 bg-orange-50 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-orange-400 group-hover:text-white transition-all shadow-inner">
+                <i class="fas fa-warehouse text-3xl text-orange-400 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="text-xl font-black text-comfaBlue uppercase mb-2">Visor de Bodega</h3>
+            <p class="text-xs text-slate-400 font-medium leading-relaxed">Visualice gráficamente el mapa físico del archivo y módulos.</p>
+        </a>
+
+        <!-- REPORTES REGISTROS -->
+        <a href="{% url 'panel_reportes' %}" class="group bg-white p-10 rounded-[3rem] shadow-xl border-b-8 border-green-400 hover:scale-105 transition-all duration-500">
+            <div class="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-green-400 group-hover:text-white transition-all shadow-inner">
+                <i class="fas fa-file-excel text-3xl text-green-400 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="text-xl font-black text-comfaBlue uppercase mb-2">Reportes Registros</h3>
+            <p class="text-xs text-slate-400 font-medium leading-relaxed">Consulte estadísticas y descargue inventarios en Excel o PDF.</p>
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Visor de Bodega | Nexus{% endblock %}
+
+{% block header_title %}Navegación Visual de Archivo{% endblock %}
+
+{% block current_location %}Interior de Bodega{% endblock %}
+
+{% block content %}
+
+<style>
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .animate-in.fade-in { animation: fadeIn 0.7s ease-out forwards; }
+    .animate-in.zoom-in-95 { animation: zoomIn 0.7s ease-out forwards; }
+    .animate-in.slide-in-from-bottom-8 { animation: slideInUp 0.7s ease-out forwards; }
+    .animate-in.fade-in.duration-1000 { animation-duration: 1s; }
+</style>
+
+<div class="space-y-10">
+
+    <!-- BREADCRUMBS -->
+    <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between overflow-hidden">
+        <div class="flex items-center space-x-3 overflow-x-auto no-scrollbar py-2">
+            <a href="?" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:bg-comfaBlue hover:text-white transition-all">
+                <i class="fas fa-warehouse text-xs"></i>
+            </a>
+            {% for crumb in breadcrumb %}
+            <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+            <a href="{{ crumb.url }}" class="px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap hover:bg-comfaBlue hover:text-white hover:border-comfaBlue transition-all shadow-sm">
+                {{ crumb.nombre }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- PANTALLA INICIAL: SELECCIÓN DE NAVE -->
+    {% if nivel == "CATEGORIA" %}
+    <div class="max-w-4xl mx-auto py-12 grid grid-cols-1 md:grid-cols-2 gap-10 animate-in fade-in zoom-in-95 duration-700">
+        <a href="?cat=TRABAJADOR" class="group bg-white p-12 rounded-[4rem] shadow-2xl border-b-8 border-comfaBlue hover:scale-105 transition-all text-center">
+            <div class="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:bg-comfaBlue group-hover:text-white transition-all shadow-inner">
+                <i class="fas fa-users-gear text-4xl"></i>
+            </div>
+            <h4 class="text-2xl font-black text-comfaBlue uppercase tracking-tighter">Archivo Trabajadores</h4>
+        </a>
+        <a href="?cat=PATRONAL" class="group bg-white p-12 rounded-[4rem] shadow-2xl border-b-8 border-comfaRed hover:scale-105 transition-all text-center">
+            <div class="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:bg-comfaRed group-hover:text-white transition-all shadow-inner">
+                <i class="fas fa-building-user text-4xl"></i>
+            </div>
+            <h4 class="text-2xl font-black text-comfaBlue uppercase tracking-tighter">Archivo Patronales</h4>
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- CONTENEDOR DE ESTANTERÍA -->
+    {% if nivel != "CATEGORIA" and nivel != "CARPETA" %}
+    <div class="bg-slate-800 p-10 rounded-[4rem] border-[10px] border-white shadow-2xl animate-in slide-in-from-bottom-8 duration-700">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
+            {% for obj in objetos %}
+            <a href="{{ request.get_full_path }}&{% if nivel == 'MODULO' %}mod{% elif nivel == 'ESTANTE' %}est{% elif nivel == 'BANDEJA' %}ban{% elif nivel == 'CUBICULO' %}cub{% endif %}={{ obj.id }}" 
+               class="group flex flex-col items-center space-y-4 hover:scale-110 transition-all duration-300">
+                <div class="w-36 h-36 rounded-[3rem] flex items-center justify-center border-4 border-white/10 shadow-2xl transition-all
+                    {% if nivel == 'MODULO' %}bg-slate-700{% elif nivel == 'ESTANTE' %}bg-comfaBlue{% elif nivel == 'BANDEJA' %}bg-orange-500{% elif nivel == 'CUBICULO' %}bg-green-600{% endif %}">
+                    <i class="fas text-5xl text-white {% if nivel == 'MODULO' %}fa-box-archive{% elif nivel == 'ESTANTE' %}fa-layer-group{% elif nivel == 'BANDEJA' %}fa-table-cells-large{% elif nivel == 'CUBICULO' %}fa-grip{% endif %}"></i>
+                </div>
+                <div class="text-center"><p class="text-[9px] font-black text-white/50 uppercase tracking-widest">{{ nivel }}</p><p class="text-xl font-black text-comfaYellow">#{{ obj.numero }}</p></div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- VISTA FINAL DE CARPETAS CON BOTÓN COPIAR -->
+    {% if nivel == "CARPETA" %}
+    <div class="bg-slate-900 p-16 rounded-[4.5rem] border-[12px] border-white shadow-2xl animate-in fade-in duration-1000">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+            {% for c in objetos %}
+            <div class="relative group" x-data="{ copied: false }">
+                <!-- CARPETA INTERACTIVA -->
+                <div class="relative w-full h-80 transition-all transform group-hover:-translate-y-4 group-hover:rotate-1 z-10 cursor-pointer" onclick="window.location.href='{% url 'detalle_carpeta' c.id %}'">
+                    <div class="absolute inset-0 rounded-r-3xl rounded-l-lg border-l-[16px] flex flex-col p-6 shadow-2xl
+                        {% if c.categoria == 'TRABAJADOR' %}bg-comfaBlue border-blue-900{% else %}bg-comfaRed border-red-900{% endif %}">
+                        
+                        <div class="flex-1 flex flex-col justify-between text-white">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[7px] font-black uppercase opacity-60">ID / NIT</span>
+                                    <p class="text-lg font-black tracking-tighter leading-none">{{ c.identificacion }}</p>
+                                </div>
+                                <!-- BOTÓN COPIAR (Ubicado dentro del lomo) -->
+                                <button @click.stop="navigator.clipboard.writeText('M:{{ c.modulo }} E:{{ c.estante }} B:{{ c.bandeja }} C:{{ c.cubiculo }}'); copied = true; setTimeout(() => copied = false, 2000)" 
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all border border-white/20 hover:bg-white hover:text-slate-900"
+                                    :class="copied ? 'bg-green-500 border-green-500 text-white' : 'bg-white/5 text-white/50'">
+                                    <i class="fas text-[10px]" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="py-3 border-y border-white/10">
+                                <p class="text-[10px] font-black uppercase line-clamp-2 leading-tight">{{ c.nombre }}</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
+                                    <p class="text-[6px] font-black uppercase opacity-60">Mód</p>
+                                    <p class="text-[10px] font-black">M:{{ c.modulo }}</p>
+                                </div>
+                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
+                                    <p class="text-[6px] font-black uppercase opacity-60">Est</p>
+                                    <p class="text-[10px] font-black">E:{{ c.estante }}</p>
+                                </div>
+                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
+                                    <p class="text-[6px] font-black uppercase opacity-60">Ban</p>
+                                    <p class="text-[10px] font-black">B:{{ c.bandeja }}</p>
+                                </div>
+                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
+                                    <p class="text-[6px] font-black uppercase opacity-60">Cub</p>
+                                    <p class="text-[10px] font-black">C:{{ c.cubiculo }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 bg-white text-slate-900 p-2 rounded-xl text-center shadow-xl">
+                                <p class="text-[7px] font-black uppercase opacity-40">CARPETA</p>
+                                <p class="text-xl font-black leading-none">#{{ c.numero_carpeta }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

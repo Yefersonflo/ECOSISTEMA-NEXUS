@@ -1,0 +1,7 @@
+<h2>Afiliado encontrado</h2>
+
+<p><strong>Nombre:</strong> {{ carpeta.nombre }}</p>
+<p><strong>Identificación:</strong> {{ carpeta.identificacion }}</p>
+<p><strong>Ubicación:</strong> {{ carpeta.obtener_ubicacion }}</p>
+
+<a href="{% url 'agregar_documento' carpeta.id %}">Agregar Documento</a>

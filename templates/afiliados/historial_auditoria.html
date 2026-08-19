@@ -1,0 +1,209 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}Auditoría Global | Nexus{% endblock %}
+
+{% block header_title %}Auditoría Global del Ecosistema{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- TITULO Y ACCIONES PRINCIPALES -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <div>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Panel de Control General</p>
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">Historial de Auditoría Unificado</h1>
+            <p class="text-xs text-slate-500 mt-1">Monitorea y exporta en tiempo real las operaciones realizadas en el Gestor de Escritorio y en el Portal Web.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'exportar_auditoria_excel' %}?plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
+               class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-2xl shadow-lg shadow-emerald-600/10 flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
+                <i class="fas fa-file-excel text-lg"></i>
+                Exportar Historial
+            </a>
+        </div>
+    </div>
+
+    <!-- PANEL DE FILTROS -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
+            <!-- Buscar Detalles -->
+            <div class="space-y-1 md:col-span-2">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Buscar en detalles</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ q_filter }}" placeholder="Cédula, nombre o campo modificado..." 
+                           class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 placeholder-slate-400 rounded-2xl py-3.5 pl-10 pr-4 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Plataforma -->
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Plataforma</label>
+                <select name="plataforma" class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+                    <option value="Todos" {% if plat_filter == 'Todos' %}selected{% endif %}>Todas</option>
+                    <option value="Web" {% if plat_filter == 'Web' %}selected{% endif %}>Web (Portal)</option>
+                    <option value="Escritorio" {% if plat_filter == 'Escritorio' %}selected{% endif %}>Escritorio (Gestor)</option>
+                </select>
+            </div>
+
+            <!-- Acción -->
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Acción</label>
+                <select name="accion" class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+                    <option value="Todos" {% if action_filter == 'Todos' %}selected{% endif %}>Todas</option>
+                    <option value="AGREGAR" {% if action_filter == 'AGREGAR' %}selected{% endif %}>AGREGAR</option>
+                    <option value="MODIFICAR" {% if action_filter == 'MODIFICAR' %}selected{% endif %}>MODIFICAR</option>
+                    <option value="ELIMINAR" {% if action_filter == 'ELIMINAR' %}selected{% endif %}>ELIMINAR</option>
+                    <option value="EDICION" {% if action_filter == 'EDICION' %}selected{% endif %}>EDICION (WEB)</option>
+                    <option value="SUBIDA_PDF" {% if action_filter == 'SUBIDA_PDF' %}selected{% endif %}>SUBIDA PDF</option>
+                    <option value="IMPORTACIÓN MASIVA" {% if action_filter == 'IMPORTACIÓN MASIVA' %}selected{% endif %}>IMPORTACIÓN MASIVA</option>
+                </select>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-comfaBlue hover:bg-comfaBlue/90 text-white font-bold text-xs uppercase tracking-wider py-4 rounded-2xl transition-all shadow-lg shadow-comfaBlue/10 flex items-center justify-center gap-2">
+                    <i class="fas fa-filter"></i>
+                    Filtrar
+                </button>
+                <a href="{% url 'historial_auditoria' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs uppercase tracking-wider p-4 rounded-2xl transition-all flex items-center justify-center" title="Limpiar Filtros">
+                    <i class="fas fa-rotate"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- VISTA GENERAL DEL HISTORIAL -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- Encabezado de la tabla con métrica -->
+        <div class="px-8 py-5 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Listado de Eventos ({{ total_eventos }} total)</h3>
+            <span class="bg-blue-50 text-comfaBlue text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Historial General</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100">
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Fecha y Hora</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Plataforma</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Usuario</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Acción</th>
+                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Detalles de Operación</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs font-semibold text-slate-600">
+                    {% for item in page_obj %}
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <!-- Fecha y Hora -->
+                        <td class="px-8 py-4.5 whitespace-nowrap text-slate-500 font-medium">
+                            {{ item.fecha|date:"Y-m-d H:i:s" }}
+                        </td>
+                        <!-- Plataforma -->
+                        <td class="px-6 py-4.5 whitespace-nowrap">
+                            {% if item.plataforma == 'Web' %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-50 text-comfaBlue">
+                                <i class="fas fa-globe text-[10px]"></i> Portal Web
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-purple-50 text-purple-600">
+                                <i class="fas fa-desktop text-[10px]"></i> Escritorio
+                            </span>
+                            {% endif %}
+                        </td>
+                        <!-- Usuario -->
+                        <td class="px-6 py-4.5 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-[10px] uppercase">
+                                    {{ item.usuario|slice:":2" }}
+                                </div>
+                                <span class="text-slate-800 font-bold uppercase tracking-tight">{{ item.usuario }}</span>
+                            </div>
+                        </td>
+                        <!-- Acción -->
+                        <td class="px-6 py-4.5 whitespace-nowrap">
+                            {% if item.accion == 'AGREGAR' or item.accion == 'NUEVO' %}
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-green-50 text-green-600">
+                                AGREGAR
+                            </span>
+                            {% elif item.accion == 'MODIFICAR' or item.accion == 'EDICION' %}
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600">
+                                MODIFICAR
+                            </span>
+                            {% elif item.accion == 'ELIMINAR' %}
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-50 text-red-600 animate-pulse">
+                                ELIMINAR
+                            </span>
+                            {% elif item.accion == 'IMPORTACIÓN MASIVA' %}
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600">
+                                IMPORTACIÓN
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
+                                {{ item.accion }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <!-- Detalles -->
+                        <td class="px-8 py-4.5 font-medium text-slate-700 max-w-lg">
+                            <p class="break-words leading-relaxed">{{ item.detalles }}</p>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-8 py-16 text-center text-slate-400">
+                            <div class="flex flex-col items-center justify-center space-y-4">
+                                <i class="fas fa-folder-open text-5xl text-slate-200"></i>
+                                <div>
+                                    <p class="font-bold text-slate-500">No se encontraron eventos</p>
+                                    <p class="text-xs text-slate-400 mt-1">Intenta ajustando los filtros de búsqueda o plataforma.</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        {% if page_obj.has_other_pages %}
+        <div class="px-8 py-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span class="text-xs text-slate-400 font-semibold">
+                Mostrando página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+            <div class="flex items-center gap-1.5">
+                {% if page_obj.has_previous %}
+                <a href="?page=1&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
+                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
+                    <i class="fas fa-angles-left text-xs"></i>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
+                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
+                    <i class="fas fa-angle-left text-xs"></i>
+                </a>
+                {% endif %}
+
+                <!-- Rango de Páginas Corto -->
+                <span class="px-4 py-2 bg-comfaBlue text-white text-xs font-bold rounded-xl shadow-md shadow-comfaBlue/10">
+                    {{ page_obj.number }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
+                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
+                    <i class="fas fa-angle-right text-xs"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
+                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
+                    <i class="fas fa-angles-right text-xs"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
