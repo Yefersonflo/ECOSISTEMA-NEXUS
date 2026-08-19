@@ -35,37 +35,47 @@ def is_super(user):
 from django.http import JsonResponse
 
 def api_buscar_afiliado(request):
-    query = request.GET.get('q', '').strip()
-    if not query:
-        return JsonResponse({'error': 'Parámetro q requerido'}, status=400)
-    
-    clean_q = re.sub(r"\D", "", query)
-    qs = Carpeta.objects.filter(categoria='TRABAJADOR')
-    if clean_q:
-        match = qs.filter(identificacion=clean_q).first()
+    try:
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return JsonResponse({'error': 'Parámetro q requerido'}, status=400)
+        
+        clean_q = re.sub(r"\D", "", query)
+        qs = Carpeta.objects.filter(categoria='TRABAJADOR')
+        match = None
+        if clean_q:
+            match = qs.filter(identificacion=clean_q).first()
+            if not match:
+                match = qs.filter(Q(identificacion__icontains=query) | Q(nombre__icontains=query)).first()
+        else:
+            match = qs.filter(nombre__icontains=query).first()
+            
         if not match:
-            match = qs.filter(Q(identificacion__icontains=query) | Q(nombre__icontains=query)).first()
-    else:
-        match = qs.filter(nombre__icontains=query).first()
-        
-    if not match:
-        return JsonResponse({'encontrado': False, 'mensaje': 'Expediente no encontrado'}, status=404)
-        
-    data = {
-        'encontrado': True,
-        'Fecha': match.fecha or match.fecha_registro.strftime("%Y-%m-%d"),
-        'Tipo Identificación': match.tipo_identificacion or "CC",
-        'Cédula': match.identificacion,
-        'Nombre': match.nombre,
-        'Módulo': str(match.modulo),
-        'Estante': str(match.estante),
-        'Bandeja': str(match.bandeja),
-        'Cubículo': str(match.cubiculo),
-        'Número de Carpeta': str(match.numero_carpeta),
-        'Estado': match.estado or "ACTIVO",
-        'Fecha Retiro': match.fecha_retiro or "No aplica"
-    }
-    return JsonResponse(data)
+            return JsonResponse({'encontrado': False, 'mensaje': 'Expediente no encontrado'}, status=404)
+            
+        fecha_str = ""
+        if match.fecha:
+            fecha_str = str(match.fecha)
+        elif getattr(match, 'fecha_registro', None):
+            fecha_str = match.fecha_registro.strftime("%Y-%m-%d")
+
+        data = {
+            'encontrado': True,
+            'Fecha': fecha_str,
+            'Tipo Identificación': match.tipo_identificacion or "CC",
+            'Cédula': match.identificacion,
+            'Nombre': match.nombre or "SIN NOMBRE",
+            'Módulo': str(match.modulo),
+            'Estante': str(match.estante),
+            'Bandeja': str(match.bandeja),
+            'Cubículo': str(match.cubiculo),
+            'Número de Carpeta': str(match.numero_carpeta),
+            'Estado': match.estado or "ACTIVO",
+            'Fecha Retiro': match.fecha_retiro or "No aplica"
+        }
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'encontrado': False, 'error': str(e)}, status=500)
 
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
