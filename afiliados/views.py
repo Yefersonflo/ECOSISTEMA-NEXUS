@@ -42,40 +42,43 @@ def api_buscar_afiliado(request):
         
         clean_q = re.sub(r"\D", "", query)
         qs = Carpeta.objects.filter(categoria='TRABAJADOR')
-        match = None
+        matches = []
         if clean_q:
-            match = qs.filter(identificacion=clean_q).first()
-            if not match:
-                match = qs.filter(Q(identificacion__icontains=query) | Q(nombre__icontains=query)).first()
+            matches = list(qs.filter(Q(identificacion__icontains=clean_q) | Q(nombre__icontains=query))[:50])
         else:
-            match = qs.filter(nombre__icontains=query).first()
+            matches = list(qs.filter(nombre__icontains=query)[:50])
             
-        if not match:
-            return JsonResponse({'encontrado': False, 'mensaje': 'Expediente no encontrado'}, status=404)
+        if not matches:
+            return JsonResponse({'encontrado': False, 'resultados': [], 'mensaje': 'Expediente no encontrado'}, status=200)
             
-        fecha_str = ""
-        if match.fecha:
-            fecha_str = str(match.fecha)
-        elif getattr(match, 'fecha_registro', None):
-            fecha_str = match.fecha_registro.strftime("%Y-%m-%d")
+        results = []
+        for match in matches:
+            fecha_str = ""
+            if match.fecha:
+                fecha_str = str(match.fecha)
+            elif getattr(match, 'fecha_registro', None):
+                fecha_str = match.fecha_registro.strftime("%Y-%m-%d")
 
-        data = {
-            'encontrado': True,
-            'Fecha': fecha_str,
-            'Tipo Identificación': match.tipo_identificacion or "CC",
-            'Cédula': match.identificacion,
-            'Nombre': match.nombre or "SIN NOMBRE",
-            'Módulo': str(match.modulo),
-            'Estante': str(match.estante),
-            'Bandeja': str(match.bandeja),
-            'Cubículo': str(match.cubiculo),
-            'Número de Carpeta': str(match.numero_carpeta),
-            'Estado': match.estado or "ACTIVO",
-            'Fecha Retiro': match.fecha_retiro or "No aplica"
-        }
-        return JsonResponse(data)
+            results.append({
+                'Fecha': fecha_str,
+                'Tipo Identificación': match.tipo_identificacion or "CC",
+                'Cédula': match.identificacion,
+                'Nombre': match.nombre or "SIN NOMBRE",
+                'Módulo': str(match.modulo),
+                'Estante': str(match.estante),
+                'Bandeja': str(match.bandeja),
+                'Cubículo': str(match.cubiculo),
+                'Número de Carpeta': str(match.numero_carpeta),
+                'Estado': match.estado or "ACTIVO",
+                'Fecha Retiro': match.fecha_retiro or "No aplica"
+            })
+
+        response_data = dict(results[0])
+        response_data['encontrado'] = True
+        response_data['resultados'] = results
+        return JsonResponse(response_data)
     except Exception as e:
-        return JsonResponse({'encontrado': False, 'error': str(e)}, status=200)
+        return JsonResponse({'encontrado': False, 'resultados': [], 'error': str(e)}, status=200)
 
 # Vista del panel principal, requiere inicio de sesiÃ³n
 @login_required
