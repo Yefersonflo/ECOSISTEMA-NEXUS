@@ -1,6 +1,6 @@
 # Importa el mÃ³dulo os para interactuar con el sistema operativo (rutas, archivos)
 import os
-# Importa datetime para manejar fechas y horas
+import re
 import datetime
 # Importa uuid para generar identificadores Ãºnicos universales (usado en radicados fÃ­sicos)
 import uuid
