@@ -118,7 +118,8 @@ def api_sincronizar_afiliados(request):
                     existing.nombre = nombre or existing.nombre
                     if fecha: existing.fecha = fecha
                     if estado: existing.estado = estado
-                    if fecha_retiro: existing.fecha_retiro = fecha_retiro
+                    if fecha_retiro and fecha_retiro.upper() not in ["NO APLICA", "", "NONE", "NAN"]:
+                        existing.fecha_retiro = fecha_retiro
                     existing.save()
                     updated += 1
                 else:
