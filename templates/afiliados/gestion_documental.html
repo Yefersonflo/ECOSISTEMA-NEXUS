@@ -67,6 +67,7 @@
                         <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest">Tipo</th>
                         <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest">ID / NIT</th>
                         <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest">Nombre / Razón Social</th>
+                        <th class="px-6 py-6 text-[10px] font-black uppercase tracking-widest text-center">Estado</th>
                         <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-center">Carpeta</th>
                         <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest">Ubicación Física (M, E, B, C)</th>
                         <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-right">Acciones</th>
@@ -78,6 +79,18 @@
                         <td class="px-8 py-6"><span class="px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest {% if c.categoria == 'TRABAJADOR' %}bg-comfaBlue text-white{% else %}bg-comfaRed text-white{% endif %}">{{ c.categoria|title }}</span></td>
                         <td class="px-8 py-6"><span class="bg-white border-2 border-slate-100 px-4 py-2 rounded-xl text-xs font-black text-comfaBlue shadow-sm">{{ c.identificacion }}</span></td>
                         <td class="px-8 py-6"><p class="font-black text-slate-700 uppercase text-sm tracking-tighter">{{ c.nombre }}</p></td>
+                        <td class="px-6 py-6 text-center">
+                            <span class="inline-block px-3 py-1 text-[10px] font-black rounded-lg uppercase tracking-wider
+                                {% if c.estado == 'ACTIVO' %}bg-emerald-100 text-emerald-800
+                                {% elif c.estado == 'INACTIVO' %}bg-amber-100 text-amber-800
+                                {% elif c.estado == 'MUERTO' %}bg-red-100 text-red-800
+                                {% else %}bg-slate-100 text-slate-600{% endif %}">
+                                {{ c.estado|default:"ACTIVO" }}
+                            </span>
+                            {% if c.fecha_retiro and c.fecha_retiro != 'nan' and c.fecha_retiro != 'None' and c.fecha_retiro != 'No aplica' %}
+                            <span class="block text-[9px] font-bold text-slate-400 mt-1">{{ c.fecha_retiro }}</span>
+                            {% endif %}
+                        </td>
                         <td class="px-8 py-6 text-center">
                             <span class="w-12 h-12 inline-flex items-center justify-center bg-comfaRed text-white rounded-2xl font-black text-sm shadow-lg transform group-hover:scale-110 transition-transform">
                                 {{ c.numero_carpeta }}

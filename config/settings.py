@@ -105,7 +105,7 @@ else:
     def get_django_db_path():
         try:
             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-            config_path = os.path.join(desktop_path, "ECOSISTEMA NEXUS", "1. Gestor de Escritorio", "config.json")
+            config_path = os.path.join(desktop_path, "ECOSISTEMA NEXUS", "3. Gestor de Escritorio", "config.json")
             if os.path.exists(config_path):
                 with open(config_path, "r", encoding="utf-8") as f:
                     config = json.load(f)
@@ -115,7 +115,7 @@ else:
         except Exception:
             pass
         desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-        return os.path.join(desktop, "ECOSISTEMA NEXUS", "5. Base de Datos", "base_datos_prueba", "base_datos.db")
+        return os.path.join(desktop, "ECOSISTEMA NEXUS", "5. Base de Datos", "almacen_datos_locales", "base_datos.db")
 
     DATABASES = {
         'default': {

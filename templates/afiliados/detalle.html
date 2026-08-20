@@ -7,6 +7,50 @@
 {% block current_location %}{{ carpeta.get_categoria_display }}{% endblock %}
 
 {% block content %}
+<!-- CABECERA EJECUTIVA DE ESTADO Y AFILIACIÓN (FUSIÓN MODERNA Y SOBRIA) -->
+<div class="mb-8 p-6 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-wrap items-center justify-between gap-6">
+    <div class="flex items-center space-x-5">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl shadow-md 
+            {% if carpeta.estado == 'ACTIVO' %}bg-emerald-50 text-emerald-600 border border-emerald-200
+            {% elif carpeta.estado == 'INACTIVO' %}bg-amber-50 text-amber-600 border border-amber-200
+            {% elif carpeta.estado == 'MUERTO' %}bg-red-50 text-red-600 border border-red-200
+            {% else %}bg-blue-50 text-comfaBlue border border-blue-200{% endif %}">
+            <i class="fas {% if carpeta.estado == 'ACTIVO' %}fa-user-check{% elif carpeta.estado == 'INACTIVO' %}fa-user-clock{% elif carpeta.estado == 'MUERTO' %}fa-user-slash{% else %}fa-id-card{% endif %}"></i>
+        </div>
+        <div>
+            <div class="flex items-center space-x-3">
+                <h2 class="text-xl font-black text-slate-800 tracking-tight uppercase">{{ carpeta.nombre|default:"SIN NOMBRE" }}</h2>
+                <span class="px-3 py-1 text-[10px] font-black rounded-xl uppercase tracking-wider
+                    {% if carpeta.estado == 'ACTIVO' %}bg-emerald-100 text-emerald-800
+                    {% elif carpeta.estado == 'INACTIVO' %}bg-amber-100 text-amber-800
+                    {% elif carpeta.estado == 'MUERTO' %}bg-red-100 text-red-800
+                    {% else %}bg-slate-100 text-slate-700{% endif %}">
+                    {{ carpeta.estado|default:"ACTIVO" }}
+                </span>
+            </div>
+            <p class="text-xs font-bold text-slate-400 mt-1">
+                <span class="text-comfaBlue font-black">{{ carpeta.tipo_identificacion|default:"CC" }}:</span> {{ carpeta.identificacion }} 
+                <span class="mx-2 text-slate-300">•</span>
+                <span>Carpeta Fís. N° {{ carpeta.numero_carpeta }}</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- FECHA DE RETIRO Y TIEMPO -->
+    <div class="flex items-center space-x-6 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
+        <div>
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Fecha de Retiro</span>
+            <span class="text-xs font-black text-slate-700">
+                {% if carpeta.fecha_retiro and carpeta.fecha_retiro != 'nan' and carpeta.fecha_retiro != 'None' %}
+                    <i class="fas fa-calendar-alt text-amber-500 mr-1.5"></i>{{ carpeta.fecha_retiro }}
+                {% else %}
+                    <span class="text-slate-400 font-bold">No aplica (Activo)</span>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
     <!-- COLUMNA 1: EDICIÓN E INFORMACIÓN -->
@@ -31,6 +75,21 @@
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Identificación (ID/NIT)</label>
                         {{ form.identificacion }}
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Estado</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase 
+                                {% if carpeta.estado == 'ACTIVO' %}text-emerald-600{% elif carpeta.estado == 'INACTIVO' %}text-amber-600{% elif carpeta.estado == 'MUERTO' %}text-red-600{% else %}text-slate-700{% endif %} text-xs">
+                                {{ carpeta.estado|default:"ACTIVO" }}
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Fecha Retiro</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-slate-600 text-xs">
+                                {{ carpeta.fecha_retiro|default:"No aplica" }}
+                            </p>
+                        </div>
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Carpeta Número</label>
@@ -75,6 +134,21 @@
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Identificación (ID/NIT)</label>
                         <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-comfaBlue text-sm">{{ carpeta.identificacion }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Estado</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase 
+                                {% if carpeta.estado == 'ACTIVO' %}text-emerald-600{% elif carpeta.estado == 'INACTIVO' %}text-amber-600{% elif carpeta.estado == 'MUERTO' %}text-red-600{% else %}text-slate-700{% endif %} text-xs">
+                                {{ carpeta.estado|default:"ACTIVO" }}
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Fecha Retiro</label>
+                            <p class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold uppercase text-slate-600 text-xs">
+                                {{ carpeta.fecha_retiro|default:"No aplica" }}
+                            </p>
+                        </div>
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Carpeta Número</label>
