@@ -429,53 +429,154 @@ def mapa_visual(request):
         'nivel': nivel, 'objetos': objetos, 'breadcrumb': breadcrumb, 'cat': cat
     })
 
+def calcular_anos_inactividad(fecha_retiro_str):
+    if not fecha_retiro_str:
+        return None
+    fr = str(fecha_retiro_str).strip()
+    if fr.lower() in ['nan', 'none', 'no aplica', '']:
+        return None
+    
+    import re, datetime
+    match = re.findall(r'\b(19\d\d|20\d\d)\b', fr)
+    if match:
+        ano = int(match[0])
+        hoy = datetime.date.today()
+        for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%Y/%m/%d', '%d-%m-%Y'):
+            try:
+                dt = datetime.datetime.strptime(fr[:10], fmt).date()
+                diff_days = (hoy - dt).days
+                return round(diff_days / 365.25, 1)
+            except Exception:
+                pass
+        return float(max(0, hoy.year - ano))
+    return None
+
+def filtrar_carpetas_reporte(request):
+    estado = request.GET.get('estado', 'TODOS').strip().upper()
+    categoria = request.GET.get('categoria', 'TODOS').strip().upper()
+    modulo = request.GET.get('modulo', '').strip()
+    anos_min_str = request.GET.get('anos_min', '').strip()
+    anos_max_str = request.GET.get('anos_max', '').strip()
+    
+    anos_min = float(anos_min_str) if anos_min_str else None
+    anos_max = float(anos_max_str) if anos_max_str else None
+    
+    qs = Carpeta.objects.all()
+    
+    if categoria in ['TRABAJADOR', 'PATRONAL']:
+        qs = qs.filter(categoria=categoria)
+        
+    if estado in ['ACTIVO', 'INACTIVO', 'MUERTO']:
+        qs = qs.filter(estado=estado)
+        
+    if modulo:
+        try:
+            qs = qs.filter(modulo=int(modulo))
+        except ValueError:
+            pass
+            
+    # Filtrar por rango de años de inactividad
+    resultados = []
+    for c in qs:
+        anos_inactivo = calcular_anos_inactividad(c.fecha_retiro)
+        
+        # Si se especificó rango de años de inactividad
+        if anos_min is not None or anos_max is not None:
+            if anos_inactivo is None:
+                continue
+            if anos_min is not None and anos_inactivo < anos_min:
+                continue
+            if anos_max is not None and anos_inactivo > anos_max:
+                continue
+                
+        resultados.append({
+            'carpeta': c,
+            'anos_inactivo': anos_inactivo
+        })
+        
+    return resultados, {
+        'estado': estado,
+        'categoria': categoria,
+        'modulo': modulo,
+        'anos_min': anos_min_str,
+        'anos_max': anos_max_str
+    }
+
 @login_required
 def panel_reportes(request):
-    c_t = Carpeta.objects.filter(categoria='TRABAJADOR').count()
-    c_p = Carpeta.objects.filter(categoria='PATRONAL').count()
+    resultados, params = filtrar_carpetas_reporte(request)
     
-    # Capacidad teÃ³rica (Ejemplo: cada cubÃ­culo 55 carpetas)
-    total_cubiculos_t = Carpeta.objects.filter(categoria='TRABAJADOR').values('modulo', 'estante', 'bandeja', 'cubiculo').distinct().count()
-    total_cubiculos_p = Carpeta.objects.filter(categoria='PATRONAL').values('modulo', 'estante', 'bandeja', 'cubiculo').distinct().count()
+    # Módulos disponibles para el selector
+    modulos_disp = Carpeta.objects.values_list('modulo', flat=True).distinct().order_by('modulo')
     
-    cap_t = total_cubiculos_t * 55
-    cap_p = total_cubiculos_p * 55
+    from django.core.paginator import Paginator
+    paginator = Paginator(resultados, 25)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
     
-    stats = {
-        'trabajadores': c_t,
-        'patronales': c_p,
-        'total': c_t + c_p,
-        'disp_t': cap_t - c_t if cap_t > c_t else 0,
-        'perc_t': round((1 - (c_t/cap_t))*100, 1) if cap_t > 0 else 0,
-        'disp_p': cap_p - c_p if cap_p > c_p else 0,
-        'perc_p': round((1 - (c_p/cap_p))*100, 1) if cap_p > 0 else 0,
-    }
-    return render(request, 'afiliados/reportes.html', {'stats': stats})
+    return render(request, 'afiliados/reportes.html', {
+        'resultados_page': page_obj,
+        'total_encontrados': len(resultados),
+        'params': params,
+        'modulos_disp': modulos_disp,
+        'header_title': 'Generador de Reportes Parametrizados'
+    })
 
 @login_required
 def exportar_excel_archivo(request):
+    resultados, params = filtrar_carpetas_reporte(request)
+    
     wb = Workbook()
     ws = wb.active
-    ws.title = "Inventario Archivo"
+    ws.title = "Reporte Filtrado"
     
-    headers = ['CATEGORIA', 'NOMBRE', 'IDENTIFICACION', 'CARPETA #', 'MODULO', 'ESTANTE', 'BANDEJA', 'CUBICULO', 'FECHA REGISTRO']
+    # Encabezados
+    headers = [
+        'CATEGORÍA', 'TIPO ID', 'IDENTIFICACIÓN', 'NOMBRE COMPLETO', 
+        'ESTADO', 'FECHA RETIRO', 'AÑOS INACTIVO', 
+        'MÓDULO', 'ESTANTE', 'BANDEJA', 'CUBÍCULO', 'CARPETA #'
+    ]
     ws.append(headers)
     
-    for c in Carpeta.objects.all():
+    # Estilos encabezado
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    header_fill = PatternFill(start_color="004A87", end_color="004A87", fill_type="solid")
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    align_center = Alignment(horizontal="center", vertical="center")
+    
+    for col_num in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = align_center
+        
+    for item in resultados:
+        c = item['carpeta']
+        anos_inact = f"{item['anos_inactivo']} años" if item['anos_inactivo'] is not None else "No aplica"
         ws.append([
             c.get_categoria_display(),
-            c.nombre,
+            c.tipo_identificacion or "CC",
             c.identificacion,
-            c.numero_carpeta,
+            c.nombre,
+            c.estado or "ACTIVO",
+            c.fecha_retiro or "No aplica",
+            anos_inact,
             c.modulo,
             c.estante,
             c.bandeja,
             c.cubiculo,
-            c.fecha_registro.strftime('%Y-%m-%d %H:%M')
+            c.numero_carpeta
         ])
+        
+    # Autoajuste de columnas
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or '')) for cell in col)
+        col_letter = col[0].column_letter
+        ws.column_dimensions[col_letter].width = max(max_len + 3, 12)
     
+    nombre_archivo = f"Reporte_Nexus_{params['estado']}_{params['categoria']}.xlsx"
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=Inventario_Archivo.xlsx'
+    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
     wb.save(response)
     return response
 
