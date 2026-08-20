@@ -27,10 +27,15 @@ from documentos.models import Documento, TipoDocumento
 # Importa los modelos de la aplicaciÃ³n 'ubicacion' para el manejo fÃ­sico del archivo
 
 
-# FunciÃ³n auxiliar para determinar si un usuario tiene privilegios mÃ¡ximos
+# Funciones auxiliares para control de roles jerárquicos
 def is_super(user):
-    # Retorna True si es superusuario de Django O si su perfil tiene el rol 'SUPER'
     return user.is_superuser or (hasattr(user, 'profile') and user.profile.rol == 'SUPER')
+
+def is_jefe(user):
+    return is_super(user) or (hasattr(user, 'profile') and user.profile.rol == 'JEFE')
+
+def is_aux_or_higher(user):
+    return is_jefe(user) or (hasattr(user, 'profile') and user.profile.rol == 'AUX')
 
 # API pública en formato JSON para consultas remotas del Gestor de Escritorio
 from django.http import JsonResponse
@@ -159,16 +164,14 @@ def api_sincronizar_afiliados(request):
     except Exception as e:
         return JsonResponse({'exito': False, 'error': str(e)}, status=200)
 
-# Vista del panel principal, requiere inicio de sesiÃ³n
+# Vista del panel principal, requiere inicio de sesión
 @login_required
 def dashboard(request):
-    es_admin = is_super(request.user)
-    
-    # Redirección Inteligente por Rol:
-    # Si el usuario es Auxiliar (JEFE) o Usuario de Consulta, entra directo a Gestión Documental
-    if not es_admin:
+    # Solo Administrador (SUPER) y Jefe de Archivo (JEFE) tienen acceso al Dashboard Gerencial
+    if not is_jefe(request.user):
         return redirect('gestion_documental')
         
+    es_admin = is_super(request.user)
     historial = HistorialCarpeta.objects.all().order_by('-fecha')[:10]
 
     # Estadísticas para el Dashboard Interactivo
@@ -206,7 +209,7 @@ def dashboard(request):
 
 # MÓDULOS DE VENTANILLA ÚNICA Y CORRESPONDENCIA DEBAJO ELIMINADOS
 
-# === VISTAS DE GESTIÃƒâ€œN DOCUMENTAL Y ARCHIVO ===
+# === VISTAS DE GESTIÓN DOCUMENTAL Y ARCHIVO ===
 
 # Vista principal para la administración del archivo físico
 @login_required
@@ -219,48 +222,24 @@ def gestion_documental(request):
     # Obtiene todas las carpetas de la categoría seleccionada, ordenadas por fecha de registro (últimas creadas primero)
     carpetas = Carpeta.objects.filter(categoria=cat_activa).order_by('-fecha_registro')
     
-    # Si hay una búsqueda activa, filtra por identificación O nombre que contenga el texto
     if query:
-        carpetas = carpetas.filter(Q(identificacion__icontains=query) | Q(nombre__icontains=query))
-    
-    # Paginar las carpetas (25 por página)
+        clean_q = re.sub(r"\D", "", query)
+        if clean_q:
+            carpetas = carpetas.filter(Q(identificacion__icontains=clean_q) | Q(nombre__icontains=query))
+        else:
+            carpetas = carpetas.filter(nombre__icontains=query)
+            
     from django.core.paginator import Paginator
     paginator = Paginator(carpetas, 25)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # Diccionario con el conteo total de expedientes por categoría
-    stats = {
-        'trabajadores': Carpeta.objects.filter(categoria='TRABAJADOR').count(),
-        'patronales': Carpeta.objects.filter(categoria='PATRONAL').count(),
-        'archivos': 0
-    }
-    
-    # Lógica para guardar un nuevo expediente físico
-    if request.method == 'POST':
-        if not (hasattr(request.user, 'profile') and request.user.profile.rol in ['SUPER', 'JEFE']):
-            messages.error(request, "No tiene permisos para registrar nuevos expedientes.")
-            return redirect('gestion_documental')
-        # Carga los datos del formulario incluyendo archivos (si los hay)
-        form = CarpetaForm(request.POST, request.FILES)
-        if form.is_valid(): # Valida que los datos sean correctos según el modelo
-            try:
-                # Guarda la carpeta directamente en la base de datos
-                nueva = form.save()
-                
-                # Alerta de éxito y recarga la página en la misma categoría
-                messages.success(request, f"Expediente de {nueva.nombre} registrado.")
-                return redirect(f"{request.path}?cat={nueva.categoria}")
-            except Exception as e: 
-                # Si ocurre un error en base de datos, lo muestra
-                messages.error(request, f"Error: {str(e)}")
-    else: 
-        # Si no es POST, crea un formulario vacío con la categoría actual preseleccionada
-        form = CarpetaForm(initial={'categoria': cat_activa})
-        
-    # Renderiza la interfaz de gestión documental pasando carpetas, estadísticas y formulario
-    return render(request, 'afiliados/gestion_documental.html', {
-        'cat_activa': cat_activa, 'carpetas': page_obj, 'stats': stats, 'form': form, 'header_title': 'Gestion Documental'
+    return render(request, 'afiliados/gestion.html', {
+        'carpetas': page_obj,
+        'cat_activa': cat_activa,
+        'query': query,
+        'can_edit': is_aux_or_higher(request.user),
+        'header_title': 'Gestión Documental'
     })
 
 # Vista para ver los detalles de una carpeta física y su contenido
@@ -281,7 +260,7 @@ def detalle_carpeta(request, carpeta_id):
     if request.method == 'POST':
         # LÓGICA DE EDICIÓN DE CARPETA
         if 'editar_carpeta' in request.POST:
-            if not (hasattr(request.user, 'profile') and request.user.profile.rol in ['SUPER', 'JEFE']):
+            if not is_aux_or_higher(request.user):
                 messages.error(request, "No tiene permisos para editar expedientes.")
                 return redirect('detalle_carpeta', carpeta_id=it.id)
             form = CarpetaForm(request.POST, instance=it)
@@ -305,6 +284,9 @@ def detalle_carpeta(request, carpeta_id):
         
         # LÓGICA DE CARGA DE DOCUMENTOS
         elif 'subir_doc' in request.POST:
+            if not is_aux_or_higher(request.user):
+                messages.error(request, "No tiene permisos para digitalizar o subir documentos.")
+                return redirect('detalle_carpeta', carpeta_id=it.id)
             nombre_doc = request.POST.get('nombre_doc')
             archivo = request.FILES.get('archivo')
             if nombre_doc and archivo:
@@ -340,6 +322,8 @@ def detalle_carpeta(request, carpeta_id):
         'form': form,
         'documentos': documentos,
         'historial_carpeta': historial_carpeta,
+        'can_edit': is_aux_or_higher(request.user),
+        'can_delete_doc': is_super(request.user),
         'header_title': f'Expediente: {it.nombre}'
     })
 
@@ -493,8 +477,7 @@ def filtrar_carpetas_reporte(request):
             'carpeta': c,
             'anos_inactivo': anos_inactivo
         })
-        
-    return resultados, {
+        return resultados, {
         'estado': estado,
         'categoria': categoria,
         'modulo': modulo,
@@ -504,14 +487,14 @@ def filtrar_carpetas_reporte(request):
 
 @login_required
 def panel_reportes(request):
-    if not is_super(request.user):
-        messages.error(request, "Solo el Administrador tiene autorización para acceder al Generador de Reportes.")
+    if not is_jefe(request.user):
+        messages.error(request, "Solo el Administrador y el Jefe de Archivo tienen autorización para acceder al Generador de Reportes.")
         return redirect('gestion_documental')
         
     resultados, params = filtrar_carpetas_reporte(request)
     
     # Módulos disponibles para el selector
-    modulos_disp = Carpeta.objects.values_list('modulo', flat=True).distinct().order_by('modulo')
+    modulos_disp = sorted(list(Carpeta.objects.values_list('modulo', flat=True).distinct()))
     
     from django.core.paginator import Paginator
     paginator = Paginator(resultados, 25)
@@ -528,7 +511,7 @@ def panel_reportes(request):
 
 @login_required
 def exportar_excel_archivo(request):
-    if not is_super(request.user):
+    if not is_jefe(request.user):
         messages.error(request, "No tiene permisos para exportar reportes institucionales.")
         return redirect('gestion_documental')
         
@@ -590,9 +573,9 @@ def exportar_excel_archivo(request):
 
 @login_required
 def historial_auditoria(request):
-    if not is_super(request.user):
+    if not is_jefe(request.user):
         messages.error(request, "No tiene autorización para ver el historial de auditoría.")
-        return redirect('dashboard')
+        return redirect('gestion_documental')
 
     import re
     from django.db import connection
@@ -676,7 +659,7 @@ def historial_auditoria(request):
     # 7. Consultar Historial de Inicios de Sesión
     login_logs = LoginLog.objects.all().select_related('user').order_by('-timestamp')[:50]
     
-    tab_activa = request.GET.get('tab', 'sesiones') # Por defecto pestaña de sesiones en vivo
+    tab_activa = request.GET.get('tab', 'sesiones' if is_super(request.user) else 'trazabilidad')
     
     return render(request, 'afiliados/historial_auditoria.html', {
         'page_obj': page_obj,
@@ -688,6 +671,7 @@ def historial_auditoria(request):
         'active_sessions': active_sessions,
         'login_logs': login_logs,
         'tab_activa': tab_activa,
+        'is_super': is_super(request.user),
         'header_title': 'Centro de Seguridad y Auditoría'
     })
 

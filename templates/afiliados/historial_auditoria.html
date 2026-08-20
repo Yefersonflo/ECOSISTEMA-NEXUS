@@ -18,6 +18,7 @@
 
         <!-- BOTONES DE PESTAÑAS -->
         <div class="flex items-center p-1.5 bg-slate-100 rounded-xl space-x-1">
+            {% if is_super %}
             <button @click="tab = 'sesiones'" 
                     :class="tab === 'sesiones' ? 'bg-white text-comfaBlue shadow-md' : 'text-slate-500 hover:text-slate-800'"
                     class="px-4 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2">
@@ -30,6 +31,7 @@
                 <i class="fas fa-key text-[11px]"></i>
                 <span>Historial Logins</span>
             </button>
+            {% endif %}
             <button @click="tab = 'trazabilidad'" 
                     :class="tab === 'trazabilidad' ? 'bg-white text-comfaBlue shadow-md' : 'text-slate-500 hover:text-slate-800'"
                     class="px-4 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2">
