@@ -124,3 +124,65 @@ class HistorialCarpeta(models.Model):
     accion = models.CharField(max_length=50)
     fecha = models.DateTimeField(auto_now_add=True)
     observaciones = models.TextField(blank=True, null=True)
+
+
+# Modelo para rastrear sesiones activas y presencia en tiempo real
+class ActiveUserSession(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='active_sessions')
+    session_key = models.CharField(max_length=40, unique=True)
+    ip_address = models.CharField(max_length=50, blank=True, null=True)
+    user_agent = models.CharField(max_length=255, blank=True, null=True)
+    login_time = models.DateTimeField(auto_now_add=True)
+    last_activity = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Sesión Activa'
+        verbose_name_plural = 'Sesiones Activas'
+        ordering = ['-last_activity']
+
+    def is_online(self):
+        from django.utils import timezone
+        return (timezone.now() - self.last_activity).total_seconds() < 300  # < 5 minutos activo
+
+    def get_device(self):
+        ua = str(self.user_agent or "").lower()
+        if "windows" in ua:
+            os_name = "Windows"
+        elif "mac" in ua or "darwin" in ua:
+            os_name = "macOS"
+        elif "android" in ua:
+            os_name = "Android"
+        elif "iphone" in ua or "ipad" in ua:
+            os_name = "iOS"
+        elif "linux" in ua:
+            os_name = "Linux"
+        else:
+            os_name = "PC / Dispositivo"
+
+        if "edg" in ua:
+            browser = "Microsoft Edge"
+        elif "chrome" in ua:
+            browser = "Google Chrome"
+        elif "firefox" in ua:
+            browser = "Mozilla Firefox"
+        elif "safari" in ua and "chrome" not in ua:
+            browser = "Apple Safari"
+        else:
+            browser = "Navegador Web"
+
+        return f"{os_name} • {browser}"
+
+
+# Modelo para registrar el historial completo de inicios de sesión
+class LoginLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='login_logs')
+    username_entered = models.CharField(max_length=150)
+    success = models.BooleanField(default=True)
+    ip_address = models.CharField(max_length=50, blank=True, null=True)
+    user_agent = models.CharField(max_length=255, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Historial de Inicio de Sesión'
+        verbose_name_plural = 'Historial de Inicios de Sesión'
+        ordering = ['-timestamp']

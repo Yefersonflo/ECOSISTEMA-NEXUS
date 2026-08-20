@@ -19,7 +19,8 @@ class CustomLoginView(auth_views.LoginView):
 from afiliados.views import (
     dashboard, detalle_carpeta, borrar_documento, borrar_carpeta, 
     mapa_visual, gestion_documental, panel_reportes, exportar_excel_archivo,
-    historial_auditoria, exportar_auditoria_excel, api_buscar_afiliado, api_sincronizar_afiliados
+    historial_auditoria, exportar_auditoria_excel, api_buscar_afiliado, api_sincronizar_afiliados,
+    cerrar_sesion_remota
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -53,9 +54,10 @@ urlpatterns = [
     # Descarga de inventario de archivo en formato Excel
     path('exportar-excel-archivo/', exportar_excel_archivo, name='exportar_excel_archivo'),
 
-    # Módulo de Auditoría Global (Superusuario)
+    # Módulo de Auditoría Global y Seguridad (Superusuario)
     path('historial-auditoria/', historial_auditoria, name='historial_auditoria'),
     path('historial-auditoria/exportar/', exportar_auditoria_excel, name='exportar_auditoria_excel'),
+    path('seguridad/cerrar-sesion/<int:session_id>/', cerrar_sesion_remota, name='cerrar_sesion_remota'),
 
     # SECCIÓN DE SEGURIDAD ELIMINADA DE URLS (Manejado por /admin/)
 ]

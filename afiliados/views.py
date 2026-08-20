@@ -557,6 +557,18 @@ def historial_auditoria(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
+    # 6. Consultar Sesiones Activas en Tiempo Real
+    from .models import ActiveUserSession, LoginLog
+    # Limpiar sesiones con más de 24 horas de inactividad
+    un_dia_atras = timezone.now() - datetime.timedelta(hours=24)
+    ActiveUserSession.objects.filter(last_activity__lt=un_dia_atras).delete()
+    active_sessions = ActiveUserSession.objects.all().select_related('user', 'user__profile').order_by('-last_activity')
+    
+    # 7. Consultar Historial de Inicios de Sesión
+    login_logs = LoginLog.objects.all().select_related('user').order_by('-timestamp')[:50]
+    
+    tab_activa = request.GET.get('tab', 'sesiones') # Por defecto pestaña de sesiones en vivo
+    
     return render(request, 'afiliados/historial_auditoria.html', {
         'page_obj': page_obj,
         'plat_filter': plat_filter,
@@ -564,10 +576,33 @@ def historial_auditoria(request):
         'action_filter': action_filter,
         'q_filter': q_filter,
         'total_eventos': len(filtered_records),
-        'header_title': 'Auditoría Global'
+        'active_sessions': active_sessions,
+        'login_logs': login_logs,
+        'tab_activa': tab_activa,
+        'header_title': 'Centro de Seguridad y Auditoría'
     })
 
 @login_required
+def cerrar_sesion_remota(request, session_id):
+    if not is_super(request.user):
+        messages.error(request, "No tiene permisos para cerrar sesiones de otros usuarios.")
+        return redirect('historial_auditoria')
+    
+    from django.contrib.sessions.models import Session
+    from .models import ActiveUserSession
+    try:
+        active_sess = ActiveUserSession.objects.filter(id=session_id).first()
+        if active_sess:
+            username = active_sess.user.username
+            Session.objects.filter(session_key=active_sess.session_key).delete()
+            active_sess.delete()
+            messages.success(request, f"Sesión del usuario '{username}' cerrada remotamente.")
+        else:
+            messages.warning(request, "La sesión ya no se encuentra activa.")
+    except Exception as e:
+        messages.error(request, f"Error al cerrar la sesión: {str(e)}")
+        
+    return redirect('/historial-auditoria/?tab=sesiones')
 def exportar_auditoria_excel(request):
     if not is_super(request.user):
         messages.error(request, "No tiene autorización para exportar auditorías.")

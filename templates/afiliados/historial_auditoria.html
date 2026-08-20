@@ -1,209 +1,357 @@
 {% extends 'layout/base.html' %}
 {% load static %}
 
-{% block title %}Auditoría Global | Nexus{% endblock %}
+{% block title %}Centro de Seguridad y Auditoría | Nexus{% endblock %}
 
-{% block header_title %}Auditoría Global del Ecosistema{% endblock %}
+{% block header_title %}Centro de Seguridad y Auditoría Global{% endblock %}
 
 {% block content %}
-<div class="space-y-8">
-    <!-- TITULO Y ACCIONES PRINCIPALES -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+<div x-data="{ tab: '{{ tab_activa|default:'sesiones' }}' }" class="space-y-6">
+
+    <!-- CABECERA Y SELECTOR DE PESTAÑAS (ESTILO EJECUTIVO) -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Panel de Control General</p>
-            <h1 class="text-2xl font-black text-slate-800 tracking-tight">Historial de Auditoría Unificado</h1>
-            <p class="text-xs text-slate-500 mt-1">Monitorea y exporta en tiempo real las operaciones realizadas en el Gestor de Escritorio y en el Portal Web.</p>
+            <p class="text-[9px] font-black uppercase tracking-[0.25em] text-comfaBlue">NEXUS GUARD • SEGURIDAD EMPRESARIAL</p>
+            <h1 class="text-xl font-black text-slate-800 tracking-tight">Monitoreo de Sesiones y Trazabilidad</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Control de presencia en vivo, historial de accesos y registro de operaciones.</p>
         </div>
-        <div class="flex items-center gap-3">
+
+        <!-- BOTONES DE PESTAÑAS -->
+        <div class="flex items-center p-1.5 bg-slate-100 rounded-xl space-x-1">
+            <button @click="tab = 'sesiones'" 
+                    :class="tab === 'sesiones' ? 'bg-white text-comfaBlue shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    class="px-4 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Sesiones en Vivo ({{ active_sessions|length }})</span>
+            </button>
+            <button @click="tab = 'logins'" 
+                    :class="tab === 'logins' ? 'bg-white text-comfaBlue shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    class="px-4 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2">
+                <i class="fas fa-key text-[11px]"></i>
+                <span>Historial Logins</span>
+            </button>
+            <button @click="tab = 'trazabilidad'" 
+                    :class="tab === 'trazabilidad' ? 'bg-white text-comfaBlue shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    class="px-4 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2">
+                <i class="fas fa-list-check text-[11px]"></i>
+                <span>Bitácora de Cambios</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 1: SESIONES ACTIVAS EN TIEMPO REAL -->
+    <!-- ========================================== -->
+    <div x-show="tab === 'sesiones'" x-cloak class="space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div class="flex items-center space-x-3">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-700">Usuarios con Sesión Abierta en este Momento</h3>
+                </div>
+                <span class="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase px-3 py-1 rounded-full">
+                    {{ active_sessions|length }} Conexión{{ active_sessions|length|pluralize:"es" }}
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-400 border-b border-slate-100">
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Usuario / Nombre</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest text-center">Rol de Acceso</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest text-center">Estado de Presencia</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Dirección IP & Dispositivo</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Hora Ingreso</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Última Actividad</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
+                        {% for s in active_sessions %}
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+                            <td class="px-6 py-3.5">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-xl bg-comfaBlue/10 text-comfaBlue flex items-center justify-center font-black text-xs uppercase">
+                                        {{ s.user.username|slice:":2" }}
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-slate-800 uppercase text-xs">{{ s.user.username }}</p>
+                                        <p class="text-[10px] text-slate-400 font-medium">{{ s.user.get_full_name|default:s.user.email|default:"Usuario Registrado" }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3.5 text-center">
+                                <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider
+                                    {% if s.user.is_superuser or s.user.profile.rol == 'SUPER' %}bg-purple-100 text-purple-700
+                                    {% elif s.user.profile.rol == 'JEFE' %}bg-blue-100 text-comfaBlue
+                                    {% else %}bg-slate-100 text-slate-600{% endif %}">
+                                    {{ s.user.profile.get_rol_display|default:"Usuario" }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3.5 text-center">
+                                {% if s.is_online %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    En Línea
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-200">
+                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                    Inactivo
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-3.5">
+                                <p class="text-xs font-bold text-slate-700">{{ s.ip_address|default:"127.0.0.1" }}</p>
+                                <p class="text-[10px] text-slate-400 font-medium">{{ s.get_device }}</p>
+                            </td>
+                            <td class="px-6 py-3.5 text-slate-500 font-medium">
+                                {{ s.login_time|date:"H:i" }} hrs
+                            </td>
+                            <td class="px-6 py-3.5 text-slate-500 font-medium">
+                                {{ s.last_activity|timesince }} atrás
+                            </td>
+                            <td class="px-6 py-3.5 text-right">
+                                {% if s.user != request.user %}
+                                <a href="{% url 'cerrar_sesion_remota' s.id %}" 
+                                   onclick="return confirm('¿Desea CERRAR remotamente la sesión de {{ s.user.username }}?')"
+                                   class="px-3 py-1.5 bg-red-50 text-comfaRed hover:bg-comfaRed hover:text-white rounded-lg text-[10px] font-black uppercase tracking-wider transition-all inline-flex items-center gap-1 shadow-sm">
+                                    <i class="fas fa-power-off"></i> Desconectar
+                                </a>
+                                {% else %}
+                                <span class="text-[9px] font-bold text-slate-300 uppercase italic">Tu sesión actual</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-slate-400">
+                                <i class="fas fa-users-slash text-4xl text-slate-200 mb-2 block"></i>
+                                <p class="font-bold">No hay sesiones activas registradas en este momento.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 2: HISTORIAL DE INICIOS DE SESIÓN  -->
+    <!-- ========================================== -->
+    <div x-show="tab === 'logins'" x-cloak class="space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-700">Bitácora de Intentos de Inicio de Sesión (Últimos 50)</h3>
+                <span class="bg-blue-50 text-comfaBlue text-[9px] font-black uppercase px-3 py-1 rounded-full">Historial de Accesos</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-400 border-b border-slate-100">
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Fecha y Hora</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Usuario Ingresado</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest text-center">Resultado</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Dirección IP</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Dispositivo / Navegador</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
+                        {% for log in login_logs %}
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+                            <td class="px-6 py-3.5 text-slate-500 font-medium">
+                                {{ log.timestamp|date:"Y-m-d H:i:s" }}
+                            </td>
+                            <td class="px-6 py-3.5">
+                                <span class="font-black text-slate-800 uppercase">{{ log.username_entered }}</span>
+                            </td>
+                            <td class="px-6 py-3.5 text-center">
+                                {% if log.success %}
+                                <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                    <i class="fas fa-check-circle mr-1"></i> Acceso Exitoso
+                                </span>
+                                {% else %}
+                                <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-50 text-comfaRed border border-red-200 animate-pulse">
+                                    <i class="fas fa-times-circle mr-1"></i> Fallido / Contraseña Errónea
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-3.5 text-slate-600 font-medium">
+                                {{ log.ip_address|default:"127.0.0.1" }}
+                            </td>
+                            <td class="px-6 py-3.5 text-slate-500 font-medium truncate max-w-xs">
+                                {{ log.user_agent|truncatechars:60 }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-12 text-center text-slate-400">
+                                <i class="fas fa-shield-alt text-4xl text-slate-200 mb-2 block"></i>
+                                <p class="font-bold">Aún no se registran eventos de inicio de sesión.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 3: BITÁCORA DE CAMBIOS Y TRABAJO   -->
+    <!-- ========================================== -->
+    <div x-show="tab === 'trazabilidad'" x-cloak class="space-y-6">
+        
+        <!-- PANEL DE FILTROS Y EXPORTACIÓN -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-end justify-between gap-4">
+            <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 flex-1">
+                <input type="hidden" name="tab" value="trazabilidad">
+                <!-- Buscar Detalles -->
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black uppercase tracking-wider text-slate-400 block">Buscar en detalles</label>
+                    <input type="text" name="q" value="{{ q_filter }}" placeholder="Cédula, nombre o detalle..." 
+                           class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 placeholder-slate-400 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+                </div>
+
+                <!-- Plataforma -->
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black uppercase tracking-wider text-slate-400 block">Plataforma</label>
+                    <select name="plataforma" class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+                        <option value="Todos" {% if plat_filter == 'Todos' %}selected{% endif %}>Todas</option>
+                        <option value="Web" {% if plat_filter == 'Web' %}selected{% endif %}>Web (Portal)</option>
+                        <option value="Escritorio" {% if plat_filter == 'Escritorio' %}selected{% endif %}>Escritorio (Gestor)</option>
+                    </select>
+                </div>
+
+                <!-- Acción -->
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black uppercase tracking-wider text-slate-400 block">Acción</label>
+                    <select name="accion" class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+                        <option value="Todos" {% if action_filter == 'Todos' %}selected{% endif %}>Todas</option>
+                        <option value="AGREGAR" {% if action_filter == 'AGREGAR' %}selected{% endif %}>AGREGAR</option>
+                        <option value="MODIFICAR" {% if action_filter == 'MODIFICAR' %}selected{% endif %}>MODIFICAR</option>
+                        <option value="ELIMINAR" {% if action_filter == 'ELIMINAR' %}selected{% endif %}>ELIMINAR</option>
+                        <option value="EDICION" {% if action_filter == 'EDICION' %}selected{% endif %}>EDICIÓN</option>
+                        <option value="DOCUMENTO" {% if action_filter == 'DOCUMENTO' %}selected{% endif %}>SUBIDA PDF</option>
+                    </select>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 bg-comfaBlue hover:bg-comfaBlue/90 text-white font-bold text-xs uppercase tracking-wider py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fas fa-filter text-[10px]"></i> Filtrar
+                    </button>
+                    <a href="{% url 'historial_auditoria' %}?tab=trazabilidad" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs p-2.5 rounded-xl transition-all flex items-center justify-center" title="Limpiar">
+                        <i class="fas fa-rotate text-xs"></i>
+                    </a>
+                </div>
+            </form>
+
             <a href="{% url 'exportar_auditoria_excel' %}?plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
-               class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-2xl shadow-lg shadow-emerald-600/10 flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
-                <i class="fas fa-file-excel text-lg"></i>
-                Exportar Historial
+               class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-md flex items-center gap-2 transition-all hover:scale-105">
+                <i class="fas fa-file-excel text-base"></i>
+                <span>Exportar Excel</span>
             </a>
         </div>
-    </div>
 
-    <!-- PANEL DE FILTROS -->
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
-            <!-- Buscar Detalles -->
-            <div class="space-y-1 md:col-span-2">
-                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Buscar en detalles</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
-                        <i class="fas fa-magnifying-glass"></i>
-                    </span>
-                    <input type="text" name="q" value="{{ q_filter }}" placeholder="Cédula, nombre o campo modificado..." 
-                           class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 placeholder-slate-400 rounded-2xl py-3.5 pl-10 pr-4 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
+        <!-- TABLA DE TRAZABILIDAD -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-700">Listado de Operaciones ({{ total_eventos }} registrados)</h3>
+                <span class="bg-blue-50 text-comfaBlue text-[9px] font-black uppercase px-3 py-1 rounded-full">Historial Unificado</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-400 border-b border-slate-100">
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Fecha y Hora</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Plataforma</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Usuario</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Acción</th>
+                            <th class="px-6 py-3.5 text-[9px] font-black uppercase tracking-widest">Detalles de la Operación</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
+                        {% for item in page_obj %}
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+                            <td class="px-6 py-3.5 whitespace-nowrap text-slate-500 font-medium">
+                                {{ item.fecha|date:"Y-m-d H:i:s" }}
+                            </td>
+                            <td class="px-6 py-3.5 whitespace-nowrap">
+                                {% if item.plataforma == 'Web' %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-blue-50 text-comfaBlue border border-blue-200">
+                                    <i class="fas fa-globe text-[9px]"></i> Web
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-purple-50 text-purple-600 border border-purple-200">
+                                    <i class="fas fa-desktop text-[9px]"></i> Gestor
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-3.5 whitespace-nowrap">
+                                <span class="font-black text-slate-800 uppercase">{{ item.usuario }}</span>
+                            </td>
+                            <td class="px-6 py-3.5 whitespace-nowrap">
+                                {% if item.accion == 'AGREGAR' or item.accion == 'NUEVO' or item.accion == 'CREACION' %}
+                                <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-green-50 text-green-600 border border-green-200">
+                                    AGREGAR
+                                </span>
+                                {% elif item.accion == 'MODIFICAR' or item.accion == 'EDICION' %}
+                                <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-200">
+                                    MODIFICAR
+                                </span>
+                                {% elif item.accion == 'DOCUMENTO' or item.accion == 'SUBIDA_PDF' %}
+                                <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-200">
+                                    SUBIDA PDF
+                                </span>
+                                {% elif item.accion == 'ELIMINAR' or item.accion == 'ELIMINACION' %}
+                                <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-red-50 text-comfaRed border border-red-200">
+                                    ELIMINAR
+                                </span>
+                                {% else %}
+                                <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
+                                    {{ item.accion }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-3.5 text-slate-600 max-w-md">
+                                <p class="break-words leading-relaxed font-normal">{{ item.detalles }}</p>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-12 text-center text-slate-400">
+                                <i class="fas fa-folder-open text-4xl text-slate-200 mb-2 block"></i>
+                                <p class="font-bold">No se encontraron eventos en este criterio de búsqueda.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            {% if page_obj.has_other_pages %}
+            <div class="px-6 py-3.5 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-medium">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                <div class="flex items-center gap-1">
+                    {% if page_obj.has_previous %}
+                    <a href="?tab=trazabilidad&page={{ page_obj.previous_page_number }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-600"><i class="fas fa-angle-left"></i></a>
+                    {% endif %}
+                    <span class="px-3 py-1.5 bg-comfaBlue text-white text-xs font-bold rounded-lg">{{ page_obj.number }}</span>
+                    {% if page_obj.has_next %}
+                    <a href="?tab=trazabilidad&page={{ page_obj.next_page_number }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-600"><i class="fas fa-angle-right"></i></a>
+                    {% endif %}
                 </div>
             </div>
+            {% endif %}
+        </div>
 
-            <!-- Plataforma -->
-            <div class="space-y-1">
-                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Plataforma</label>
-                <select name="plataforma" class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
-                    <option value="Todos" {% if plat_filter == 'Todos' %}selected{% endif %}>Todas</option>
-                    <option value="Web" {% if plat_filter == 'Web' %}selected{% endif %}>Web (Portal)</option>
-                    <option value="Escritorio" {% if plat_filter == 'Escritorio' %}selected{% endif %}>Escritorio (Gestor)</option>
-                </select>
-            </div>
-
-            <!-- Acción -->
-            <div class="space-y-1">
-                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Acción</label>
-                <select name="accion" class="w-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-comfaBlue/20 focus:border-comfaBlue focus:outline-none transition-all">
-                    <option value="Todos" {% if action_filter == 'Todos' %}selected{% endif %}>Todas</option>
-                    <option value="AGREGAR" {% if action_filter == 'AGREGAR' %}selected{% endif %}>AGREGAR</option>
-                    <option value="MODIFICAR" {% if action_filter == 'MODIFICAR' %}selected{% endif %}>MODIFICAR</option>
-                    <option value="ELIMINAR" {% if action_filter == 'ELIMINAR' %}selected{% endif %}>ELIMINAR</option>
-                    <option value="EDICION" {% if action_filter == 'EDICION' %}selected{% endif %}>EDICION (WEB)</option>
-                    <option value="SUBIDA_PDF" {% if action_filter == 'SUBIDA_PDF' %}selected{% endif %}>SUBIDA PDF</option>
-                    <option value="IMPORTACIÓN MASIVA" {% if action_filter == 'IMPORTACIÓN MASIVA' %}selected{% endif %}>IMPORTACIÓN MASIVA</option>
-                </select>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="flex gap-2">
-                <button type="submit" class="flex-1 bg-comfaBlue hover:bg-comfaBlue/90 text-white font-bold text-xs uppercase tracking-wider py-4 rounded-2xl transition-all shadow-lg shadow-comfaBlue/10 flex items-center justify-center gap-2">
-                    <i class="fas fa-filter"></i>
-                    Filtrar
-                </button>
-                <a href="{% url 'historial_auditoria' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs uppercase tracking-wider p-4 rounded-2xl transition-all flex items-center justify-center" title="Limpiar Filtros">
-                    <i class="fas fa-rotate"></i>
-                </a>
-            </div>
-        </form>
     </div>
 
-    <!-- VISTA GENERAL DEL HISTORIAL -->
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-        <!-- Encabezado de la tabla con métrica -->
-        <div class="px-8 py-5 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Listado de Eventos ({{ total_eventos }} total)</h3>
-            <span class="bg-blue-50 text-comfaBlue text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Historial General</span>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50 border-b border-slate-100">
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Fecha y Hora</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Plataforma</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Usuario</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Acción</th>
-                        <th class="px-8 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Detalles de Operación</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs font-semibold text-slate-600">
-                    {% for item in page_obj %}
-                    <tr class="hover:bg-slate-50/50 transition-colors">
-                        <!-- Fecha y Hora -->
-                        <td class="px-8 py-4.5 whitespace-nowrap text-slate-500 font-medium">
-                            {{ item.fecha|date:"Y-m-d H:i:s" }}
-                        </td>
-                        <!-- Plataforma -->
-                        <td class="px-6 py-4.5 whitespace-nowrap">
-                            {% if item.plataforma == 'Web' %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-50 text-comfaBlue">
-                                <i class="fas fa-globe text-[10px]"></i> Portal Web
-                            </span>
-                            {% else %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-purple-50 text-purple-600">
-                                <i class="fas fa-desktop text-[10px]"></i> Escritorio
-                            </span>
-                            {% endif %}
-                        </td>
-                        <!-- Usuario -->
-                        <td class="px-6 py-4.5 whitespace-nowrap">
-                            <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-[10px] uppercase">
-                                    {{ item.usuario|slice:":2" }}
-                                </div>
-                                <span class="text-slate-800 font-bold uppercase tracking-tight">{{ item.usuario }}</span>
-                            </div>
-                        </td>
-                        <!-- Acción -->
-                        <td class="px-6 py-4.5 whitespace-nowrap">
-                            {% if item.accion == 'AGREGAR' or item.accion == 'NUEVO' %}
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-green-50 text-green-600">
-                                AGREGAR
-                            </span>
-                            {% elif item.accion == 'MODIFICAR' or item.accion == 'EDICION' %}
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600">
-                                MODIFICAR
-                            </span>
-                            {% elif item.accion == 'ELIMINAR' %}
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-50 text-red-600 animate-pulse">
-                                ELIMINAR
-                            </span>
-                            {% elif item.accion == 'IMPORTACIÓN MASIVA' %}
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600">
-                                IMPORTACIÓN
-                            </span>
-                            {% else %}
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
-                                {{ item.accion }}
-                            </span>
-                            {% endif %}
-                        </td>
-                        <!-- Detalles -->
-                        <td class="px-8 py-4.5 font-medium text-slate-700 max-w-lg">
-                            <p class="break-words leading-relaxed">{{ item.detalles }}</p>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-8 py-16 text-center text-slate-400">
-                            <div class="flex flex-col items-center justify-center space-y-4">
-                                <i class="fas fa-folder-open text-5xl text-slate-200"></i>
-                                <div>
-                                    <p class="font-bold text-slate-500">No se encontraron eventos</p>
-                                    <p class="text-xs text-slate-400 mt-1">Intenta ajustando los filtros de búsqueda o plataforma.</p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- PAGINACIÓN -->
-        {% if page_obj.has_other_pages %}
-        <div class="px-8 py-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span class="text-xs text-slate-400 font-semibold">
-                Mostrando página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-            </span>
-            <div class="flex items-center gap-1.5">
-                {% if page_obj.has_previous %}
-                <a href="?page=1&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
-                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
-                    <i class="fas fa-angles-left text-xs"></i>
-                </a>
-                <a href="?page={{ page_obj.previous_page_number }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
-                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
-                    <i class="fas fa-angle-left text-xs"></i>
-                </a>
-                {% endif %}
-
-                <!-- Rango de Páginas Corto -->
-                <span class="px-4 py-2 bg-comfaBlue text-white text-xs font-bold rounded-xl shadow-md shadow-comfaBlue/10">
-                    {{ page_obj.number }}
-                </span>
-
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
-                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
-                    <i class="fas fa-angle-right text-xs"></i>
-                </a>
-                <a href="?page={{ page_obj.paginator.num_pages }}&plataforma={{ plat_filter }}&usuario={{ user_filter }}&accion={{ action_filter }}&q={{ q_filter }}" 
-                   class="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center border border-slate-200 transition-all">
-                    <i class="fas fa-angles-right text-xs"></i>
-                </a>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
 </div>
 {% endblock %}
