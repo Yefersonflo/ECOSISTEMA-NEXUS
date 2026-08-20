@@ -266,8 +266,15 @@ def gestion_documental(request):
 # Vista para ver los detalles de una carpeta física y su contenido
 @login_required
 def detalle_carpeta(request, carpeta_id):
-    # Busca la carpeta por ID
-    it = get_object_or_404(Carpeta, id=carpeta_id)
+    # Busca la carpeta por ID o por identificación/cédula
+    it = Carpeta.objects.filter(id=carpeta_id).first()
+    if not it:
+        it = Carpeta.objects.filter(identificacion=str(carpeta_id)).first()
+        
+    if not it:
+        messages.warning(request, f"El expediente solicitado (ID: {carpeta_id}) no fue encontrado o fue reubicado.")
+        return redirect('gestion_documental')
+        
     # Obtiene los documentos asociados
     documentos = it.documentos.all().order_by('-fecha_creacion')
     
