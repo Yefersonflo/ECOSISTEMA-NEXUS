@@ -83,24 +83,24 @@
                 <i class="fas fa-boxes-stacked w-8 text-center text-xl text-comfaYellow"></i>
                 <span class="sidebar-text text-xs uppercase tracking-widest">Gestión Documental</span>     
             </a>
-            <a href="{% url 'panel_reportes' %}" class="flex items-center space-x-4 p-4 rounded-xl text-white font-bold hover:bg-white/10 {% if '/reportes-registros/' in request.path %}nav-item-active{% endif %}">       
-                <i class="fas fa-file-excel w-8 text-center text-xl text-green-400"></i>
-                <span class="sidebar-text text-xs uppercase tracking-widest">Reportes Registros</span>      
-            </a>
             <a href="{% url 'mapa_visual' %}" class="flex items-center space-x-4 p-4 rounded-xl text-white font-bold hover:bg-white/10 {% if '/mapa-visual/' in request.path %}nav-item-active{% endif %}">
                 <i class="fas fa-warehouse w-8 text-center text-xl text-orange-400"></i>
                 <span class="sidebar-text text-xs uppercase tracking-widest">Visor de Bodega</span>
             </a>
 
-            <!-- AUDITORÍA GLOBAL -->
+            <!-- ADMINISTRACIÓN EXCLUSIVA (SOLO SUPERADMIN) -->
             {% if user.profile.rol == 'SUPER' or user.is_superuser %}
             <div class="pt-4 pb-2 text-center group-hover:text-left transition-all">
                 <div class="h-px bg-white/10 w-full group-hover:hidden"></div>
                 <p class="sidebar-text text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] px-4">Administración</p>
             </div>
+            <a href="{% url 'panel_reportes' %}" class="flex items-center space-x-3 p-3 rounded-xl text-white font-bold hover:bg-white/10 {% if '/reportes-registros/' in request.path %}nav-item-active{% endif %}">       
+                <i class="fas fa-file-excel w-7 text-center text-lg text-green-400"></i>
+                <span class="sidebar-text text-xs uppercase tracking-widest">Generador Reportes</span>      
+            </a>
             <a href="{% url 'historial_auditoria' %}" class="flex items-center space-x-3 p-3 rounded-xl text-white font-bold hover:bg-white/10 {% if '/historial-auditoria/' in request.path %}nav-item-active{% endif %}">
-                <i class="fas fa-clock-rotate-left w-7 text-center text-lg text-yellow-400"></i>
-                <span class="sidebar-text text-xs uppercase tracking-widest">Auditoría Global</span>
+                <i class="fas fa-shield-halved w-7 text-center text-lg text-yellow-400"></i>
+                <span class="sidebar-text text-xs uppercase tracking-widest">Seguridad y Auditoría</span>
             </a>
             {% endif %}
 

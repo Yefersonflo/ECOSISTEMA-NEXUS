@@ -504,6 +504,10 @@ def filtrar_carpetas_reporte(request):
 
 @login_required
 def panel_reportes(request):
+    if not is_super(request.user):
+        messages.error(request, "Solo el Administrador tiene autorización para acceder al Generador de Reportes.")
+        return redirect('gestion_documental')
+        
     resultados, params = filtrar_carpetas_reporte(request)
     
     # Módulos disponibles para el selector
@@ -524,6 +528,10 @@ def panel_reportes(request):
 
 @login_required
 def exportar_excel_archivo(request):
+    if not is_super(request.user):
+        messages.error(request, "No tiene permisos para exportar reportes institucionales.")
+        return redirect('gestion_documental')
+        
     resultados, params = filtrar_carpetas_reporte(request)
     
     wb = Workbook()
