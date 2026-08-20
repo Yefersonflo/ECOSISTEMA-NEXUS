@@ -308,6 +308,10 @@ def detalle_carpeta(request, carpeta_id):
             nombre_doc = request.POST.get('nombre_doc')
             archivo = request.FILES.get('archivo')
             if nombre_doc and archivo:
+                if not str(archivo.name).lower().endswith('.pdf'):
+                    messages.error(request, "⚠️ Formato no permitido. Únicamente se pueden subir documentos en formato PDF.")
+                    return redirect('detalle_carpeta', carpeta_id=it.id)
+                    
                 Documento.objects.create(
                     nombre=nombre_doc,
                     archivo=archivo,
@@ -318,11 +322,11 @@ def detalle_carpeta(request, carpeta_id):
                     carpeta=it,
                     usuario=request.user,
                     accion='DOCUMENTO',
-                    observaciones=f'Se subió el archivo: {nombre_doc}'
+                    observaciones=f'Se subió el archivo PDF: {nombre_doc}'
                 )
-                messages.success(request, f"Archivo '{nombre_doc}' subido a la bodega digital.")
+                messages.success(request, f"Documento PDF '{nombre_doc}' subido con éxito a la bodega digital.")
             else:
-                messages.error(request, "Debe proporcionar un nombre y un archivo.")
+                messages.error(request, "Debe proporcionar un nombre y un archivo PDF válido.")
         
         return redirect('detalle_carpeta', carpeta_id=it.id)
     
