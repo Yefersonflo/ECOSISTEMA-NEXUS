@@ -27,6 +27,7 @@
                         <option value="ACTIVO" {% if params.estado == 'ACTIVO' %}selected{% endif %}>🟢 Solo Activos</option>
                         <option value="INACTIVO" {% if params.estado == 'INACTIVO' %}selected{% endif %}>🟠 Solo Inactivos</option>
                         <option value="MUERTO" {% if params.estado == 'MUERTO' %}selected{% endif %}>🔴 Solo Fallecidos (Muerto)</option>
+                        <option value="NO ENCONTRADO" {% if params.estado == 'NO ENCONTRADO' %}selected{% endif %}>⚪ No Encontrados</option>
                     </select>
                 </div>
 

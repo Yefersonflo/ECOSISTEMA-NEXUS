@@ -450,8 +450,8 @@ def filtrar_carpetas_reporte(request):
     if categoria in ['TRABAJADOR', 'PATRONAL']:
         qs = qs.filter(categoria=categoria)
         
-    if estado in ['ACTIVO', 'INACTIVO', 'MUERTO']:
-        qs = qs.filter(estado=estado)
+    if estado and estado != 'TODOS':
+        qs = qs.filter(estado__icontains=estado)
         
     if modulo:
         try:
