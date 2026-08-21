@@ -145,3 +145,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'radicacion@comfacasanare.com.co'
 EMAIL_HOST_PASSWORD = 'tu_contrasena_segura'
 DEFAULT_FROM_EMAIL = 'Nexus Comfacasanare <radicacion@comfacasanare.com.co>'
+
+# Configuración de tipo de campo clave primaria predeterminado
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
