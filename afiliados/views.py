@@ -234,7 +234,7 @@ def gestion_documental(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    return render(request, 'afiliados/gestion.html', {
+    return render(request, 'afiliados/gestion_documental.html', {
         'carpetas': page_obj,
         'cat_activa': cat_activa,
         'query': query,
