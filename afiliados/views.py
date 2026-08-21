@@ -477,7 +477,8 @@ def filtrar_carpetas_reporte(request):
             'carpeta': c,
             'anos_inactivo': anos_inactivo
         })
-        return resultados, {
+
+    return resultados, {
         'estado': estado,
         'categoria': categoria,
         'modulo': modulo,
