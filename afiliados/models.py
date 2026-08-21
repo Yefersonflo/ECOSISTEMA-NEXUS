@@ -68,34 +68,35 @@ class Carpeta(models.Model):
 
         super().save(*args, **kwargs)
 
-        try:
-            modulo_val = str(self.modulo)
-            estante_val = str(self.estante)
-            bandeja_val = str(self.bandeja)
-            cubiculo_val = str(self.cubiculo)
-            num_carpeta_val = str(self.numero_carpeta)
-            fecha_val = self.fecha_registro.strftime("%Y-%m-%d %H:%M:%S") if getattr(self, 'fecha_registro', None) else datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if connection.vendor == 'sqlite':
+            try:
+                modulo_val = str(self.modulo)
+                estante_val = str(self.estante)
+                bandeja_val = str(self.bandeja)
+                cubiculo_val = str(self.cubiculo)
+                num_carpeta_val = str(self.numero_carpeta)
+                fecha_val = self.fecha_registro.strftime("%Y-%m-%d %H:%M:%S") if getattr(self, 'fecha_registro', None) else datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            with connection.cursor() as cursor:
-                if original_identificacion and original_identificacion != self.identificacion:
-                    cursor.execute('DELETE FROM expedientes WHERE "Cédula" = %s', [original_identificacion])
+                with connection.cursor() as cursor:
+                    if original_identificacion and original_identificacion != self.identificacion:
+                        cursor.execute('DELETE FROM expedientes WHERE "Cédula" = %s', [original_identificacion])
 
-                cursor.execute('INSERT OR REPLACE INTO expedientes ("Fecha", "Tipo Identificación", "Cédula", "Nombre", "Módulo", "Estante", "Bandeja", "Cubículo", "Número de Carpeta", "Estado", "Fecha Retiro") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (self.fecha or fecha_val, self.tipo_identificacion or "CC", self.identificacion, self.nombre.upper(), modulo_val, estante_val, bandeja_val, cubiculo_val, num_carpeta_val, self.estado or "ACTIVO", self.fecha_retiro or ""))
-        except Exception:
-            pass
+                    cursor.execute('INSERT OR REPLACE INTO expedientes ("Fecha", "Tipo Identificación", "Cédula", "Nombre", "Módulo", "Estante", "Bandeja", "Cubículo", "Número de Carpeta", "Estado", "Fecha Retiro") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (self.fecha or fecha_val, self.tipo_identificacion or "CC", self.identificacion, self.nombre.upper(), modulo_val, estante_val, bandeja_val, cubiculo_val, num_carpeta_val, self.estado or "ACTIVO", self.fecha_retiro or ""))
+            except Exception:
+                pass
 
         try:
             from .excel_sync import sync_to_excel
             record_data = {
-                "Fecha": self.fecha or fecha_val,
+                "Fecha": self.fecha or (self.fecha_registro.strftime("%Y-%m-%d %H:%M:%S") if getattr(self, 'fecha_registro', None) else datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
                 "Tipo Identificación": self.tipo_identificacion or "CC",
                 "Cédula": self.identificacion,
                 "Nombre": self.nombre.upper(),
-                "Módulo": modulo_val,
-                "Estante": estante_val,
-                "Bandeja": bandeja_val,
-                "Cubículo": cubiculo_val,
-                "Número de Carpeta": num_carpeta_val,
+                "Módulo": str(self.modulo),
+                "Estante": str(self.estante),
+                "Bandeja": str(self.bandeja),
+                "Cubículo": str(self.cubiculo),
+                "Número de Carpeta": str(self.numero_carpeta),
                 "Estado": self.estado or "ACTIVO",
                 "Fecha Retiro": self.fecha_retiro or ""
             }
@@ -106,11 +107,13 @@ class Carpeta(models.Model):
     def delete(self, *args, **kwargs):
         identificacion = self.identificacion
         super().delete(*args, **kwargs)
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute('DELETE FROM expedientes WHERE "Cédula" = %s', [identificacion])
-        except Exception:
-            pass
+        if connection.vendor == 'sqlite':
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute('DELETE FROM expedientes WHERE "Cédula" = %s', [identificacion])
+            except Exception:
+                pass
+
 
         try:
             from .excel_sync import sync_to_excel
