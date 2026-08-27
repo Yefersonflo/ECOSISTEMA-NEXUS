@@ -50,9 +50,18 @@ def api_buscar_afiliado(request):
         qs = Carpeta.objects.filter(categoria='TRABAJADOR')
         matches = []
         if clean_q:
-            matches = list(qs.filter(Q(identificacion__icontains=clean_q) | Q(nombre__icontains=query))[:50])
+            # 1. Búsqueda exacta ultra-rápida por índice de cédula
+            exact_match = qs.filter(identificacion=clean_q).first()
+            if exact_match:
+                matches = [exact_match]
+                # Complementar con coincidencias adicionales si existen
+                other_matches = list(qs.filter(Q(identificacion__icontains=clean_q) | Q(nombre__icontains=query)).exclude(id=exact_match.id)[:49])
+                matches.extend(other_matches)
+            else:
+                matches = list(qs.filter(Q(identificacion__icontains=clean_q) | Q(nombre__icontains=query))[:50])
         else:
             matches = list(qs.filter(nombre__icontains=query)[:50])
+
             
         if not matches:
             return JsonResponse({'encontrado': False, 'resultados': [], 'mensaje': 'Expediente no encontrado'}, status=200)
