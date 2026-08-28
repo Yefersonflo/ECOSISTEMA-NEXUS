@@ -72,57 +72,57 @@
     </div>
     {% endif %}
 
-    <!-- VISTA FINAL DE CARPETAS CON BOTÓN COPIAR -->
+    <!-- VISTA FINAL DE CARPETAS CON BOTÓN COPIAR (5 COLUMNAS X 11 FILAS = 55 CARPETAS) -->
     {% if nivel == "CARPETA" %}
-    <div class="bg-slate-900 p-16 rounded-[4.5rem] border-[12px] border-white shadow-2xl animate-in fade-in duration-1000">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+    <div class="bg-slate-900 p-8 sm:p-10 rounded-[3.5rem] border-[8px] border-white shadow-2xl animate-in fade-in duration-1000">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-5">
             {% for c in objetos %}
             <div class="relative group" x-data="{ copied: false }">
-                <!-- CARPETA INTERACTIVA -->
-                <div class="relative w-full h-80 transition-all transform group-hover:-translate-y-4 group-hover:rotate-1 z-10 cursor-pointer" onclick="window.location.href='{% url 'detalle_carpeta' c.id %}'">
-                    <div class="absolute inset-0 rounded-r-3xl rounded-l-lg border-l-[16px] flex flex-col p-6 shadow-2xl
+                <!-- CARPETA INTERACTIVA (5 COLUMNAS ALINEADAS) -->
+                <div class="relative w-full h-72 transition-all transform group-hover:-translate-y-3 group-hover:rotate-1 z-10 cursor-pointer" onclick="window.location.href='{% url 'detalle_carpeta' c.id %}'">
+                    <div class="absolute inset-0 rounded-r-2xl rounded-l-lg border-l-[12px] flex flex-col p-4 shadow-2xl
                         {% if c.categoria == 'TRABAJADOR' %}bg-comfaBlue border-blue-900{% else %}bg-comfaRed border-red-900{% endif %}">
                         
                         <div class="flex-1 flex flex-col justify-between text-white">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-[7px] font-black uppercase opacity-60">ID / NIT</span>
-                                    <p class="text-lg font-black tracking-tighter leading-none">{{ c.identificacion }}</p>
+                                    <span class="text-[7px] font-black uppercase opacity-60">ID / CÉDULA</span>
+                                    <p class="text-base font-black tracking-tighter leading-none">{{ c.identificacion }}</p>
                                 </div>
-                                <!-- BOTÓN COPIAR (Ubicado dentro del lomo) -->
-                                <button @click.stop="navigator.clipboard.writeText('M:{{ c.modulo }} E:{{ c.estante }} B:{{ c.bandeja }} C:{{ c.cubiculo }}'); copied = true; setTimeout(() => copied = false, 2000)" 
-                                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all border border-white/20 hover:bg-white hover:text-slate-900"
+                                <!-- BOTÓN COPIAR -->
+                                <button @click.stop="navigator.clipboard.writeText('M:{{ c.modulo }} E:{{ c.estante }} B:{{ c.bandeja }} C:{{ c.cubiculo }} #{{ c.numero_carpeta }}'); copied = true; setTimeout(() => copied = false, 2000)" 
+                                    class="w-7 h-7 rounded-lg flex items-center justify-center transition-all border border-white/20 hover:bg-white hover:text-slate-900"
                                     :class="copied ? 'bg-green-500 border-green-500 text-white' : 'bg-white/5 text-white/50'">
-                                    <i class="fas text-[10px]" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                    <i class="fas text-[9px]" :class="copied ? 'fa-check' : 'fa-copy'"></i>
                                 </button>
                             </div>
                             
-                            <div class="py-3 border-y border-white/10">
-                                <p class="text-[10px] font-black uppercase line-clamp-2 leading-tight">{{ c.nombre }}</p>
+                            <div class="py-2 border-y border-white/10 my-1">
+                                <p class="text-[9px] font-black uppercase line-clamp-2 leading-tight" title="{{ c.nombre }}">{{ c.nombre }}</p>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 mt-2">
-                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
-                                    <p class="text-[6px] font-black uppercase opacity-60">Mód</p>
-                                    <p class="text-[10px] font-black">M:{{ c.modulo }}</p>
+                            <div class="grid grid-cols-2 gap-1.5 mt-1">
+                                <div class="bg-black/20 p-1 rounded text-center border border-white/10">
+                                    <p class="text-[5px] font-black uppercase opacity-60">Mód</p>
+                                    <p class="text-[9px] font-black">M:{{ c.modulo }}</p>
                                 </div>
-                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
-                                    <p class="text-[6px] font-black uppercase opacity-60">Est</p>
-                                    <p class="text-[10px] font-black">E:{{ c.estante }}</p>
+                                <div class="bg-black/20 p-1 rounded text-center border border-white/10">
+                                    <p class="text-[5px] font-black uppercase opacity-60">Est</p>
+                                    <p class="text-[9px] font-black">E:{{ c.estante }}</p>
                                 </div>
-                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
-                                    <p class="text-[6px] font-black uppercase opacity-60">Ban</p>
-                                    <p class="text-[10px] font-black">B:{{ c.bandeja }}</p>
+                                <div class="bg-black/20 p-1 rounded text-center border border-white/10">
+                                    <p class="text-[5px] font-black uppercase opacity-60">Ban</p>
+                                    <p class="text-[9px] font-black">B:{{ c.bandeja }}</p>
                                 </div>
-                                <div class="bg-black/20 p-1.5 rounded-lg text-center border border-white/10">
-                                    <p class="text-[6px] font-black uppercase opacity-60">Cub</p>
-                                    <p class="text-[10px] font-black">C:{{ c.cubiculo }}</p>
+                                <div class="bg-black/20 p-1 rounded text-center border border-white/10">
+                                    <p class="text-[5px] font-black uppercase opacity-60">Cub</p>
+                                    <p class="text-[9px] font-black">C:{{ c.cubiculo }}</p>
                                 </div>
                             </div>
 
-                            <div class="mt-4 bg-white text-slate-900 p-2 rounded-xl text-center shadow-xl">
-                                <p class="text-[7px] font-black uppercase opacity-40">CARPETA</p>
-                                <p class="text-xl font-black leading-none">#{{ c.numero_carpeta }}</p>
+                            <div class="mt-2 bg-white text-slate-900 p-1.5 rounded-xl text-center shadow-lg">
+                                <p class="text-[6px] font-black uppercase opacity-40">CARPETA</p>
+                                <p class="text-lg font-black leading-none">#{{ c.numero_carpeta }}</p>
                             </div>
                         </div>
                     </div>
