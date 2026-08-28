@@ -38,7 +38,7 @@ class Carpeta(models.Model):
     )
     cubiculo = models.PositiveIntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(6)]
+        validators=[MinValueValidator(1)]
     )
     numero_carpeta = models.PositiveIntegerField(
         default=1,

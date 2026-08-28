@@ -276,7 +276,8 @@ def detalle_carpeta(request, carpeta_id):
                 except Exception as e:
                     messages.error(request, f"Error al actualizar: {str(e)}")
             else:
-                messages.error(request, "Error en el formulario. Verifique los datos.")
+                errores_txt = " | ".join([f"{k}: {', '.join(v)}" for k, v in form.errors.items()])
+                messages.error(request, f"Error en el formulario: {errores_txt}")
         
         # LÓGICA DE CARGA DE DOCUMENTOS
         elif 'subir_doc' in request.POST:
