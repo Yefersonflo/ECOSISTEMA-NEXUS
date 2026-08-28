@@ -6,7 +6,6 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate
 python manage.py shell < init_admin.py
-python manage.py migrar_expedientes --clear
 
 
 
