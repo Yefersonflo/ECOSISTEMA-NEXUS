@@ -34,87 +34,46 @@
         </div>
     </div>
 
-    <!-- SECCIÓN DE MÉTRICAS Y KPIS ESTILO COMFACASANARE -->
-    <div class="relative overflow-hidden bg-gradient-to-r from-[#00356b] via-[#004a87] to-[#002855] p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-blue-900/30">
-        <!-- Textura de puntos y patrones de fondo -->
-        <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#ffffff 1.5px, transparent 1.5px); background-size: 20px 20px;"></div>
-        <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full border-2 border-white/10 pointer-events-none"></div>
-        <div class="absolute -left-16 -bottom-16 w-72 h-72 rounded-full border-2 border-white/10 pointer-events-none"></div>
-
-        <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center items-center">
-            
-            <!-- CIRCULAR CARD 1: ACTIVOS -->
-            <div class="flex flex-col items-center group">
-                <div class="w-48 h-48 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full p-3 flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_35px_rgba(255,222,0,0.3)]"
-                     style="background: conic-gradient(#ffc700 0% 86%, #ffffff 86% 92%, #ffc700 92% 100%);">
-                    <div class="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-center p-3">
-                        <span class="text-xs sm:text-xs md:text-sm font-black text-[#004a87] leading-tight tracking-tight uppercase">
-                            Trabajadores<br>Activos
-                        </span>
-                        <span class="text-[9px] sm:text-[9px] md:text-[10px] text-slate-400 font-bold mt-1 tracking-wider uppercase">
-                            Actualizado<br>{% now "d/m/Y" %}
-                        </span>
-                        <span class="text-2xl sm:text-2xl md:text-3xl font-black text-[#e85324] mt-1.5 tracking-tight">
-                            {{ activos_cnt }}
-                        </span>
-                    </div>
-                </div>
+    <!-- MÉTRICAS Y KPIS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-md flex items-center space-x-4">
+            <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-user-check"></i>
             </div>
-
-            <!-- CIRCULAR CARD 2: INACTIVOS -->
-            <div class="flex flex-col items-center group">
-                <div class="w-48 h-48 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full p-3 flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_35px_rgba(255,222,0,0.3)]"
-                     style="background: conic-gradient(#ffc700 0% 88%, #ffffff 88% 94%, #ffc700 94% 100%);">
-                    <div class="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-center p-3">
-                        <span class="text-xs sm:text-xs md:text-sm font-black text-[#004a87] leading-tight tracking-tight uppercase">
-                            Trabajadores<br>Inactivos
-                        </span>
-                        <span class="text-[9px] sm:text-[9px] md:text-[10px] text-slate-400 font-bold mt-1 tracking-wider uppercase">
-                            Actualizado<br>{% now "d/m/Y" %}
-                        </span>
-                        <span class="text-2xl sm:text-2xl md:text-3xl font-black text-[#e85324] mt-1.5 tracking-tight">
-                            {{ inactivos_cnt }}
-                        </span>
-                    </div>
-                </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Activos</p>
+                <h3 class="text-2xl font-black text-emerald-600">{{ activos_cnt }}</h3>
             </div>
+        </div>
 
-            <!-- CIRCULAR CARD 3: ALERTA NARANJA -->
-            <div class="flex flex-col items-center group">
-                <div class="w-48 h-48 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full p-3 flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_35px_rgba(255,222,0,0.3)]"
-                     style="background: conic-gradient(#ffc700 0% 82%, #ffffff 82% 88%, #ffc700 88% 100%);">
-                    <div class="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-center p-3">
-                        <span class="text-xs sm:text-xs md:text-sm font-black text-[#004a87] leading-tight tracking-tight uppercase">
-                            Alerta Naranja<br>(+10 Años)
-                        </span>
-                        <span class="text-[9px] sm:text-[9px] md:text-[10px] text-slate-400 font-bold mt-1 tracking-wider uppercase">
-                            Actualizado<br>{% now "d/m/Y" %}
-                        </span>
-                        <span class="text-2xl sm:text-2xl md:text-3xl font-black text-[#e85324] mt-1.5 tracking-tight">
-                            {{ alertas_naranja }}
-                        </span>
-                    </div>
-                </div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-md flex items-center space-x-4">
+            <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-user-clock"></i>
             </div>
-
-            <!-- CIRCULAR CARD 4: FALLECIDOS -->
-            <div class="flex flex-col items-center group">
-                <div class="w-48 h-48 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full p-3 flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_35px_rgba(255,222,0,0.3)]"
-                     style="background: conic-gradient(#ffc700 0% 90%, #ffffff 90% 96%, #ffc700 96% 100%);">
-                    <div class="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-center p-3">
-                        <span class="text-xs sm:text-xs md:text-sm font-black text-[#004a87] leading-tight tracking-tight uppercase">
-                            Afiliados<br>Fallecidos
-                        </span>
-                        <span class="text-[9px] sm:text-[9px] md:text-[10px] text-slate-400 font-bold mt-1 tracking-wider uppercase">
-                            Actualizado<br>{% now "d/m/Y" %}
-                        </span>
-                        <span class="text-2xl sm:text-2xl md:text-3xl font-black text-[#e85324] mt-1.5 tracking-tight">
-                            {{ muertos_cnt }}
-                        </span>
-                    </div>
-                </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inactivos</p>
+                <h3 class="text-2xl font-black text-amber-600">{{ inactivos_cnt }}</h3>
             </div>
+        </div>
 
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-md flex items-center space-x-4">
+            <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alerta Naranja (+10 años)</p>
+                <h3 class="text-2xl font-black text-orange-600">{{ alertas_naranja }}</h3>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-md flex items-center space-x-4">
+            <div class="w-14 h-14 bg-red-50 text-comfaRed rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-cross"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fallecidos</p>
+                <h3 class="text-2xl font-black text-comfaRed">{{ muertos_cnt }}</h3>
+            </div>
         </div>
     </div>
 
