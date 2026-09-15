@@ -192,7 +192,17 @@ def dashboard(request):
             except Exception:
                 pass
 
-    return render(request, 'dashboard/index.html', {
+    # Conmutador dinámico de vistas (Clásico vs Institucional Comfacasanare)
+    v_param = request.GET.get('v')
+    if v_param in ['clasico', 'comfa']:
+        request.session['view_mode'] = v_param
+        # Redirigir limpiando el query param para URLs limpias manteniendo la sesion
+        # (o continuar directamente)
+    
+    view_mode = request.session.get('view_mode', 'comfa')
+    template_to_render = 'dashboard/index_clasico.html' if view_mode == 'clasico' else 'dashboard/index_comfacasanare.html'
+
+    return render(request, template_to_render, {
         'total_carpetas': total_carpetas,
         'activos_cnt': activos_cnt,
         'inactivos_cnt': inactivos_cnt,
@@ -200,6 +210,7 @@ def dashboard(request):
         'alertas_naranja': alertas_naranja,
         'es_admin': es_admin,
         'historial': historial,
+        'view_mode': view_mode,
         'header_title': 'Panel Principal'
     })
 
