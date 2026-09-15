@@ -4,14 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingreso Segura | Comfacasanare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Ingreso Seguro | Comfacasanare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        'montserrat': ['Montserrat', 'sans-serif'],
+                    },
                     colors: {
                         comfaBlue: '#004a87',
                         comfaRed: '#e30613',
@@ -21,50 +25,101 @@
             }
         }
     </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { font-family: 'Montserrat', sans-serif; }
+        .expand-transition {
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+    </style>
 </head>
-<body class="font-montserrat h-full flex items-center justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
+<body class="h-full flex items-center justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
 
-    <div class="w-full max-w-md">
-        <!-- Tarjeta de Login -->
-        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-b-8 border-comfaYellow">
+    <div class="w-full max-w-md"
+         x-data="{
+             isExpanded: {% if form.errors %}true{% else %}false{% endif %},
+             showPassword: false,
+             userText: '',
+             passText: '',
+             isTyping() {
+                 return this.userText.trim().length > 0 || this.passText.trim().length > 0;
+             }
+         }">
+
+        <!-- Tarjeta de Login Original con Animación Expansiva -->
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-b-8 border-comfaYellow transition-all duration-500 hover:shadow-[0_25px_50px_rgba(0,74,135,0.2)]"
+             @mouseenter="isExpanded = true"
+             @mouseleave="if (!isTyping() && !{% if form.errors %}true{% else %}false{% endif %}) { isExpanded = false; }"
+             @click="isExpanded = true">
             
-            <!-- Header con Logo -->
-            <div class="bg-comfaBlue p-10 text-center relative">
-                <div class="bg-white p-4 rounded-2xl shadow-xl inline-block mb-4">
+            <!-- Header con Logo (Diseño Original Intacto) -->
+            <div class="bg-comfaBlue p-10 text-center relative cursor-pointer select-none">
+                <div class="bg-white p-4 rounded-2xl shadow-xl inline-block mb-4 transform transition-transform duration-300 group-hover:scale-105">
                     <img src="{% static 'logo_comfa_transparent.png' %}" alt="Comfacasanare" class="h-16">
                 </div>
                 <h2 class="text-white font-black text-xl tracking-tighter uppercase">Gestión Nexus</h2>
                 <p class="text-comfaYellow text-[9px] font-bold tracking-[0.4em] uppercase mt-1">Acceso Centralizado</p>
+
+                <!-- BOTÓN TRIGGER QUE SE MUESTRA AL ESTAR COLAPSADO -->
+                <div x-show="!isExpanded" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-2"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     class="mt-6 inline-flex items-center space-x-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-black px-6 py-3 rounded-full uppercase tracking-[0.25em] shadow-lg transition-all duration-300 hover:scale-105">
+                    <i class="fas fa-lock text-comfaYellow text-xs"></i>
+                    <span>INICIAR SESIÓN</span>
+                    <i class="fas fa-chevron-down text-[10px] text-comfaYellow animate-bounce ml-1"></i>
+                </div>
             </div>
 
-            <!-- Formulario -->
-            <form method="POST" class="p-10 space-y-6">
-                {% csrf_token %}
+            <!-- CONTENEDOR EXPANDIBLE CON EL FORMULARIO (SE DESPLIEGA SUAVEMENTE) -->
+            <div class="expand-transition overflow-hidden"
+                 :class="isExpanded ? 'max-h-[600px] opacity-100 transform translate-y-0' : 'max-h-0 opacity-0 transform -translate-y-4'">
                 
-                {% if form.errors %}
-                <div class="p-4 bg-red-50 rounded-xl border border-red-100 text-red-600 text-xs font-bold text-center uppercase tracking-widest">
-                    Credenciales Incorrectas
-                </div>
-                {% endif %}
-
-                <div class="space-y-4">
-                    <div class="relative">
-                        <i class="fas fa-user absolute left-5 top-4 text-slate-300"></i>
-                        <input type="text" name="username" required placeholder="Usuario" 
-                            class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                <form method="POST" class="p-10 pt-8 space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="p-4 bg-red-50 rounded-xl border border-red-100 text-red-600 text-xs font-bold text-center uppercase tracking-widest">
+                        Credenciales Incorrectas
                     </div>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-5 top-4 text-slate-300"></i>
-                        <input type="password" name="password" required placeholder="Contraseña" 
-                            class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                    {% endif %}
+
+                    <div class="space-y-4">
+                        <!-- CAMPO USUARIO -->
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-5 top-4 text-slate-300"></i>
+                            <input type="text" name="username" required placeholder="Usuario" 
+                                x-model="userText"
+                                autocomplete="username"
+                                class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                        </div>
+
+                        <!-- CAMPO CONTRASEÑA CON BOTÓN OJO (SHOW/HIDE) -->
+                        <div class="relative flex items-center">
+                            <i class="fas fa-lock absolute left-5 top-4 text-slate-300"></i>
+                            <input :type="showPassword ? 'text' : 'password'" name="password" required placeholder="Contraseña" 
+                                x-model="passText"
+                                autocomplete="current-password"
+                                class="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                            
+                            <button type="button" 
+                                    @click="showPassword = !showPassword"
+                                    class="absolute right-4 text-slate-400 hover:text-comfaBlue p-2 focus:outline-none transition-colors"
+                                    title="Mostrar u ocultar contraseña">
+                                <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" class="w-full py-5 bg-comfaBlue hover:bg-comfaRed text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-[0.3em] text-xs transform active:scale-95">
-                    Entrar al Sistema <i class="fas fa-arrow-right ml-2"></i>
-                </button>
+                    <!-- BOTÓN ENTRAR -->
+                    <button type="submit" class="w-full py-5 bg-comfaBlue hover:bg-comfaRed text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-[0.3em] text-xs transform active:scale-95 flex items-center justify-center space-x-2">
+                        <span>Entrar al Sistema</span>
+                        <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
 
-            </form>
+                </form>
+            </div>
         </div>
 
         <p class="text-center mt-8 text-[9px] font-bold text-slate-400 uppercase tracking-[0.4em]">© 2026 Comfacasanare - Nexus Archive</p>
