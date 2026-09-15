@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingreso Segura | Comfacasanare</title>
+    <title>Ingreso Seguro | Comfacasanare</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -53,10 +53,13 @@
                         <input type="text" name="username" required placeholder="Usuario" 
                             class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
                     </div>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-5 top-4 text-slate-300"></i>
-                        <input type="password" name="password" required placeholder="Contraseña" 
-                            class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                    <div class="relative flex items-center">
+                        <i class="fas fa-lock absolute left-5 text-slate-300 pointer-events-none"></i>
+                        <input type="password" id="passwordInput" name="password" required placeholder="Contraseña" 
+                            class="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 text-slate-400 hover:text-comfaBlue p-2 focus:outline-none transition-colors" title="Ver / Ocultar contraseña">
+                            <i id="eyeIcon" class="fas fa-eye text-sm"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -69,6 +72,22 @@
 
         <p class="text-center mt-8 text-[9px] font-bold text-slate-400 uppercase tracking-[0.4em]">© 2026 Comfacasanare - Nexus Archive</p>
     </div>
+
+    <script>
+        function togglePassword() {
+            const passField = document.getElementById('passwordInput');
+            const eye = document.getElementById('eyeIcon');
+            if (passField.type === 'password') {
+                passField.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                passField.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+    </script>
 
 </body>
 </html>
