@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingreso Seguro | Comfacasanare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Ingreso Seguro | NEXUS Comfacasanare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -18,6 +18,7 @@
                     },
                     colors: {
                         comfaBlue: '#004a87',
+                        comfaDarkBlue: '#00335e',
                         comfaRed: '#e30613',
                         comfaYellow: '#ffde00',
                     }
@@ -33,9 +34,9 @@
         }
     </style>
 </head>
-<body class="h-full flex items-center justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
+<body class="min-h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-100 via-slate-200 to-blue-50/40">
 
-    <div class="w-full max-w-md"
+    <div class="w-full max-w-md my-auto"
          x-data="{
              isExpanded: {% if form.errors %}true{% else %}false{% endif %},
              showPassword: false,
@@ -46,83 +47,127 @@
              }
          }">
 
-        <!-- Tarjeta de Login Original con Animación Expansiva -->
-        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-b-8 border-comfaYellow transition-all duration-500 hover:shadow-[0_25px_50px_rgba(0,74,135,0.2)]"
+        <!-- TARJETA PRINCIPAL DE LOGIN CORPORATIVO -->
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-b-8 border-comfaYellow transition-all duration-500 hover:shadow-[0_25px_60px_rgba(0,74,135,0.22)]"
              @mouseenter="isExpanded = true"
              @mouseleave="if (!isTyping() && !{% if form.errors %}true{% else %}false{% endif %}) { isExpanded = false; }"
              @click="isExpanded = true">
             
-            <!-- Header con Logo (Diseño Original Intacto) -->
-            <div class="bg-comfaBlue p-10 text-center relative cursor-pointer select-none">
-                <div class="bg-white p-4 rounded-2xl shadow-xl inline-block mb-4 transform transition-transform duration-300 group-hover:scale-105">
-                    <img src="{% static 'logo_comfa_transparent.png' %}" alt="Comfacasanare" class="h-16">
+            <!-- CABECERA INSTITUCIONAL CO-BRANDING (COMFACASANARE + NEXUS) -->
+            <div class="bg-gradient-to-br from-comfaBlue to-comfaDarkBlue p-8 sm:p-10 text-center relative cursor-pointer select-none">
+                
+                <!-- Logo Oficial Comfacasanare en Tarjeta Flotante -->
+                <div class="bg-white px-5 py-3 rounded-2xl shadow-xl inline-flex items-center justify-center mb-4 transform transition-all duration-300 hover:scale-105">
+                    <img src="{% static 'logo_comfa_transparent.png' %}" alt="Comfacasanare" class="h-14 sm:h-16 object-contain">
                 </div>
-                <h2 class="text-white font-black text-xl tracking-tighter uppercase">Gestión Nexus</h2>
-                <p class="text-comfaYellow text-[9px] font-bold tracking-[0.4em] uppercase mt-1">Acceso Centralizado</p>
+
+                <!-- Títulos y Co-Branding -->
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 bg-white/10 px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-comfaYellow border border-white/15">
+                        <i class="fas fa-shield-halved text-[8px]"></i>
+                        <span>NEXUS ARCHIVE • V2.0</span>
+                    </div>
+                    <h2 class="text-white font-black text-xl tracking-tight uppercase pt-1">Gestión Documental</h2>
+                    <p class="text-blue-100/80 text-[10px] font-semibold uppercase tracking-wider">Caja de Compensación Familiar de Casanare</p>
+                </div>
 
                 <!-- BOTÓN TRIGGER QUE SE MUESTRA AL ESTAR COLAPSADO -->
                 <div x-show="!isExpanded" 
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 transform translate-y-2"
                      x-transition:enter-end="opacity-100 transform translate-y-0"
-                     class="mt-6 inline-flex items-center space-x-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-black px-6 py-3 rounded-full uppercase tracking-[0.25em] shadow-lg transition-all duration-300 hover:scale-105">
+                     class="mt-6 inline-flex items-center space-x-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-black px-6 py-2.5 rounded-full uppercase tracking-[0.2em] shadow-lg transition-all duration-300 hover:scale-105">
                     <i class="fas fa-lock text-comfaYellow text-xs"></i>
                     <span>INICIAR SESIÓN</span>
                     <i class="fas fa-chevron-down text-[10px] text-comfaYellow animate-bounce ml-1"></i>
                 </div>
             </div>
 
-            <!-- CONTENEDOR EXPANDIBLE CON EL FORMULARIO (SE DESPLIEGA SUAVEMENTE) -->
+            <!-- CONTENEDOR EXPANDIBLE CON EL FORMULARIO -->
             <div class="expand-transition overflow-hidden"
-                 :class="isExpanded ? 'max-h-[600px] opacity-100 transform translate-y-0' : 'max-h-0 opacity-0 transform -translate-y-4'">
+                 :class="isExpanded ? 'max-h-[650px] opacity-100 transform translate-y-0' : 'max-h-0 opacity-0 transform -translate-y-4'">
                 
-                <form method="POST" class="p-10 pt-8 space-y-6">
+                <form method="POST" class="p-8 sm:p-10 pt-6 space-y-5">
                     {% csrf_token %}
                     
+                    <!-- ALERTA DE ERROR SI EXISTE -->
                     {% if form.errors %}
-                    <div class="p-4 bg-red-50 rounded-xl border border-red-100 text-red-600 text-xs font-bold text-center uppercase tracking-widest">
-                        Credenciales Incorrectas
+                    <div class="p-3.5 bg-red-50 rounded-2xl border border-red-200 text-red-700 text-xs font-bold text-center flex items-center justify-center space-x-2">
+                        <i class="fas fa-circle-exclamation text-comfaRed text-sm"></i>
+                        <span>Usuario o contraseña incorrectos.</span>
                     </div>
                     {% endif %}
 
+                    <!-- INDICADOR DE CONEXIÓN SEGURA ENCRIPTADA -->
+                    <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+                        <span class="flex items-center space-x-1.5 text-emerald-600">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Conexión SSL Segura</span>
+                        </span>
+                        <span class="text-slate-400 uppercase tracking-wider">Acceso Restringido</span>
+                    </div>
+
                     <div class="space-y-4">
                         <!-- CAMPO USUARIO -->
-                        <div class="relative">
-                            <i class="fas fa-user absolute left-5 top-4 text-slate-300"></i>
-                            <input type="text" name="username" required placeholder="Usuario" 
-                                x-model="userText"
-                                autocomplete="username"
-                                class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1">Usuario</label>
+                            <div class="relative flex items-center">
+                                <i class="fas fa-user absolute left-5 text-slate-300 text-sm pointer-events-none"></i>
+                                <input type="text" name="username" required placeholder="Ingrese su usuario" 
+                                    x-model="userText"
+                                    autocomplete="username"
+                                    class="w-full pl-12 pr-6 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue text-sm placeholder:text-slate-400">
+                            </div>
                         </div>
 
-                        <!-- CAMPO CONTRASEÑA CON BOTÓN OJO (SHOW/HIDE) -->
-                        <div class="relative flex items-center">
-                            <i class="fas fa-lock absolute left-5 top-4 text-slate-300"></i>
-                            <input :type="showPassword ? 'text' : 'password'" name="password" required placeholder="Contraseña" 
-                                x-model="passText"
-                                autocomplete="current-password"
-                                class="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue">
-                            
-                            <button type="button" 
-                                    @click="showPassword = !showPassword"
-                                    class="absolute right-4 text-slate-400 hover:text-comfaBlue p-2 focus:outline-none transition-colors"
-                                    title="Mostrar u ocultar contraseña">
-                                <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                            </button>
+                        <!-- CAMPO CONTRASEÑA CON TOGGLE (👁️) -->
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1">Contraseña</label>
+                            <div class="relative flex items-center">
+                                <i class="fas fa-lock absolute left-5 text-slate-300 text-sm pointer-events-none"></i>
+                                <input :type="showPassword ? 'text' : 'password'" name="password" required placeholder="••••••••••••" 
+                                    x-model="passText"
+                                    autocomplete="current-password"
+                                    class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-comfaBlue focus:bg-white outline-none transition-all font-bold text-comfaBlue text-sm placeholder:text-slate-400">
+                                
+                                <button type="button" 
+                                        @click="showPassword = !showPassword"
+                                        class="absolute right-4 text-slate-400 hover:text-comfaBlue p-1.5 focus:outline-none transition-colors"
+                                        title="Mostrar u ocultar contraseña">
+                                    <i class="fas text-sm" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- BOTÓN ENTRAR -->
-                    <button type="submit" class="w-full py-5 bg-comfaBlue hover:bg-comfaRed text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-[0.3em] text-xs transform active:scale-95 flex items-center justify-center space-x-2">
-                        <span>Entrar al Sistema</span>
+                    <!-- BOTÓN DE INGRESO -->
+                    <button type="submit" class="w-full py-4 bg-comfaBlue hover:bg-comfaRed text-white font-black rounded-2xl shadow-xl transition-all uppercase tracking-[0.25em] text-xs transform active:scale-95 flex items-center justify-center space-x-2 mt-2">
+                        <span>Ingresar al Sistema</span>
                         <i class="fas fa-arrow-right ml-1"></i>
                     </button>
+
+                    <!-- ASISTENCIA / SOPORTE -->
+                    <div class="pt-2 text-center">
+                        <p class="text-[10px] text-slate-400 font-semibold">
+                            ¿Problemas de acceso? Contacte a <span class="text-comfaBlue font-bold">Archivo Central</span>
+                        </p>
+                    </div>
 
                 </form>
             </div>
         </div>
 
-        <p class="text-center mt-8 text-[9px] font-bold text-slate-400 uppercase tracking-[0.4em]">© 2026 Comfacasanare - Nexus Archive</p>
+        <!-- SELLO OFICIAL SUPERINTENDENCIA DEL SUBSIDIO FAMILIAR Y COPYRIGHT -->
+        <div class="mt-6 text-center space-y-2">
+            <div class="inline-flex items-center space-x-2 bg-white/80 border border-slate-200/80 px-4 py-1.5 rounded-full shadow-sm">
+                <i class="fas fa-certificate text-comfaBlue text-xs"></i>
+                <span class="text-[9px] font-black uppercase text-slate-500 tracking-wider">Vigilado Superintendencia del Subsidio Familiar</span>
+            </div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em]">
+                © 2026 Comfacasanare • Ecosistema NEXUS
+            </p>
+        </div>
+
     </div>
 
 </body>
