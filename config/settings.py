@@ -27,14 +27,40 @@ except Exception:
 # Define la ruta base del proyecto para referenciar carpetas internas
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Configuración de seguridad: Clave secreta para criptografía en el sitio
-SECRET_KEY = 'django-insecure--roagn(!n==-+^85i*f)f^%q@3h4zv^b@!*2qb%xil3x-xhmo&'
+# Cargar variables de entorno desde .env de forma nativa
+import os
+import json
 
-# Modo de depuración: True para desarrollo, False para producción
-DEBUG = True
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    try:
+        with open(env_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    k, v = line.split('=', 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+    except Exception:
+        pass
+
+# Modo de depuración: False en producción por defecto
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+
+# Clave secreta: SIEMPRE desde variable de entorno (nunca quemada en el código).
+# En desarrollo se genera una efímera; en producción es OBLIGATORIA.
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        from django.core.management.utils import get_random_secret_key
+        SECRET_KEY = get_random_secret_key()
+    else:
+        raise RuntimeError(
+            'SECRET_KEY no está definida. Configúrala como variable de entorno en producción.'
+        )
 
 # Dominios o IPs permitidos para acceder a la aplicación
-ALLOWED_HOSTS = ['*']
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'ecosistema-nexus-web.onrender.com,localhost,127.0.0.1,*')
+ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
 
 # Definición de aplicaciones instaladas (módulos internos y externos)
 INSTALLED_APPS = [
@@ -55,6 +81,7 @@ INSTALLED_APPS = [
 # Capas de procesamiento para peticiones y respuestas
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'config.middleware.SecurityHeadersMiddleware',  # CSP + Permissions-Policy
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -88,9 +115,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Configuración de la base de datos (PostgreSQL en la Nube / SQLite en local)
-import os
-import json
-
 DEFAULT_RENDER_DB_URL = "postgresql://nexus_postgres_db_user:cU0VInNSTcc69JZbDtuVnp2gOJx0AJEV@dpg-da2ssrflk1mc73cq2960-a.oregon-postgres.render.com/nexus_postgres_db"
 DATABASE_URL = os.environ.get('DATABASE_URL', DEFAULT_RENDER_DB_URL)
 
@@ -126,11 +150,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# CONFIGURACIÓN DE CORREO INSTITUCIONAL (Sincronización IMAP)
-IMAP_SERVER = 'comfacasanare.com.co'
-IMAP_USER = 'jefersonflores@comfacasanare.com.co'
-IMAP_PASS = 'JefersonFlores2026$%'
-
 # CONFIGURACIÓN DE REDIRECCIONES DE ACCESO
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
@@ -138,14 +157,28 @@ LOGOUT_REDIRECT_URL = 'login'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # CONFIGURACIÓN DE ENVÍO DE CORREOS (SMTP / Consola para pruebas)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'radicacion@comfacasanare.com.co'
-EMAIL_HOST_PASSWORD = 'tu_contrasena_segura'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'radicacion@comfacasanare.com.co')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'tu_contrasena_segura')
 DEFAULT_FROM_EMAIL = 'Nexus Comfacasanare <radicacion@comfacasanare.com.co>'
 
 # Configuración de tipo de campo clave primaria predeterminado
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Blindaje de Cabeceras de Seguridad en Producción
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 

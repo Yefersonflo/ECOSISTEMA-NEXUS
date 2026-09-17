@@ -7,6 +7,13 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
+      # Producción: desactiva DEBUG -> activa HSTS, redirección HTTPS y cookies seguras.
+      - key: DEBUG
+        value: "False"
+      # Render genera y guarda una SECRET_KEY segura (NUNCA queda en el repo).
+      - key: SECRET_KEY
+        generateValue: true
+      # TODO SEGURIDAD: rotar la contraseña de la BD en Render y pasar a 'sync: false'
+      # (valor gestionado solo en el dashboard, no en el repositorio).
       - key: DATABASE_URL
         value: postgresql://nexus_postgres_db_user:cU0VInNSTcc69JZbDtuVnp2gOJx0AJEV@dpg-da2ssrflk1mc73cq2960-a.oregon-postgres.render.com/nexus_postgres_db
-
