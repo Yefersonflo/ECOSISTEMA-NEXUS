@@ -100,13 +100,17 @@ from django.db import transaction
 
 @csrf_exempt
 def api_sincronizar_afiliados(request):
+    import secrets
     if request.method != 'POST':
         return JsonResponse({'error': 'Metodo no permitido'}, status=405)
     try:
         data = json.loads(request.body.decode('utf-8'))
         records = data.get('registros', [])
-        secret = data.get('secret', '')
-        if secret != 'nexus_cloud_sync_secret_2026':
+        secret = str(data.get('secret', ''))
+        expected_secret = os.environ.get('NEXUS_SYNC_SECRET', 'nexus_cloud_sync_secret_2026')
+        
+        # Comparación en tiempo constante contra ataques de timing
+        if not secrets.compare_digest(secret, expected_secret):
             return JsonResponse({'error': 'No autorizado'}, status=401)
             
         if not records:
@@ -215,6 +219,45 @@ def gestion_documental(request):
     # Obtiene el término de búsqueda
     query = request.GET.get('q', '').strip()
     
+    form = CarpetaForm(initial={'categoria': cat_activa})
+    
+    if request.method == 'POST':
+        if not is_jefe(request.user):
+            messages.error(request, "No tiene permisos para crear nuevos registros de archivo.")
+            return redirect(f"/gestion-documental/?cat={cat_activa}")
+            
+        form = CarpetaForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                carpeta = form.save(commit=False)
+                carpeta.categoria = cat_activa
+                carpeta.save()
+                
+                # Si se adjuntó archivo digital
+                archivo = request.FILES.get('archivo_digital')
+                if archivo:
+                    Documento.objects.create(
+                        carpeta=carpeta,
+                        archivo=archivo,
+                        nombre=archivo.name
+                    )
+                
+                # Registrar en historial
+                HistorialCarpeta.objects.create(
+                    carpeta=carpeta,
+                    usuario=request.user,
+                    accion='CREACION',
+                    observaciones=f'Se creó el expediente #{carpeta.numero_carpeta} para {carpeta.nombre} en ubicación M:{carpeta.modulo} E:{carpeta.estante} B:{carpeta.bandeja} C:{carpeta.cubiculo}'
+                )
+                
+                messages.success(request, f"¡Expediente de '{carpeta.nombre}' registrado con éxito!")
+                return redirect(f"/gestion-documental/?cat={cat_activa}")
+            except Exception as e:
+                messages.error(request, f"Error al guardar expediente: {str(e)}")
+        else:
+            errores = " | ".join([f"{k}: {', '.join(v)}" for k, v in form.errors.items()])
+            messages.error(request, f"Error en los datos ingresados: {errores}")
+
     # Obtiene todas las carpetas de la categoría seleccionada, ordenadas por fecha de registro (últimas creadas primero)
     carpetas = Carpeta.objects.filter(categoria=cat_activa).order_by('-fecha_registro')
     
@@ -234,6 +277,7 @@ def gestion_documental(request):
         'carpetas': page_obj,
         'cat_activa': cat_activa,
         'query': query,
+        'form': form,
         'can_edit': is_aux_or_higher(request.user),
         'header_title': 'Gestión Documental'
     })
