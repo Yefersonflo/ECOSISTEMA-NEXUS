@@ -312,7 +312,9 @@
 
 <script>
     function previewPDF(url, title) {
-        document.getElementById('pdfModalTitle').innerHTML = '<i class="fas fa-file-pdf text-comfaRed text-lg mr-3"></i> ' + title;
+        const _t = document.getElementById('pdfModalTitle');
+        _t.innerHTML = '<i class="fas fa-file-pdf text-comfaRed text-lg mr-3"></i> ';
+        _t.appendChild(document.createTextNode(title));  // textContent: evita XSS por nombre de documento
         document.getElementById('pdfFrame').src = url;
         document.getElementById('pdfViewerModal').classList.remove('hidden');
     }
