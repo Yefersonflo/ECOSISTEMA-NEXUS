@@ -115,17 +115,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Configuración de la base de datos (PostgreSQL en la Nube / SQLite en local)
-DEFAULT_RENDER_DB_URL = "postgresql://nexus_postgres_db_user:cU0VInNSTcc69JZbDtuVnp2gOJx0AJEV@dpg-da2ssrflk1mc73cq2960-a.oregon-postgres.render.com/nexus_postgres_db"
-DATABASE_URL = os.environ.get('DATABASE_URL', DEFAULT_RENDER_DB_URL)
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 import dj_database_url
-DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Desarrollo local sin DATABASE_URL: SQLite (sin credenciales en el código).
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Validadores para asegurar la fortaleza de las contraseñas
 AUTH_PASSWORD_VALIDATORS = [
