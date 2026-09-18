@@ -37,7 +37,7 @@
             <div class="flex items-center space-x-4">
                 {% if cat_activa %}
                 {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}
-                <button type="button" @click="showModal = true" class="bg-comfaBlue text-white font-black px-10 py-5 rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest flex items-center">
+                <button type="button" onclick="abrirModalRegistro()" class="bg-comfaBlue text-white font-black px-10 py-5 rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest flex items-center cursor-pointer">
                     <i class="fas fa-plus-circle mr-3 text-lg"></i> NUEVO REGISTRO EN {{ cat_activa }}
                 </button>
                 {% endif %}
@@ -205,11 +205,11 @@
     {% endif %}
 
     <!-- MODAL DE REGISTRO -->
-    <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-comfaBlue/80 backdrop-blur-md">
-        <div @click.away="showModal = false" class="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden">
+    <div id="modalRegistroArchivo" onclick="if(event.target === this) cerrarModalRegistro()" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-comfaBlue/80 backdrop-blur-md">
+        <div class="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
             <div class="bg-comfaBlue p-8 text-white flex justify-between items-center border-b-8 border-comfaYellow">
                 <div><h3 class="text-xl font-black uppercase tracking-tight">Registro de Archivo</h3><p class="text-[10px] font-bold text-comfaYellow uppercase tracking-widest mt-1">Nexus v2.0</p></div>
-                <button type="button" @click="showModal = false" class="text-white/50 hover:text-white transition-colors text-2xl"><i class="fas fa-times"></i></button>
+                <button type="button" onclick="cerrarModalRegistro()" class="text-white/50 hover:text-white transition-colors text-2xl cursor-pointer"><i class="fas fa-times"></i></button>
             </div>
             <form method="POST" enctype="multipart/form-data" class="p-10 space-y-6">
                 {% csrf_token %}
@@ -241,11 +241,38 @@
                     </div>
                     <div class="col-span-2 p-6 bg-comfaBlue/5 rounded-3xl border-2 border-comfaBlue/10">{{ form.archivo_digital }}</div>
                 </div>
-                <button type="submit" class="w-full py-5 bg-comfaBlue text-white font-black rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest">Confirmar Registro <i class="fas fa-save ml-2"></i></button>
+                <button type="submit" class="w-full py-5 bg-comfaBlue text-white font-black rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest cursor-pointer">Confirmar Registro <i class="fas fa-save ml-2"></i></button>
             </form>
         </div>
     </div>
 
+</div>
 
-    </div>
+<script>
+    function abrirModalRegistro() {
+        const modal = document.getElementById('modalRegistroArchivo');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function cerrarModalRegistro() {
+        const modal = document.getElementById('modalRegistroArchivo');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            cerrarModalRegistro();
+        }
+    });
+
+    {% if form.errors %}
+    document.addEventListener('DOMContentLoaded', function() {
+        abrirModalRegistro();
+    });
+    {% endif %}
+</script>
 {% endblock %}
