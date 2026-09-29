@@ -59,7 +59,7 @@ if not SECRET_KEY:
         )
 
 # Dominios o IPs permitidos para acceder a la aplicación
-allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'ecosistema-nexus-web.onrender.com,localhost,127.0.0.1,*')
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'app.nexusflz.tech,179.236.225.125,localhost,127.0.0.1')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
 
 # Definición de aplicaciones instaladas (módulos internos y externos)
