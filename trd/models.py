@@ -17,6 +17,7 @@ class EncabezadoTRD(models.Model):
     estado = models.CharField(max_length=50, default="VIGENTE")
     vigencia_ano = models.CharField(max_length=50, blank=True)
 
+
     def __str__(self):
         return f"{self.oficina_productora} - {self.estado}"
 
@@ -35,6 +36,24 @@ class ItemTRD(models.Model):
     reproduccion_tecnica = models.CharField(max_length=50, blank=True)
     procedimiento = models.TextField(blank=True)
     orden = models.IntegerField(default=0)
+
+    def to_json(self):
+        import json
+        return json.dumps({
+            "id": self.id,
+            "codigo": self.codigo,
+            "nivel": self.nivel,
+            "nombre": self.nombre,
+            "soporte_papel": self.soporte_papel,
+            "soporte_electronico": self.soporte_electronico,
+            "extensiones": self.extensiones,
+            "retencion_gestion": self.retencion_gestion,
+            "retencion_central": self.retencion_central,
+            "disposicion_final": self.disposicion_final,
+            "reproduccion_tecnica": self.reproduccion_tecnica,
+            "procedimiento": self.procedimiento,
+            "orden": self.orden
+        })
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
