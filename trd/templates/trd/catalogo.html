@@ -68,7 +68,7 @@
             <div class="md:col-span-5 relative" x-data="{
                 abierto: false,
                 busqueda: '',
-                seleccionadas: {{ oficinas_seleccionadas | tojson }},
+                seleccionadas: {{ oficinas_seleccionadas | safe }},
                 marcarTodas() {
                     this.seleccionadas = [{% for o in oficinas %}'{{ o.nombre }}',{% endfor %}];
                 },

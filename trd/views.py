@@ -222,7 +222,7 @@ def catalogo(request):
         "conteos": conteos,
         "oficinas": oficinas_all,
         "disposiciones": DISPOSICIONES,
-        "oficinas_seleccionadas": oficinas_sel,
+        "oficinas_seleccionadas": json.dumps(oficinas_sel),
         "filtros": {
             "texto": q, "oficinas": oficinas_sel, "disposicion": disp, "nivel": nivel
         }

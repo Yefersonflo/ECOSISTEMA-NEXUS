@@ -883,13 +883,13 @@
 
                         <!-- Botones de Acción de la Serie -->
                         {% if nodo.serie.id %}
-                        <button type="button" @click='abrirModalNuevaSubserieDirecta({{ nodo.serie.to_dict()|tojson }}, {{ (nodo.subseries|length + 1) }})'
+                        <button type="button" @click='abrirModalNuevaSubserieDirecta({{ nodo.serie.to_json|safe }}, {{ (nodo.subseries|length + 1) }})'
                                 class="px-2.5 py-1.5 bg-blue-50 hover:bg-comfaBlue text-comfaBlue hover:text-white border border-blue-200 hover:border-comfaBlue rounded-lg inline-flex items-center gap-1 text-[11px] font-black uppercase transition-all cursor-pointer shadow-xs"
                                 title="Agregar una nueva subserie a esta serie">
                             <i class="fas fa-plus"></i>
                             <span>+ Subserie</span>
                         </button>
-                        <button type="button" @click='abrirModalEditarItem({{ nodo.serie.to_dict()|tojson }})'
+                        <button type="button" @click='abrirModalEditarItem({{ nodo.serie.to_json|safe }})'
                                 class="px-2.5 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-lg inline-flex items-center gap-1 text-[11px] font-black uppercase transition-all cursor-pointer shadow-sm">
                             <i class="fas fa-pen-to-square"></i>
                             <span class="hidden sm:inline">Editar</span>
@@ -988,7 +988,7 @@
 
                                         <!-- Botones de Acción de la Subserie -->
                                         {% if sub_item.subserie.id %}
-                                        <button type="button" @click='abrirModalEditarItem({{ sub_item.subserie.to_dict()|tojson }})'
+                                        <button type="button" @click='abrirModalEditarItem({{ sub_item.subserie.to_json|safe }})'
                                                 class="px-2 py-1 bg-white hover:bg-comfaBlue text-comfaBlue hover:text-white border border-slate-300 hover:border-comfaBlue rounded-lg text-[10px] font-black uppercase transition-all cursor-pointer" title="Editar subserie">
                                             <i class="fas fa-pen"></i>
                                         </button>
