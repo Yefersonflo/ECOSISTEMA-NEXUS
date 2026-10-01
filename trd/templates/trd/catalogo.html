@@ -228,7 +228,7 @@
         {% if oficinas_tarjetas %}
             {% for ofi_nodo in oficinas_tarjetas %}
             <div class="bg-white rounded-3xl shadow-lg border-2 border-slate-200 overflow-hidden transition-all duration-200 hover:border-slate-300"
-                 x-data="{ ofiAbierta: {{ 'true' if (filtros.texto or filtros.oficinas or filtros.oficina or oficinas_tarjetas|length <= 2) else 'false' }} }">
+                 x-data="{ ofiAbierta: {% if filtros.texto or filtros.oficinas or filtros.oficina or oficinas_tarjetas|length <= 2 %}true{% else %}false{% endif %} }">
                 
                 <!-- NIVEL 0: CABECERA DE LA OFICINA PRODUCTORA (Clic para abrir/cerrar Series) -->
                 <div @click="ofiAbierta = !ofiAbierta"
@@ -380,7 +380,7 @@
                                                         {% if sub_nodo.subserie.soporte_papel and sub_nodo.subserie.soporte_electronico %}
                                                             Papel + Elec.
                                                         {% elif sub_nodo.subserie.soporte_electronico %}
-                                                            Electrónico ({{ sub_nodo.subserie.extensiones or '.pdf' }})
+                                                            Electrónico ({{sub_nodo.subserie.extensiones|default:'.pdf'}})
                                                         {% else %}
                                                             Papel
                                                         {% endif %}
@@ -431,7 +431,7 @@
                                                                 {% endif %}
                                                                 {% if td.soporte_electronico %}
                                                                 <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded text-[9px] font-black uppercase font-mono" title="Electrónico {{ td.extensiones }}">
-                                                                    {{ td.extensiones or 'Elec' }}
+                                                                    {{td.extensiones|default:'Elec'}}
                                                                 </span>
                                                                 {% endif %}
                                                             </div>
@@ -471,7 +471,7 @@
                                             {% if s_nodo.serie.soporte_papel and s_nodo.serie.soporte_electronico %}
                                                 Papel + Electrónico
                                             {% elif s_nodo.serie.soporte_electronico %}
-                                                Electrónico ({{ s_nodo.serie.extensiones or '.pdf' }})
+                                                Electrónico ({{s_nodo.serie.extensiones|default:'.pdf'}})
                                             {% else %}
                                                 Papel
                                             {% endif %}
@@ -516,7 +516,7 @@
                                                     {% endif %}
                                                     {% if td.soporte_electronico %}
                                                     <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded text-[9px] font-black uppercase font-mono">
-                                                        {{ td.extensiones or 'Elec' }}
+                                                        {{td.extensiones|default:'Elec'}}
                                                     </span>
                                                     {% endif %}
                                                 </div>

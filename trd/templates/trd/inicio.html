@@ -99,10 +99,10 @@
                         <td class="px-8 py-6">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="px-2 py-0.5 bg-comfaBlue text-white rounded-md text-[10px] font-black uppercase shadow-2xs">
-                                    v{{ t.version or '1.0' }}
+                                    v{{t.version|default:'1.0'}}
                                 </span>
                                 <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider {% if t.estado == 'VIGENTE' %}bg-blue-100 text-comfaBlue border border-blue-200{% else %}bg-slate-100 text-slate-600 border border-slate-300{% endif %}">
-                                    {{ t.estado or 'VIGENTE' }}
+                                    {{t.estado|default:'VIGENTE'}}
                                 </span>
                                 {% if t.vigencia_ano %}
                                 <span class="px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-md text-[9px] font-black uppercase">
@@ -115,10 +115,10 @@
                         </td>
                         <td class="px-6 py-6 text-center">
                             <span class="w-12 h-12 inline-flex items-center justify-center bg-comfaRed text-white rounded-2xl font-black text-sm shadow-lg transform group-hover:scale-110 transition-transform">
-                                {{ t.total_items }}
+                                {{ t.items.count }}
                             </span>
                         </td>
-                        <td class="px-8 py-6 text-xs font-bold text-slate-500">{{ t.fecha_aprobacion or 'Sin aprobar' }}</td>
+                        <td class="px-8 py-6 text-xs font-bold text-slate-500">{{t.fecha_aprobacion|default:'Sin aprobar'}}</td>
                         <td class="px-8 py-6 text-right space-x-2">
                             <a href="{% url 'trd:editar_trd' enc_id=t.id %}" class="w-12 h-12 bg-comfaBlue/5 text-comfaBlue rounded-2xl inline-flex items-center justify-center hover:bg-comfaBlue hover:text-white transition-all shadow-sm" title="Diligenciar">
                                 <i class="fas fa-pen-to-square text-lg"></i>

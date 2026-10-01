@@ -18,10 +18,10 @@
         <div class="space-y-2">
             <div class="flex flex-wrap items-center gap-2">
                 <span class="px-3 py-1 bg-comfaBlue text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-2xs">
-                    Versión {{ encabezado.version or '1.0' }}
+                    Versión {{encabezado.version|default:'1.0'}}
                 </span>
                 <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider {% if encabezado.estado == 'VIGENTE' %}bg-blue-100 text-comfaBlue border border-blue-200{% else %}bg-slate-100 text-slate-600 border border-slate-300{% endif %}">
-                    {{ encabezado.estado or 'VIGENTE' }}
+                    {{encabezado.estado|default:'VIGENTE'}}
                 </span>
                 {% if encabezado.vigencia_ano %}
                 <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-[10px] font-black uppercase tracking-wider">
@@ -36,7 +36,7 @@
                         <a href="{% url 'trd:editar_trd' enc_id=v.id %}"
                            class="px-2.5 py-0.5 rounded-lg border text-[10px] font-bold transition-all {% if v.id == enc_id %}bg-comfaBlue text-white border-comfaBlue shadow-2xs{% else %}bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-200{% endif %}"
                            title="Ver versión {{ v.version }}">
-                            v{{ v.version or '1.0' }}{% if v.vigencia_ano %} ({{ v.vigencia_ano }}){% endif %}
+                            v{{v.version|default:'1.0'}}{% if v.vigencia_ano %} ({{ v.vigencia_ano }}){% endif %}
                         </a>
                     {% endfor %}
                 </div>
@@ -46,9 +46,9 @@
             <h2 class="text-2xl font-black text-comfaBlue uppercase tracking-tight">{{ encabezado.oficina_productora }}</h2>
             <p class="text-[11px] font-bold text-slate-500">{{ encabezado.entidad_productora }}</p>
             <div class="flex flex-wrap gap-2 pt-1 text-[9px] font-black uppercase tracking-widest">
-                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Creacion: {{ encabezado.fecha_creacion or '-' }}</span>
-                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Ajuste: {{ encabezado.fecha_ajuste or '-' }}</span>
-                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Aprobacion: {{ encabezado.fecha_aprobacion or '-' }}</span>
+                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Creacion: {{encabezado.fecha_creacion|default:'-'}}</span>
+                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Ajuste: {{encabezado.fecha_ajuste|default:'-'}}</span>
+                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Aprobacion: {{encabezado.fecha_aprobacion|default:'-'}}</span>
             </div>
         </div>
 
@@ -859,7 +859,7 @@
                         {% if nodo.serie.soporte_papel or nodo.serie.soporte_electronico %}
                             <span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-black">
                                 {% if nodo.serie.soporte_papel %}PAPEL{% endif %}
-                                {% if nodo.serie.soporte_electronico %}{{ nodo.serie.extensiones or 'ELEC' }}{% endif %}
+                                {% if nodo.serie.soporte_electronico %}{{nodo.serie.extensiones|default:'ELEC'}}{% endif %}
                             </span>
                         {% endif %}
 
@@ -953,7 +953,7 @@
                                             {% if sub_item.subserie.soporte_papel and sub_item.subserie.soporte_electronico %}
                                                 Papel + Elec.
                                             {% elif sub_item.subserie.soporte_electronico %}
-                                                {{ sub_item.subserie.extensiones or 'Elec' }}
+                                                {{sub_item.subserie.extensiones|default:'Elec'}}
                                             {% else %}
                                                 Papel
                                             {% endif %}
@@ -1027,7 +1027,7 @@
                                                 </div>
                                                 <div class="flex items-center gap-1 shrink-0">
                                                     {% if td.soporte_papel %}<span class="px-1.5 py-0.5 bg-white border border-slate-200 text-slate-600 rounded text-[9px] font-black uppercase">Papel</span>{% endif %}
-                                                    {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded text-[9px] font-black uppercase font-mono">{{ td.extensiones or 'Elec' }}</span>{% endif %}
+                                                    {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded text-[9px] font-black uppercase font-mono">{{td.extensiones|default:'Elec'}}</span>{% endif %}
                                                     <button type="button" @click='abrirModalEditarItem({{ td.to_json|safe }})' class="text-slate-400 hover:text-comfaBlue p-1 cursor-pointer" title="Editar tipo"><i class="fas fa-pen text-[10px]"></i></button>
                                                     <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=td.id %}" onsubmit="return confirm('¿Eliminar tipo documental?');">
                                                         <button type="submit" class="text-slate-400 hover:text-comfaRed p-1 cursor-pointer" title="Eliminar tipo"><i class="fas fa-trash text-[10px]"></i></button>
@@ -1090,7 +1090,7 @@
                                  </div>
                                  <div class="flex items-center gap-1 shrink-0">
                                      {% if td.soporte_papel %}<span class="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[9px] font-black">PAPEL</span>{% endif %}
-                                     {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-black">{{ td.extensiones or 'ELEC' }}</span>{% endif %}
+                                     {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-black">{{td.extensiones|default:'ELEC'}}</span>{% endif %}
                                      <button type="button" @click='abrirModalEditarItem({{ td.to_json|safe }})' class="text-slate-400 hover:text-indigo-600 p-1.5 cursor-pointer" title="Editar tipo"><i class="fas fa-pen text-xs"></i></button>
                                      <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=td.id %}" onsubmit="return confirm('¿Eliminar tipo documental?');">
                                          <button type="submit" class="text-slate-400 hover:text-red-600 p-1.5 cursor-pointer" title="Eliminar tipo"><i class="fas fa-trash text-xs"></i></button>
@@ -1156,7 +1156,7 @@
                             {{ encabezado.oficina_productora }} &middot; Código {{ encabezado.codigo_oficina }}
                         </h4>
                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                            Tabla de Retención Documental &middot; Versión {{ encabezado.version or '1.0' }} &middot; {{ arbol_series|length }} Series &middot; {{ items|length }} Registros
+                            Tabla de Retención Documental &middot; Versión {{encabezado.version|default:'1.0'}} &middot; {{ arbol_series|length }} Series &middot; {{ items|length }} Registros
                         </p>
                     </div>
                 </div>
@@ -1223,7 +1223,7 @@
                                     {% if nodo.serie.soporte_papel and nodo.serie.soporte_electronico %}
                                         <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel + Elec</span>
                                     {% elif nodo.serie.soporte_electronico %}
-                                        <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded font-mono">{{ nodo.serie.extensiones or 'Elec' }}</span>
+                                        <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded font-mono">{{nodo.serie.extensiones|default:'Elec'}}</span>
                                     {% elif nodo.serie.soporte_papel %}
                                         <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel</span>
                                     {% else %}-{% endif %}
@@ -1234,7 +1234,7 @@
                                 <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.disposicion_final == 'S' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-blue-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
                                 <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.disposicion_final == 'E' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-red-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
                                 <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.reproduccion_tecnica %}<span class="w-5 h-5 inline-flex items-center justify-center bg-purple-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
-                                <td class="py-3 px-4 text-xs text-slate-700 italic leading-relaxed">{{ nodo.serie.procedimiento or '-' }}</td>
+                                <td class="py-3 px-4 text-xs text-slate-700 italic leading-relaxed">{{nodo.serie.procedimiento|default:'-'}}</td>
                                 {% else %}
                                 <!-- Serie con subseries: celdas vacías en la fila padre -->
                                 <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
@@ -1244,7 +1244,7 @@
                                 <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
                                 <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
                                 <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
-                                <td class="py-3 px-4 text-xs text-slate-500 italic">{{ nodo.serie.procedimiento or '-' }}</td>
+                                <td class="py-3 px-4 text-xs text-slate-500 italic">{{nodo.serie.procedimiento|default:'-'}}</td>
                                 {% endif %}
                             </tr>
 
@@ -1265,7 +1265,7 @@
                                         {% if sub_item.subserie.soporte_papel and sub_item.subserie.soporte_electronico %}
                                             <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel + Elec</span>
                                         {% elif sub_item.subserie.soporte_electronico %}
-                                            <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded font-mono">{{ sub_item.subserie.extensiones or 'Elec' }}</span>
+                                            <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded font-mono">{{sub_item.subserie.extensiones|default:'Elec'}}</span>
                                         {% elif sub_item.subserie.soporte_papel %}
                                             <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel</span>
                                         {% else %}-{% endif %}
@@ -1276,7 +1276,7 @@
                                     <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.disposicion_final == 'S' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-blue-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
                                     <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.disposicion_final == 'E' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-red-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
                                     <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.reproduccion_tecnica %}<span class="w-5 h-5 inline-flex items-center justify-center bg-purple-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
-                                    <td class="py-2.5 px-4 text-xs text-slate-700 leading-relaxed font-normal bg-white/70">{{ sub_item.subserie.procedimiento or '-' }}</td>
+                                    <td class="py-2.5 px-4 text-xs text-slate-700 leading-relaxed font-normal bg-white/70">{{sub_item.subserie.procedimiento|default:'-'}}</td>
                                 </tr>
 
                                 <!-- TIPOS DOCUMENTALES DE LA SUBSERIE -->
@@ -1293,7 +1293,7 @@
                                         {% if td.soporte_papel and td.soporte_electronico %}
                                             <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">P + E</span>
                                         {% elif td.soporte_electronico %}
-                                            <span class="px-1.5 py-0.5 bg-blue-50 text-comfaBlue rounded font-mono">{{ td.extensiones or '.pdf' }}</span>
+                                            <span class="px-1.5 py-0.5 bg-blue-50 text-comfaBlue rounded font-mono">{{td.extensiones|default:'.pdf'}}</span>
                                         {% elif td.soporte_papel %}
                                             <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">Papel</span>
                                         {% else %}-{% endif %}
@@ -1325,7 +1325,7 @@
                                         {% if td.soporte_papel and td.soporte_electronico %}
                                             <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">P + E</span>
                                         {% elif td.soporte_electronico %}
-                                            <span class="px-1.5 py-0.5 bg-blue-50 text-comfaBlue rounded font-mono">{{ td.extensiones or '.pdf' }}</span>
+                                            <span class="px-1.5 py-0.5 bg-blue-50 text-comfaBlue rounded font-mono">{{td.extensiones|default:'.pdf'}}</span>
                                         {% elif td.soporte_papel %}
                                             <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">Papel</span>
                                         {% else %}-{% endif %}
@@ -1628,7 +1628,7 @@
                                 <i class="fas fa-circle-info"></i> Control de Versiones Anual
                             </p>
                             <p class="text-slate-600 font-medium leading-relaxed">
-                                La versión actual (v{{ encabezado.version or '1.0' }}) pasará a estado <b>HISTÓRICA</b> y se creará una nueva versión <b>VIGENTE</b> para esta misma oficina.
+                                La versión actual (v{{encabezado.version|default:'1.0'}}) pasará a estado <b>HISTÓRICA</b> y se creará una nueva versión <b>VIGENTE</b> para esta misma oficina.
                             </p>
                         </div>
 
