@@ -75,7 +75,8 @@ INSTALLED_APPS = [
     'ubicacion',
     'afiliados',
     'documentos',
-    'smart_selects' # Librería para selects encadenados
+    'smart_selects', # Librería para selects encadenados
+    'trd',
 ]
 
 # Capas de procesamiento para peticiones y respuestas

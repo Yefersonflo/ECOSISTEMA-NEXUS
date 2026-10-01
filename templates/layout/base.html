@@ -87,6 +87,11 @@
                 <i class="fas fa-warehouse w-8 text-center text-xl text-orange-400"></i>
                 <span class="sidebar-text text-xs uppercase tracking-widest">Visor de Bodega</span>
             </a>
+            
+            <a href="{% url 'trd:diligenciar' %}" class="flex items-center space-x-4 p-4 rounded-xl text-white font-bold hover:bg-white/10 {% if '/trd/' in request.path %}nav-item-active{% endif %}">
+                <i class="fas fa-file-signature w-8 text-center text-xl text-blue-400"></i>
+                <span class="sidebar-text text-xs uppercase tracking-widest">Módulo TRD</span>
+            </a>
 
             <!-- ADMINISTRACIÓN / SUPERVISIÓN (SUPER Y JEFE) -->
             {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}

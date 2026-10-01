@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views, logout
 
 class CustomLoginView(auth_views.LoginView):
@@ -49,6 +49,7 @@ urlpatterns = [
     path('dashboard/document/delete/<int:doc_id>/', borrar_documento, name='borrar_documento'),
     # Visualización gráfica de la ubicación física de las carpetas
     path('mapa-visual/', mapa_visual, name='mapa_visual'),
+    path('trd/', include('trd.urls')),
     # Panel para generación de reportes y estadísticas
     path('reportes-registros/', panel_reportes, name='panel_reportes'),
     # Descarga de inventario de archivo en formato Excel

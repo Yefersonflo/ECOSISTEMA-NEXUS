@@ -1,0 +1,155 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}Diligenciar TRD{% endblock %}
+{% block header_title %}Tablas de Retención Documental{% endblock %}
+
+{% block content %}
+{% extends 'layout/base.html' %}
+
+{% block title %}Diligenciar TRD | Comfacasanare{% endblock %}
+{% block header_title %}Diligenciar Nueva TRD{% endblock %}
+
+{#- Clases compartidas de alto contraste (una sola fuente de verdad por template) -#}
+{% set INPUT = "w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all" %}
+{% set LABEL = "text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto py-6">
+
+    <form method="post" class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden">
+
+        <div class="bg-comfaBlue px-8 py-6 flex items-center justify-between border-b-4 border-comfaYellow">
+            <div>
+                <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-wider mb-1 inline-block">Paso 1 de 2</span>
+                <h3 class="text-sm font-black text-white uppercase tracking-widest">Encabezado Institucional</h3>
+                <p class="text-[10px] font-bold text-comfaYellow uppercase tracking-[0.2em] mt-0.5">Formato {{ codigo_formato }} - Version {{ version_formato }}</p>
+            </div>
+            <i class="fas fa-file-signature text-4xl text-white/25"></i>
+        </div>
+
+        <div class="p-8 space-y-6">
+
+            {# --- Bloque 1: Identificacion de la entidad y la oficina --- #}
+            <fieldset class="border-2 border-blue-200 bg-blue-50/40 rounded-2xl p-6 space-y-5">
+                <legend class="px-3 mx-2 bg-white border-2 border-blue-200 rounded-lg text-[10px] font-black text-comfaBlue uppercase tracking-widest">
+                    <i class="fas fa-building-columns mr-1.5"></i> 1. Identificacion
+                </legend>
+
+                <div>
+                    <label class="{{ LABEL }}">Entidad Productora</label>
+                    <input type="text" name="entidad_productora" value="{{ entidad }}" class="{{ INPUT }}">
+                </div>
+
+                <div>
+                    <label class="{{ LABEL }}">Oficina Productora <span class="text-comfaRed">*</span></label>
+                    <select name="oficina_productora" required class="{{ INPUT }}">
+                        <option value="">-- Seleccione la oficina --</option>
+                        {% for o in oficinas %}
+                        <option value="{{ o.nombre }}">{{ o.prefijo }} &middot; {{ o.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-[11px] text-slate-600 font-bold mt-2 flex items-start gap-1.5">
+                        <i class="fas fa-circle-info text-comfaBlue mt-0.5"></i>
+                        El prefijo numerico de la oficina debe coincidir con el primer segmento de cada codigo.
+                    </p>
+                </div>
+            </fieldset>
+
+            {# --- Bloque 2: Fechas del formato de calidad --- #}
+            <fieldset class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-6">
+                <legend class="px-3 mx-2 bg-white border-2 border-slate-200 rounded-lg text-[10px] font-black text-slate-700 uppercase tracking-widest">
+                    <i class="fas fa-calendar-days mr-1.5"></i> 2. Fechas del Formato
+                </legend>
+
+                <!-- Campos ocultos de calidad -->
+                <input type="hidden" name="fecha_creacion" value="02/01/2012">
+                <input type="hidden" name="fecha_ajuste" value="30/08/2024">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="{{ LABEL }}">Fecha Aprobacion</label>
+                        <input type="text" name="fecha_aprobacion" placeholder="DD/MM/AAAA" class="{{ INPUT }}">
+                    </div>
+                    <div>
+                        <label class="{{ LABEL }}">Version de Tabla <span class="text-slate-400 font-bold normal-case tracking-normal">(opcional)</span></label>
+                        <input type="text" name="fecha_convalidacion" placeholder="Ej. 1.0" class="{{ INPUT }}">
+                    </div>
+                </div>
+            </fieldset>
+
+            {# --- Bloque 3: Responsables que firman el formato --- #}
+            <fieldset class="border-2 border-slate-200 bg-white rounded-2xl p-6">
+                <legend class="px-3 mx-2 bg-white border-2 border-slate-200 rounded-lg text-[10px] font-black text-slate-700 uppercase tracking-widest">
+                    <i class="fas fa-user-pen mr-1.5"></i> 3. Responsables
+                </legend>
+
+                <p class="text-[11px] text-slate-600 font-bold mb-5 flex items-start gap-1.5">
+                    <i class="fas fa-circle-info text-comfaBlue mt-0.5"></i>
+                    El formato oficial imprime <b>Nombre</b> y <b>Cargo</b> en renglones separados, con su linea de firma.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <div class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-5 space-y-4">
+                        <p class="text-[10px] font-black text-comfaBlue uppercase tracking-widest min-h-[2.1rem]">
+                            <i class="fas fa-user-shield mr-1.5"></i> Responsable del Area de Gestion Documental
+                        </p>
+                        <div>
+                            <label class="{{ LABEL }}">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
+                            <input type="text" name="responsable" placeholder="Nombres y apellidos" class="{{ INPUT }}">
+                        </div>
+                        <div>
+                            <label class="{{ LABEL }}">Cargo</label>
+                            <input type="text" name="cargo_responsable" placeholder="Ej. Lider de Gestion Documental" class="{{ INPUT }}">
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-5 space-y-4">
+                        <p class="text-[10px] font-black text-comfaBlue uppercase tracking-widest min-h-[2.1rem]">
+                            <i class="fas fa-user-pen mr-1.5"></i> Responsable de Area
+                        </p>
+                        <div>
+                            <label class="{{ LABEL }}">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
+                            <input type="text" name="responsable_area" placeholder="Nombres y apellidos" class="{{ INPUT }}">
+                        </div>
+                        <div>
+                            <label class="{{ LABEL }}">Cargo</label>
+                            <input type="text" name="cargo_responsable_area" placeholder="Ej. Lider de Area" class="{{ INPUT }}">
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-5 space-y-4">
+                        <p class="text-[10px] font-black text-comfaBlue uppercase tracking-widest min-h-[2.1rem]">
+                            <i class="fas fa-user-tie mr-1.5"></i> Superior Jerarquico
+                        </p>
+                        <div>
+                            <label class="{{ LABEL }}">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
+                            <input type="text" name="superior" placeholder="Nombres y apellidos" class="{{ INPUT }}">
+                        </div>
+                        <div>
+                            <label class="{{ LABEL }}">Cargo</label>
+                            <input type="text" name="cargo_superior" placeholder="Ej. Subdirector Administrativo" class="{{ INPUT }}">
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+
+        </div>
+
+        <div class="bg-slate-100 px-8 py-6 flex items-center justify-between border-t-2 border-slate-200">
+            <a href="{{ url_for('inicio') }}" class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-800 transition-all">
+                <i class="fas fa-xmark mr-1.5"></i> Cancelar
+            </a>
+            <button type="submit" class="px-8 py-4 bg-comfaBlue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003a6b] transition-all shadow-lg flex items-center gap-2 cursor-pointer">
+                <span>Continuar al Paso 2: Registrar Series y Subseries</span> <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}
+
+{% endblock %}
