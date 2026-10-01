@@ -1,0 +1,2384 @@
+[
+  {
+    "key": "10 - DIRECCION",
+    "prefijo": "10",
+    "nombre": "DIRECCION",
+    "seccion": "10 DIRECCIÓN",
+    "series": [
+      {
+        "codigo": "01",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.14",
+            "nombre": "Actas De Asambles General",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "AUDITORIAS EXTERNAS"
+          },
+          {
+            "codigo": "01.9",
+            "nombre": "Actas De Consejo Directivo",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.6",
+            "nombre": "Actas De Comité Independiente De Auditoría Y Riesgos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "INFORMES"
+          },
+          {
+            "codigo": "01.25",
+            "nombre": "Actas Comite Etica",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.1",
+            "nombre": "Planes Estrategico Institucional",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMAS",
+        "subseries": [
+          {
+            "codigo": "58.13",
+            "nombre": "Programa Destinacion Especifica",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.12",
+            "nombre": "Manual De Etica Y Buen Gobierno",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "11 - JURIDICA",
+    "prefijo": "11",
+    "nombre": "JURIDICA",
+    "seccion": "10 DIRECCIÓN",
+    "series": [
+      {
+        "codigo": "20",
+        "nombre": "CONTRATOS",
+        "subseries": [
+          {
+            "codigo": "20.5",
+            "nombre": "Contratos De Arrendamiento",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": "Artículo 55, Ley 80 de 1993"
+          },
+          {
+            "codigo": "20.6",
+            "nombre": "Contratos De Obra",
+            "retencion": 20,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "20.7",
+            "nombre": "Contratos De Prestacion De Servicios",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "20.8",
+            "nombre": "Contratos De Suministro",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "20.9",
+            "nombre": "Contratos De Prestacion De Servicios  Educativos",
+            "retencion": 1,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "23",
+        "nombre": "CONVENIOS",
+        "subseries": [
+          {
+            "codigo": "23.1",
+            "nombre": "Convenios De Cooperacion Nacional E Internacional",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "23.2",
+            "nombre": "Convenios Empresariales De Credito",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "23.3",
+            "nombre": "Convenio- Alianza De Mercados",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "82",
+        "nombre": "DEMANDAS O TUTELAS (PROCESOS JURIDICOS)",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": "PROCESOS DISCIPLINARIOS"
+          }
+        ]
+      },
+      {
+        "codigo": "108",
+        "nombre": "PROCESO DE COBRO DE COACTIVO",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": "COBRO DE OBLIGACIONES"
+          }
+        ]
+      },
+      {
+        "codigo": "25",
+        "nombre": "DERECHOS DE PETICION",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "111",
+        "nombre": "ACTOS ADMINISTRATIVOS",
+        "subseries": [
+          {
+            "codigo": "111.1",
+            "nombre": "Resoluciones",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.23",
+            "nombre": "Manual De Contratacion",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.24",
+            "nombre": "Manual De Buen Gobierno Transparencia Y Etica Empresarial",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "91",
+        "nombre": "COBRO DE OBLIGACIONES",
+        "subseries": []
+      }
+    ]
+  },
+  {
+    "key": "12 - CONTROL INTERNO",
+    "prefijo": "12",
+    "nombre": "CONTROL INTERNO",
+    "seccion": "10 DIRECCIÓN",
+    "series": [
+      {
+        "codigo": "01.",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.27",
+            "nombre": "Actas De Comite De Coordinacion Del Sistema De Control Interno",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41.",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.13",
+            "nombre": "Informes De Auditoria Interno",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "DLLO DE AUDITORIAS INTERNAS"
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.10",
+            "nombre": "Planes De Gestion Del Riesgo",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "SEGUIMIENTO Y EVALUACION A RIESGOS"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.25",
+            "nombre": "Manual De Control Interno",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.26",
+            "nombre": "Manual De Auditorias",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "13 - PLANEACIÓN",
+    "prefijo": "13",
+    "nombre": "PLANEACIÓN",
+    "seccion": "10 DIRECCIÓN",
+    "series": [
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.1",
+            "nombre": "Entes De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.1",
+            "nombre": "Plan Estratégico Institucional",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.2",
+            "nombre": "Plan Operativo",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "56",
+        "nombre": "PRESUPUESTO",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "61",
+        "nombre": "PROYECTOS DE INVERSION",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "15 - CALIDAD",
+    "prefijo": "15",
+    "nombre": "CALIDAD",
+    "seccion": "10 DIRECCIÓN",
+    "series": [
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.11",
+            "nombre": "Planes De Auditoria",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "AUDITORIAS EXTERNAS"
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.12",
+            "nombre": "Informes De Auditoria Del Sistema Gestion De Calidad",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "110",
+        "nombre": "SOLICITUD DE ELABORACION MODIFICACION O ELIMINACION DE LA DOCUMENTACION DEL SGC",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.1",
+            "nombre": "Manual Del Sistema Gestion De Calidad",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "SISTEMA DE GESTION DE CALIDAD"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "17 - DESARROLLO SOCIAL",
+    "prefijo": "17",
+    "nombre": "DESARROLLO SOCIAL",
+    "seccion": "10 DIRECCIÓN",
+    "series": [
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMA",
+        "subseries": [
+          {
+            "codigo": "58.16",
+            "nombre": "Programa  Atencion Integral A La Primera Infancia Aipi",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "DLLO JEC"
+          },
+          {
+            "codigo": "58.17",
+            "nombre": "Programa De Jornada Escolar Complementaria",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "DLLO AIPI"
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.25",
+            "nombre": "Plan De Saneamiento Basico",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.20",
+            "nombre": "Manual De Manipulacion De Alimentos",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.1",
+            "nombre": "Informes Entes  De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "21 - TALENTO HUMANO",
+    "prefijo": "21",
+    "nombre": "TALENTO HUMANO",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "39",
+        "nombre": "HISTORIAS LABORALES",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 80,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "50",
+        "nombre": "NÓMINAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 80,
+            "disposicion": "S",
+            "reemplazadas": "Relación de descuentos de salud, pensión, parafiscales y cesantías. Prestaciones sociales"
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMAS",
+        "subseries": [
+          {
+            "codigo": "58.1",
+            "nombre": "Programas De Bienestar Laboral",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "58.2",
+            "nombre": "Programa De Capacitacion",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.2",
+            "nombre": "Manual De Funciones Requisitos Y Competencias Laborales",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "114",
+        "nombre": "REGLAMENTO INTERNO DE TRABAJO",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "22 - COMPRAS",
+    "prefijo": "22",
+    "nombre": "COMPRAS",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "126",
+        "nombre": "ORDENES DE COMPRA",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "102",
+        "nombre": "HISTORIALES BIENES INMUEBLES",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "127",
+        "nombre": "COMPROBANTES DE ALMACEN",
+        "subseries": [
+          {
+            "codigo": "127.1",
+            "nombre": "Comprobantes De Baja",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "INVENTARIOS ( bienes inmuebles, de consumo, devolutivos)"
+          },
+          {
+            "codigo": "127.2",
+            "nombre": "Comprobantes De Bienes De Almacen",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "127.3",
+            "nombre": "Comprobantes De Ingreso De Bienes De Almacen",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "127.4",
+            "nombre": "Comprobantes De Egreso De Bienes De Almacen",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "112",
+        "nombre": "REGISTRO DE PROVEEDORES",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "42",
+        "nombre": "INVENTARIOS",
+        "subseries": [
+          {
+            "codigo": "42.1",
+            "nombre": "Inventarios Documentales",
+            "retencion": 0,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "42.3",
+            "nombre": "Bienes Inmuebles",
+            "retencion": 0,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "42.4",
+            "nombre": "Bienes De Consumo",
+            "retencion": 0,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "42.5",
+            "nombre": "Bienes Devolutivos",
+            "retencion": 0,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "47",
+        "nombre": "MANTENIMIENTO Y ADECUACION  DE PLANTA FISICA",
+        "subseries": []
+      },
+      {
+        "codigo": "69",
+        "nombre": "SISTEMAS DE GESTIÓN DE  CALIDAD",
+        "subseries": [
+          {
+            "codigo": "1",
+            "nombre": "Gestion De Calidad",
+            "retencion": 0,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "96",
+        "nombre": "PROVEDORES",
+        "subseries": []
+      }
+    ]
+  },
+  {
+    "key": "23 - TESORERIA",
+    "prefijo": "23",
+    "nombre": "TESORERIA",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "49",
+        "nombre": "COMPROBANTES CONTABLES",
+        "subseries": [
+          {
+            "codigo": "49.1",
+            "nombre": "Comprobantes Contables De Egreso",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "MOVIMIENTO CONTABLE"
+          },
+          {
+            "codigo": "49.2",
+            "nombre": "Comprobantes Contables De Ingreso",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "Consignacion recaudo en efectivo"
+          }
+        ]
+      },
+      {
+        "codigo": "113",
+        "nombre": "REGISTROS DE OPERACIONES DE CAJA MENOR",
+        "subseries": [
+          {
+            "codigo": "112.2",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "verificar no estaba"
+          }
+        ]
+      },
+      {
+        "codigo": "125",
+        "nombre": "REQUERIMIENTO",
+        "subseries": [
+          {
+            "codigo": "125.1",
+            "nombre": "Requerimiento De  Reembolso De Dinero",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "verificar no estaba"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "24 - CONTABILIDAD",
+    "prefijo": "24",
+    "nombre": "CONTABILIDAD",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "19",
+        "nombre": "CONCILIACIONES BANCARIAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.14",
+            "nombre": "Informes De Ejecucion Presupuestal",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "Informes internos"
+          }
+        ]
+      },
+      {
+        "codigo": "115",
+        "nombre": "LIBROS",
+        "subseries": [
+          {
+            "codigo": "115.1",
+            "nombre": "Libros Contables Auxiliares",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "LIBROS CONTABLES"
+          },
+          {
+            "codigo": "115.2",
+            "nombre": "Libros Contables Principales",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "49",
+        "nombre": "COMPROBANTES CONTABLES",
+        "subseries": [
+          {
+            "codigo": "49.4",
+            "nombre": "Notas Contables",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "MOVIMIENTO CONTABLE"
+          },
+          {
+            "codigo": "49.8",
+            "nombre": "Facturas De Servicio",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "25 - CREDITO",
+    "prefijo": "25",
+    "nombre": "CREDITO",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "105",
+        "nombre": "HISTORIAS DE CREDITOS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": "CREDITOS- CREDITOS NO APROBADOS"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUAL",
+        "subseries": [
+          {
+            "codigo": "100.28",
+            "nombre": "Manual De Credito Social",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.1",
+            "nombre": "Entes De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "26 - CARTERA",
+    "prefijo": "26",
+    "nombre": "CARTERA",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "01",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.12",
+            "nombre": "Actas Comité De Cartera",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.1",
+            "nombre": "Instrumentos De Control Administracion De Garantias",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "INFORMES CENTRALES DE RIESGOS"
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMA",
+        "subseries": [
+          {
+            "codigo": "58.25",
+            "nombre": "Programa Administracion De Cartera",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "CARTERA  ( creditos y servicios)"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUAL",
+        "subseries": [
+          {
+            "codigo": "100.27",
+            "nombre": "Manual Venta De Servicios Y Cartera",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "124",
+        "nombre": "REGISTROS",
+        "subseries": [
+          {
+            "codigo": "124.3",
+            "nombre": "Registros De Cuentas Por Cobrar",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "27 - ADMINISITRACIÓN DOCUMENTAL",
+    "prefijo": "27",
+    "nombre": "ADMINISITRACIÓN DOCUMENTAL",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "1",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.2",
+            "nombre": "Actas Comité De Archivo",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.28",
+            "nombre": "Actas Comité Interno Archivo Eliminacion Documental",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "109",
+        "nombre": "CONSECUTIVO DE COMUNICACIONES",
+        "subseries": [
+          {
+            "codigo": "109.1",
+            "nombre": "Consecutivo De Comunicaciones Oficiales Enviadas",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": "REGISTRO DE CORRESPONDENCIA"
+          },
+          {
+            "codigo": "109.2",
+            "nombre": "Consecutivo De Comunicaciones Oficiales Recibidas",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "123",
+        "nombre": "INSTRUMENTOS ARCHIVISTICOS",
+        "subseries": [
+          {
+            "codigo": "123.1",
+            "nombre": "Programa De Gestión Documental",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "123.2",
+            "nombre": "Cuadros De Clasificacion Documental",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "TRD-TVD"
+          },
+          {
+            "codigo": "123.3",
+            "nombre": "Tablas De Retencion Documental",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "123.4",
+            "nombre": "Tablas De Valoracion Documental",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "123.5",
+            "nombre": "Tablas De Control De Acceso",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "123.6",
+            "nombre": "Inventarios Documentales Archivo Central",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.12",
+            "nombre": "Planes De Transferencias Documentales",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": "NUEVA"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "27 - SEGURIDAD Y SALUD EN EL TRABAJO",
+    "prefijo": "27",
+    "nombre": "SEGURIDAD Y SALUD EN EL TRABAJO",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "1",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.20",
+            "nombre": "Actas De Copasst",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.21",
+            "nombre": "Actas De Convivencia",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.13",
+            "nombre": "Planes Del Trabajo Anual Del Sistema De Gestion De Seguridad Y Salud En El Trabajo",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "SGSST"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "28 - SEGURIDAD Y SALUD EN EL TRABAJO",
+    "prefijo": "28",
+    "nombre": "SEGURIDAD Y SALUD EN EL TRABAJO",
+    "seccion": "20 SUBDIRECCIÓN ADMINISTRATIVA Y FINANCIERA",
+    "series": [
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.14",
+            "nombre": "Planes De Prevencion Y Respuesta Ante Emergencia",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMAS",
+        "subseries": [
+          {
+            "codigo": "58.18",
+            "nombre": "Programa De Estilos De Vida Y Entorno Saludable",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "SGSST"
+          },
+          {
+            "codigo": "58.19",
+            "nombre": "Programa De Seguridad Industrial",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "SGSST"
+          },
+          {
+            "codigo": "58.20",
+            "nombre": "Programa Sisterma De Vigilancia Epidemiologica Para El Control De Riesgos Biomecanicos",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "SGSST"
+          },
+          {
+            "codigo": "58.21",
+            "nombre": "Programa Sistema De Vigilancia Riesgo Psicosocial",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.20",
+            "nombre": "Manual De Saneamiento Basico",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "SGSST"
+          },
+          {
+            "codigo": "100.21",
+            "nombre": "Manual Plan De Emergencias",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.22",
+            "nombre": "Manual Sgsst",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "31 - SISTEMAS",
+    "prefijo": "31",
+    "nombre": "SISTEMAS",
+    "seccion": "30 SUBDIRECCIÓN OPERATIVA",
+    "series": [
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.19",
+            "nombre": "Planes De Mantenimiento De Equipos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "HOJAS DE VIDA MANTENIMIENTO CORRECTIVO Y PREVENTIVO DE EQUIPOS"
+          },
+          {
+            "codigo": "51.21",
+            "nombre": "Plan De Contigencia, Continuidad Y Seguridad De Los Sistemas De La Caja.",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.22",
+            "nombre": "Plan Estrategico De Informacion Y Comunicación Petic",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "103",
+        "nombre": "HISTORIALES  EQUIPOS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": "HOJAS DE VIDA MANTENIMIENTO CORRECTIVO Y PREVENTIVO DE EQUIPOS"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.6",
+            "nombre": "Manual De Politicas Internas De Sistemas -",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.3",
+            "nombre": "Informes Internos",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": "NUEVA"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "31 - APORTES Y PAGOS",
+    "prefijo": "31",
+    "nombre": "APORTES Y PAGOS",
+    "seccion": "30 SUBDIRECCIÓN OPERATIVA",
+    "series": [
+      {
+        "codigo": "104",
+        "nombre": "HISTORIAS AFILIADOS",
+        "subseries": [
+          {
+            "codigo": "113.1",
+            "nombre": "Historias De Afiliados De Empresas, Persona Natural, Independientes Y Pensionados",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "AFILIACIONES"
+          },
+          {
+            "codigo": "113.2",
+            "nombre": "Historias De Afiliados Trabajadores",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "AFILIACIONES"
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.1",
+            "nombre": "Informes Entes De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "32 - APORTES Y PAGOS",
+    "prefijo": "32",
+    "nombre": "APORTES Y PAGOS",
+    "seccion": "30 SUBDIRECCIÓN OPERATIVA",
+    "series": [
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.3",
+            "nombre": "Informes Internos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "PAGOS SUBSIDIO FAMILIAR"
+          },
+          {
+            "codigo": "41.15",
+            "nombre": "Informes De Gestion De Pagos De Subsidio Familiar",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "PAGOS SUBSIDIO FAMILIAR"
+          }
+        ]
+      },
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.2",
+            "nombre": "Instrumentos De Control Para Giro De Cuota Monetaria",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": "PAGOS SUBSIDIO FAMILIAR"
+          },
+          {
+            "codigo": "101.8",
+            "nombre": "Instrumentos De Control Entrega De Kit Escolares",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.7",
+            "nombre": "Manual De Gestion Y Cobro De Aportes Parafiscales",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.8",
+            "nombre": "Manual De  Subsidio",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "FIZCALIZACION  SALE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "42 - MERCADEO",
+    "prefijo": "42",
+    "nombre": "MERCADEO",
+    "seccion": "40 SUBDIRCCIÓN DE GESTIÓN COMERCIAL",
+    "series": [
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.15",
+            "nombre": "Plan De Estudio De Mercadeo",
+            "retencion": 5,
+            "disposicion": "S",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.16",
+            "nombre": "Plan De Medios",
+            "retencion": 5,
+            "disposicion": "S",
+            "reemplazadas": "MERCADEO"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUAL",
+        "subseries": [
+          {
+            "codigo": "100.3",
+            "nombre": "Imagen Corporativa",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.9",
+            "nombre": "Estudios De Necesidades",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "130",
+        "nombre": "PORTAFOLIO DE SERVICIOS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "44 - ATENCIÓN AL CLIENTE",
+    "prefijo": "44",
+    "nombre": "ATENCIÓN AL CLIENTE",
+    "seccion": "40 SUBDIRCCIÓN DE GESTIÓN COMERCIAL",
+    "series": [
+      {
+        "codigo": "01",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.22",
+            "nombre": "Actas Del Grupo Focal",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "25",
+        "nombre": "DERECHOS DE PETICION",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.4",
+            "nombre": "Informes Entes De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "41.16",
+            "nombre": "Informes De Resultados Del Nivel De Madurez De Experiencia Del Cliente",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.10",
+            "nombre": "Manual De Manejo De Conflictos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "Medicion y satisfaccion al cliente"
+          },
+          {
+            "codigo": "100.11",
+            "nombre": "Manual De Atencion Del Cliente",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.3",
+            "nombre": "Instrumentos De Control De Experiencia Cliente",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "58 - RECREACION Y TURISMO",
+    "prefijo": "58",
+    "nombre": "RECREACION Y TURISMO",
+    "seccion": "50 SUBDIRECCIÓN SERVICIOS SOCIALES",
+    "series": [
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.2",
+            "nombre": "Plan Operativo",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.23",
+            "nombre": "Plan De Gestion Integral De Residuos Solidos Y Peligrosos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.24",
+            "nombre": "Plan De Emergencias",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.3",
+            "nombre": "Informes Internos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMAS",
+        "subseries": [
+          {
+            "codigo": "58.22",
+            "nombre": "Proteccion Social Al Adulto Mayor",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": "INFORMES INTERNOS"
+          },
+          {
+            "codigo": "58.24",
+            "nombre": "Servicios De Recreacion",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "58.23",
+            "nombre": "Servicios De Turismo",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "93",
+            "nombre": "Servicios  Centro Recreacional",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.4",
+            "nombre": "Control Bienes De Consumo",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "101.5",
+            "nombre": "Control Bienes Devolutivos",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.13",
+            "nombre": "Manual De Sostenibilidad Turistica",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.14",
+            "nombre": "Manual De Conservacion Y Manipulacion De Alimentos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "52 - VIVIENDA",
+    "prefijo": "52",
+    "nombre": "VIVIENDA",
+    "seccion": "50 SUBDIRECCIÓN SERVICIOS SOCIALES",
+    "series": [
+      {
+        "codigo": "01",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.3",
+            "nombre": "Actas Comité De Vivienda",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMAS",
+        "subseries": [
+          {
+            "codigo": "58.31",
+            "nombre": "Programas De Vivienda Construcción En Sitio Propio",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "58.32",
+            "nombre": "Programas De Vivienda Nueva",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "ASIGNACION DE SUBSIDIOS"
+          },
+          {
+            "codigo": "58.33",
+            "nombre": "Programa De Vivienda Rural",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "ASIGNACION DE SUBSIDIOS"
+          }
+        ]
+      },
+      {
+        "codigo": "106",
+        "nombre": "HISTORIAS DE SUBSIDIO DE VIVIENDA",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": "ASIGNACION DE SUBSIDIOS"
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.1",
+            "nombre": "Informes Entes De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "ASIGNACION DE SUBSIDIOS AFILIADOS"
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.2",
+            "nombre": "Planes Operativo",
+            "retencion": 10,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.17",
+            "nombre": "Manual Legalizacion Pago Anticipo Con Poliza",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.18",
+            "nombre": "Manual Sofware Vivienda",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.4",
+            "nombre": "Instrumentos De Control De Recepción Documentos Postulación Subsidio De Vivienda",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": "ASIGNACION SUBSIDIOS AFILIADOS"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "55 - DEPORTES",
+    "prefijo": "55",
+    "nombre": "DEPORTES",
+    "seccion": "50 SUBDIRECCIÓN SERVICIOS SOCIALES",
+    "series": [
+      {
+        "codigo": "103",
+        "nombre": "HISTORIAS DEPORTIVAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.20",
+            "nombre": "Planes Torneos Y Eventos Deportivos",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.2",
+            "nombre": "Plan Operativo",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.15",
+            "nombre": "Manual Interno De Competencias Deportivas",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "100.16",
+            "nombre": "Reglamento Escuelas De Formacion Deportiva",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "55 - GIMNASIO COMFACASANARE",
+    "prefijo": "55",
+    "nombre": "GIMNASIO COMFACASANARE",
+    "seccion": "60 SUBDIRECCIÓN DE EDUCACIÓN",
+    "series": [
+      {
+        "codigo": "01",
+        "nombre": "ACTAS",
+        "subseries": [
+          {
+            "codigo": "01.8",
+            "nombre": "Actas Asamblea De Padres De Familia",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.15",
+            "nombre": "Actas De Comisión, Promoción Y Evaluación",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.16",
+            "nombre": "Actas Del Comité De Convivencia Escolar",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.17",
+            "nombre": "Actas Del Consejo Estudiantil",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.13",
+            "nombre": "Actas De Consejo De Padres",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "01.26",
+            "nombre": "Actas Del Consejo Académico",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "117",
+        "nombre": "ACTAS DE GRADUACION",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 60,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "118",
+        "nombre": "ACTAS DE IZADA DE BANDERA",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "61 - GIMNASIO COMFACASANARE",
+    "prefijo": "61",
+    "nombre": "GIMNASIO COMFACASANARE",
+    "seccion": "60 SUBDIRECCIÓN DE EDUCACIÓN",
+    "series": [
+      {
+        "codigo": "119",
+        "nombre": "CONTROL DE ASISTENCIA ESTUDIANTES",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 6,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "37",
+        "nombre": "HISTORIAS ACADEMICAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "122",
+        "nombre": "ACUERDOS DE CONSEJO DIRECTIVO",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "SEIRE"
+          }
+        ]
+      },
+      {
+        "codigo": "120",
+        "nombre": "LIBRO REGISTRO DIPLOMAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "116",
+        "nombre": "LIBRO MATRICULAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "121",
+        "nombre": "OBSERVADOR DEL ESTUDIANTE",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMA",
+        "subseries": [
+          {
+            "codigo": "58.35",
+            "nombre": "Programa Pedagogico Transversal",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.2",
+            "nombre": "Plan Operativo",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.8",
+            "nombre": "Planes De Estudio",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.17",
+            "nombre": "Planes Operativo Anual Poa",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      },
+      {
+        "codigo": "128",
+        "nombre": "PROYECTO",
+        "subseries": [
+          {
+            "codigo": "128.1",
+            "nombre": "Proyecto Educativo Institucional Pei",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.4",
+            "nombre": "Manual De Convivencia Escolar",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "AJUSTE"
+          },
+          {
+            "codigo": "100.19",
+            "nombre": "Manuales Elaboracion Seguimiento Y Evaluacion Plan De Estudio",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": "NUEVO"
+          },
+          {
+            "codigo": "100.5",
+            "nombre": "Manuales De Pacto De Convivencia",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "62 - POLITÉCNICO COMFACASANARE",
+    "prefijo": "62",
+    "nombre": "POLITÉCNICO COMFACASANARE",
+    "seccion": "60 SUBDIRECCIÓN DE EDUCACIÓN",
+    "series": [
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMA",
+        "subseries": [
+          {
+            "codigo": "58.36",
+            "nombre": "Programa Educacion Laboral",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "EDUCACION LABORAL"
+          },
+          {
+            "codigo": "58.35",
+            "nombre": "Programa Pedagogico Transversal",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "37",
+        "nombre": "HISTORIAS ACADEMICAS",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.3",
+            "nombre": "Informes Internos",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "116",
+        "nombre": "LIBROS DE MATRICULA",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "117",
+        "nombre": "ACTAS DE GRADUACION",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "S",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.2",
+            "nombre": "Plan Operativo",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "51.8",
+            "nombre": "Planes De Estudio",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          },
+          {
+            "codigo": "51.9",
+            "nombre": "Planes Operativo Anual Poa",
+            "retencion": 10,
+            "disposicion": "S",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      },
+      {
+        "codigo": "100",
+        "nombre": "MANUALES",
+        "subseries": [
+          {
+            "codigo": "100.5",
+            "nombre": "Manual De Convivencia",
+            "retencion": null,
+            "disposicion": "",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "128",
+        "nombre": "PROYECTO",
+        "subseries": [
+          {
+            "codigo": "128.1",
+            "nombre": "Proyecto Educativo Pei",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "63 - CULTURA Y BIBLIOTECA",
+    "prefijo": "63",
+    "nombre": "CULTURA Y BIBLIOTECA",
+    "seccion": "60 SUBDIRECCIÓN DE EDUCACIÓN",
+    "series": [
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.5",
+            "nombre": "Control De Afiliados A Biblioteca",
+            "retencion": 5,
+            "disposicion": "E",
+            "reemplazadas": "AFILIACIONES USUARIOS A BIBLIOTECA"
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.1",
+            "nombre": "Informes Entes De Control",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.2",
+            "nombre": "Planes Operativo",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMAS",
+        "subseries": [
+          {
+            "codigo": "58.10",
+            "nombre": "Programas De Biblioteca",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "64 - MPC",
+    "prefijo": "64",
+    "nombre": "MPC",
+    "seccion": "60 SUBDIRECCIÓN DE EDUCACIÓN",
+    "series": [
+      {
+        "codigo": "58",
+        "nombre": "PROGRAMA",
+        "subseries": [
+          {
+            "codigo": "58.28",
+            "nombre": "Programa De Gestion Y Colocacion De Empleo",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          },
+          {
+            "codigo": "58.29",
+            "nombre": "Programa De Subsidio Al Desempleo",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          },
+          {
+            "codigo": "58.34",
+            "nombre": "Programas De Capacitación Atención Al Cesante",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      },
+      {
+        "codigo": "41",
+        "nombre": "INFORMES",
+        "subseries": [
+          {
+            "codigo": "41.6",
+            "nombre": "Informes Ministerio",
+            "retencion": 10,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "124",
+        "nombre": "REGISTRO",
+        "subseries": [
+          {
+            "codigo": "124.1",
+            "nombre": "Registro De Postulantes Mpc",
+            "retencion": 5,
+            "disposicion": "",
+            "reemplazadas": "NUEVO"
+          },
+          {
+            "codigo": "124.2",
+            "nombre": "Registros De Creación De Usuarios Plataforma Sise",
+            "retencion": 5,
+            "disposicion": "",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      },
+      {
+        "codigo": "107",
+        "nombre": "HISTORIAS SUBSIDIO AL DESEMPLEO",
+        "subseries": [
+          {
+            "codigo": "",
+            "nombre": "",
+            "retencion": 20,
+            "disposicion": "CT",
+            "reemplazadas": "SUBSIDIO AL DESEMPLEO"
+          }
+        ]
+      },
+      {
+        "codigo": "51",
+        "nombre": "PLANES",
+        "subseries": [
+          {
+            "codigo": "51.2",
+            "nombre": "Planes Operativo",
+            "retencion": 10,
+            "disposicion": "E",
+            "reemplazadas": ""
+          }
+        ]
+      },
+      {
+        "codigo": "101",
+        "nombre": "INSTRUMENTOS DE CONTROL",
+        "subseries": [
+          {
+            "codigo": "101.6",
+            "nombre": "Control De Pagos Fosfec",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": ""
+          },
+          {
+            "codigo": "101.7",
+            "nombre": "Instrumentos De Control De Novedades Cargue De Las Planillas Pila",
+            "retencion": 5,
+            "disposicion": "CT",
+            "reemplazadas": "NUEVO"
+          }
+        ]
+      }
+    ]
+  }
+]

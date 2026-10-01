@@ -1,0 +1,148 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Inicio | TRD Comfacasanare{% endblock %}
+{% block header_title %}Panel Principal TRD{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-10 py-6">
+
+    <div class="relative overflow-hidden bg-white p-10 rounded-3xl shadow-lg border-2 border-slate-200">
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-comfaBlue/5 rounded-full blur-3xl"></div>
+        <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-comfaRed/5 rounded-full blur-3xl"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="space-y-3 text-center md:text-left">
+                <h1 class="text-3xl md:text-4xl font-black text-comfaBlue leading-tight tracking-tight">
+                    TABLAS DE <span class="text-comfaRed uppercase">RETENCION DOCUMENTAL</span>
+                </h1>
+                <p class="text-xs text-slate-600 font-bold uppercase tracking-[0.2em]">Caja de Compensacion Familiar de Casanare</p>
+                <div class="flex items-center space-x-3 justify-center md:justify-start pt-1">
+                    <span class="w-3 h-3 bg-comfaYellow rounded-full animate-ping"></span>
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Base de Datos Local SQLite Conectada</span>
+                </div>
+            </div>
+
+            <div class="bg-comfaBlue p-6 rounded-[2rem] text-white shadow-xl text-center min-w-[160px]">
+                <p class="text-[9px] font-black uppercase opacity-70 mb-1">Registros TRD</p>
+                <h4 class="text-4xl font-black text-comfaYellow">{{ stats['items'] }}</h4>
+                <p class="text-[8px] font-bold mt-1 uppercase tracking-widest">{{ stats.tablas }} tablas activas</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-lg flex items-center space-x-4">
+            <div class="w-14 h-14 bg-blue-50 text-comfaBlue rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Oficinas</p>
+                <h3 class="text-2xl font-black text-comfaBlue">{{ stats.oficinas }}</h3>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-lg flex items-center space-x-4">
+            <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Conservacion Total</p>
+                <h3 class="text-2xl font-black text-amber-600">{{ stats.conservacion }}</h3>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-lg flex items-center space-x-4">
+            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-filter"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Seleccion</p>
+                <h3 class="text-2xl font-black text-blue-600">{{ stats.seleccion }}</h3>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-lg flex items-center space-x-4">
+            <div class="w-14 h-14 bg-red-50 text-comfaRed rounded-2xl flex items-center justify-center text-2xl font-black">
+                <i class="fas fa-trash-can"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Eliminacion</p>
+                <h3 class="text-2xl font-black text-comfaRed">{{ stats.eliminacion }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="exportar" class="bg-white rounded-3xl shadow-lg border-2 border-slate-200 overflow-hidden">
+        <div class="flex items-center justify-between border-b-2 border-slate-200 px-8 py-6">
+            <h3 class="text-xs font-black text-comfaBlue uppercase tracking-widest flex items-center">
+                <i class="fas fa-folder-open text-comfaRed text-lg mr-3"></i> Tablas de Retencion Registradas
+            </h3>
+            <a href="{% url 'trd:diligenciar' %}" class="px-5 py-3 bg-comfaBlue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003a6b] transition-all shadow-lg">
+                <i class="fas fa-plus mr-2"></i> Nueva TRD
+            </a>
+        </div>
+
+        {% if tablas %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 border-b-2 border-slate-300">
+                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest">Oficina Productora</th>
+                        <th class="px-6 py-6 text-[10px] font-black uppercase tracking-widest text-center">Registros</th>
+                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest">Aprobacion</th>
+                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tablas %}
+                    <tr class="border-b border-slate-200 even:bg-slate-50 hover:bg-blue-50 transition-colors group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 bg-comfaBlue text-white rounded-md text-[10px] font-black uppercase shadow-2xs">
+                                    v{{ t.version or '1.0' }}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider {% if t.estado == 'VIGENTE' %}bg-blue-100 text-comfaBlue border border-blue-200{% else %}bg-slate-100 text-slate-600 border border-slate-300{% endif %}">
+                                    {{ t.estado or 'VIGENTE' }}
+                                </span>
+                                {% if t.vigencia_ano %}
+                                <span class="px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-md text-[9px] font-black uppercase">
+                                    {{ t.vigencia_ano }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <p class="font-black text-slate-700 uppercase text-sm tracking-tighter">{{ t.oficina_productora }}</p>
+                            <p class="text-[10px] text-slate-600 font-bold">{{ t.entidad_productora }}</p>
+                        </td>
+                        <td class="px-6 py-6 text-center">
+                            <span class="w-12 h-12 inline-flex items-center justify-center bg-comfaRed text-white rounded-2xl font-black text-sm shadow-lg transform group-hover:scale-110 transition-transform">
+                                {{ t.total_items }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-xs font-bold text-slate-500">{{ t.fecha_aprobacion or 'Sin aprobar' }}</td>
+                        <td class="px-8 py-6 text-right space-x-2">
+                            <a href="{% url 'trd:editar_trd' enc_id=t.id %}" class="w-12 h-12 bg-comfaBlue/5 text-comfaBlue rounded-2xl inline-flex items-center justify-center hover:bg-comfaBlue hover:text-white transition-all shadow-sm" title="Diligenciar">
+                                <i class="fas fa-pen-to-square text-lg"></i>
+                            </a>
+                            <a href="{% url 'trd:exportar_pdf' enc_id=t.id %}" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-red-50 border-2 border-red-200 text-comfaRed rounded-2xl inline-flex items-center justify-center hover:bg-comfaRed hover:text-white hover:border-comfaRed transition-all shadow-sm" title="Ver / Descargar PDF oficial">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            <a href="{% url 'trd:exportar' enc_id=t.id %}" class="w-12 h-12 bg-green-50 border-2 border-green-200 text-green-600 rounded-2xl inline-flex items-center justify-center hover:bg-green-600 hover:text-white hover:border-green-600 transition-all shadow-sm" title="Exportar Excel editable">
+                                <i class="fas fa-file-excel text-lg"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-8 py-16 text-center">
+            <i class="fas fa-folder-open text-5xl text-slate-200 mb-4"></i>
+            <p class="text-xs font-black text-slate-600 uppercase tracking-widest">Aun no hay tablas registradas</p>
+            <p class="text-[11px] text-slate-600 mt-2">Cree la primera desde <span class="font-bold text-comfaBlue">Diligenciar TRD</span>.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

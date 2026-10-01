@@ -1,0 +1,2390 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}TRD {{ encabezado.oficina_productora }} | Comfacasanare{% endblock %}
+{% block header_title %}{{ encabezado.oficina_productora }}{% endblock %}
+
+{#- Clases compartidas de alto contraste (una sola fuente de verdad) -#}
+
+
+
+
+
+
+
+{% block content %}
+<div class="max-w-[110rem] mx-auto space-y-8 py-6" x-data="formTRDData()">
+
+    <div class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="px-3 py-1 bg-comfaBlue text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-2xs">
+                    Versión {{ encabezado.version or '1.0' }}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider {% if encabezado.estado == 'VIGENTE' %}bg-blue-100 text-comfaBlue border border-blue-200{% else %}bg-slate-100 text-slate-600 border border-slate-300{% endif %}">
+                    {{ encabezado.estado or 'VIGENTE' }}
+                </span>
+                {% if encabezado.vigencia_ano %}
+                <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                    Vigencia {{ encabezado.vigencia_ano }}
+                </span>
+                {% endif %}
+
+                {% if versiones_oficina and versiones_oficina|length > 1 %}
+                <div class="inline-flex items-center gap-1.5 ml-2 text-[10px] font-black text-slate-500">
+                    <span>Historial:</span>
+                    {% for v in versiones_oficina %}
+                        <a href="{% url 'trd:editar_trd' enc_id=v.id %}"
+                           class="px-2.5 py-0.5 rounded-lg border text-[10px] font-bold transition-all {% if v.id == enc_id %}bg-comfaBlue text-white border-comfaBlue shadow-2xs{% else %}bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-200{% endif %}"
+                           title="Ver versión {{ v.version }}">
+                            v{{ v.version or '1.0' }}{% if v.vigencia_ano %} ({{ v.vigencia_ano }}){% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <h2 class="text-2xl font-black text-comfaBlue uppercase tracking-tight">{{ encabezado.oficina_productora }}</h2>
+            <p class="text-[11px] font-bold text-slate-500">{{ encabezado.entidad_productora }}</p>
+            <div class="flex flex-wrap gap-2 pt-1 text-[9px] font-black uppercase tracking-widest">
+                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Creacion: {{ encabezado.fecha_creacion or '-' }}</span>
+                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Ajuste: {{ encabezado.fecha_ajuste or '-' }}</span>
+                <span class="px-3 py-1 bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-700">Aprobacion: {{ encabezado.fecha_aprobacion or '-' }}</span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+            <button type="button" @click="formularioAbierto = !formularioAbierto; if (formularioAbierto) { $nextTick(() => $refs.formularioTRD.scrollIntoView({ behavior: 'smooth' })) }"
+                    class="px-5 py-4 bg-amber-400 hover:bg-amber-300 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 cursor-pointer">
+                <i class="fas" :class="formularioAbierto ? 'fa-xmark text-red-700' : 'fa-plus'"></i>
+                <span x-text="formularioAbierto ? 'Ocultar Formulario' : '+ Agregar Nueva Serie a la TRD'"></span>
+            </button>
+            <button type="button" @click="mostrarModalNuevaVersion = true"
+                    class="px-5 py-4 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-code-branch text-comfaYellow"></i> Crear Nueva Versión
+            </button>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'trd:crear_item' enc_id=enc_id %}"
+          x-ref="formularioTRD"
+          x-show="formularioAbierto"
+          x-collapse
+          x-cloak
+          @submit.prevent="enviarFormulario()"
+          class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden relative">
+
+        <div class="bg-comfaBlue px-8 py-4 flex flex-col md:flex-row items-start md:items-center justify-between border-b-4 border-comfaYellow">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-comfaYellow shrink-0">
+                    <i class="fas fa-file-circle-plus text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">
+                        Diligenciamiento Unificado de TRD
+                    </h3>
+                    <p class="text-[10px] font-bold text-comfaYellow uppercase tracking-[0.2em] mt-0.5">
+                        Serie + Subserie + Múltiples Tipos Documentales en un solo registro
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-3 md:mt-0">
+                <button type="button" @click="abrirModalNuevaSerieSubserie('crear')"
+                        class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-900 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                        title="Crear una nueva serie o subserie en el catálogo oficial">
+                    <i class="fas fa-folder-plus"></i> + Crear Serie en Catálogo
+                </button>
+                <button type="button" @click="abrirModalNuevaSerieSubserie('gestionar')"
+                        class="px-4 py-2 bg-indigo-700 hover:bg-indigo-600 text-white border border-indigo-500 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                        title="Gestionar y corregir códigos del catálogo">
+                    <i class="fas fa-gear"></i> Catálogo CCD
+                </button>
+                <button type="button" @click="formularioAbierto = false"
+                        class="px-3.5 py-2 bg-white/10 hover:bg-red-600 text-white border border-white/20 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                        title="Ocultar Formulario">
+                    <i class="fas fa-xmark"></i>
+                    <span>Cerrar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Banner de Errores de Validación Visual -->
+        <div x-show="erroresValidacion.length > 0" x-cloak class="mx-8 mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-2xl animate-in fade-in duration-200">
+            <div class="flex items-center gap-2 text-red-800 font-black text-xs uppercase tracking-wider mb-1">
+                <i class="fas fa-triangle-exclamation text-sm text-red-600"></i> Por favor corrige los siguientes campos antes de guardar:
+            </div>
+            <ul class="list-disc list-inside text-xs font-bold text-red-700 space-y-0.5 ml-2">
+                <template x-for="(err, eIdx) in erroresValidacion" :key="eIdx">
+                    <li x-text="err"></li>
+                </template>
+            </ul>
+        </div>
+
+        <div class="p-8 space-y-6">
+
+            {# --- BLOQUE 1: SERIE --- #}
+            <fieldset class="border-2 border-blue-200 bg-blue-50/40 rounded-2xl p-6 space-y-4" :class="{'border-red-400 bg-red-50/30': erroresCampos.serie}">
+                <legend class="px-3 mx-2 bg-white border-2 rounded-lg text-[10px] font-black uppercase tracking-widest border-blue-200 text-comfaBlue flex items-center justify-between">
+                    <span><i class="fas fa-folder mr-1.5"></i> 1. Selección o Registro de Serie</span>
+                </legend>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end">
+                    <div class="md:col-span-5">
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Catálogo de Series Oficiales</label>
+                        <select x-model="serieSeleccionadaIdx" @change="alSeleccionarSerie()" 
+                                class="w-full px-4 py-3 bg-white text-slate-800 font-bold text-xs rounded-xl border-2 border-slate-300 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all shadow-sm">
+                            <option value="">-- Ingresar Manualmente o Seleccionar del Catálogo --</option>
+                            <template x-for="(s, idx) in series" :key="idx">
+                                <option :value="idx" x-text="'[' + s.codigo + '] ' + s.nombre + ' (' + (s.subseries ? s.subseries.length : 0) + ' subseries)'"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código Serie <span class="text-comfaRed">*</span></label>
+                        <input type="text" x-model="serieCodigo" required placeholder="64.41" 
+                               :class="erroresCampos.serieCodigo ? 'border-red-500 bg-red-50 ring-2 ring-red-200' : ''"
+                               class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+
+                    <div class="md:col-span-5">
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre de la Serie <span class="text-comfaRed">*</span></label>
+                        <input type="text" x-model="serieNombre" required placeholder="PLANES / HISTORIAS / ACTAS" 
+                               :class="erroresCampos.serieNombre ? 'border-red-500 bg-red-50 ring-2 ring-red-200' : ''"
+                               class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                </div>
+
+                <!-- Menú de opciones de la Serie -->
+                <div class="mt-4 pt-4 border-t border-blue-200/60 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center bg-white p-4 rounded-xl border border-blue-200 shadow-sm">
+                    <!-- Soporte Serie -->
+                    <div>
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider block mb-1.5">Soporte Serie</span>
+                        <div class="flex items-center gap-2">
+                            <label class="inline-flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer">
+                                <input type="checkbox" x-model="serie_soporte_papel" class="w-4 h-4 accent-[#004a87] rounded cursor-pointer">
+                                <span>Papel</span>
+                            </label>
+                            <label class="inline-flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer">
+                                <input type="checkbox" x-model="serie_soporte_electronico" class="w-4 h-4 accent-[#004a87] rounded cursor-pointer">
+                                <span>Elec.</span>
+                            </label>
+                            <input type="text" x-show="serie_soporte_electronico" x-model="serie_extensiones" placeholder=".pdf" class="w-16 px-2 py-1 text-xs border border-slate-300 rounded-lg bg-white font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Retención Serie -->
+                    <div>
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider block mb-1.5">Retención Serie (Años)</span>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1" title="Años en Gestión">
+                                <span class="text-[9px] font-black text-slate-400">G:</span>
+                                <input type="number" x-model="serie_retencion_gestion" min="0" max="100" placeholder="0" class="w-12 px-2 py-1 text-xs text-center font-black border border-slate-300 rounded-lg bg-white">
+                            </div>
+                            <div class="flex items-center gap-1" title="Años en Central">
+                                <span class="text-[9px] font-black text-slate-400">C:</span>
+                                <input type="number" x-model="serie_retencion_central" min="0" max="100" placeholder="0" class="w-12 px-2 py-1 text-xs text-center font-black border border-slate-300 rounded-lg bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disposición Serie -->
+                    <div>
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider block mb-1.5">Disposición Serie</span>
+                        <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 gap-1">
+                            <button type="button" @click="serie_disposicion_final = (serie_disposicion_final === 'C' ? '' : 'C')"
+                                    :class="serie_disposicion_final === 'C' ? 'bg-amber-500 text-white font-black shadow-sm' : 'text-slate-500 hover:text-slate-800 font-bold'"
+                                    class="px-2.5 py-1 rounded text-[11px] transition-all cursor-pointer" title="Conservación Total">C</button>
+                            <button type="button" @click="serie_disposicion_final = (serie_disposicion_final === 'S' ? '' : 'S')"
+                                    :class="serie_disposicion_final === 'S' ? 'bg-blue-500 text-white font-black shadow-sm' : 'text-slate-500 hover:text-slate-800 font-bold'"
+                                    class="px-2.5 py-1 rounded text-[11px] transition-all cursor-pointer" title="Selección">S</button>
+                            <button type="button" @click="serie_disposicion_final = (serie_disposicion_final === 'E' ? '' : 'E')"
+                                    :class="serie_disposicion_final === 'E' ? 'bg-red-500 text-white font-black shadow-sm' : 'text-slate-500 hover:text-slate-800 font-bold'"
+                                    class="px-2.5 py-1 rounded text-[11px] transition-all cursor-pointer" title="Eliminación">E</button>
+                        </div>
+                    </div>
+
+                    <!-- Rep. Técnica Serie -->
+                    <div>
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider block mb-1.5">Rep. Técnica Serie</span>
+                        <label class="inline-flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer" title="Digitalización">
+                            <input type="checkbox" :checked="serie_reproduccion_tecnica === 'D'" @change="serie_reproduccion_tecnica = $event.target.checked ? 'D' : ''" class="w-4 h-4 accent-[#004a87] rounded cursor-pointer">
+                            <span>Digitalización (D)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Procedimiento General de la Serie -->
+                <div class="mt-4 pt-3 border-t border-blue-200/60">
+                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fas fa-scale-balanced text-comfaBlue"></i> Procedimiento General de la Serie <span class="text-slate-400 font-bold normal-case tracking-normal">(Sustento marco que aplica a toda la serie o a sus subseries)</span>
+                    </label>
+                    <textarea x-model="procedimiento" rows="2" placeholder="Escribe aquí el procedimiento general de la serie si aplica a todas sus agrupaciones documentales..." class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all text-xs"></textarea>
+                </div>
+            </fieldset>
+
+            {# --- SELECTOR DE MODO: ¿TIENE SUBSERIES? --- #}
+            <div class="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                    <input type="checkbox" x-model="tieneSubserie" @change="alCambiarTieneSubserie()"
+                            class="w-6 h-6 rounded-lg text-comfaBlue focus:ring-comfaBlue accent-[#004a87] cursor-pointer">
+                    <div>
+                        <span class="text-xs font-black uppercase text-slate-800 tracking-wider">¿Esta Serie contiene Subseries?</span>
+                        <p class="text-[11px] text-slate-500 font-medium">Marca esta casilla para agregar una o múltiples subseries con sus propios tipos documentales.</p>
+                    </div>
+                </label>
+                <div x-show="!tieneSubserie" class="text-[11px] font-bold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 flex items-center gap-1.5">
+                    <i class="fas fa-circle-info"></i> Modo: Serie Simple (Los tipos documentales colgarán directo de la Serie)
+                </div>
+                <div x-show="tieneSubserie" x-cloak class="text-[11px] font-bold text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200 flex items-center gap-1.5">
+                    <i class="fas fa-sitemap"></i> Modo: Serie Jerárquica con Múltiples Subseries
+                </div>
+            </div>
+
+            {# ========================================================================= #}
+            {# --- MODO A: SUBSERIES MÚLTIPLES (CADA UNA CON SUS PROPIOS TIPOS) --- #}
+            {# ========================================================================= #}
+            {# ========================================================================= #}
+            {# --- MODO A: SUBSERIES MÚLTIPLES (UN FORMULARIO FIJO QUE SE VACÍA AL BAJAR) --- #}
+            {# ========================================================================= #}
+            <div x-show="tieneSubserie" x-cloak class="space-y-6 animate-in fade-in duration-200">
+                
+                {# --- 1. FORMULARIO FIJO DE ENTRADA DE SUBSERIE --- #}
+                <div x-ref="formularioSubserie" class="bg-indigo-50/40 border-2 border-indigo-200 rounded-3xl p-6 space-y-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-indigo-200 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-layer-group text-indigo-600 text-lg"></i>
+                            <h4 class="text-xs font-black uppercase text-indigo-950 tracking-wider"
+                                x-text="subForm_editandoIdx !== null ? '✏️ Modificar Subserie #' + (subForm_editandoIdx + 1) : '➕ Ingresar Datos de la Subserie'"></h4>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <template x-if="subseriesCatalogoActuales.length > 0">
+                                <button type="button" @click="cargarTodasLasSubseriesDelCatalogo()"
+                                        class="px-3 py-1.5 bg-white hover:bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
+                                    <i class="fas fa-bolt text-amber-500"></i> Cargar todas del Catálogo (<span x-text="subseriesCatalogoActuales.length"></span>)
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Campos de Código y Nombre -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <template x-if="subseriesCatalogoActuales.length > 0">
+                            <div class="md:col-span-4">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Elegir del Catálogo</label>
+                                <select @change="alSeleccionarSubserieEnForm($event.target.value)"
+                                        class="w-full px-3 py-3 bg-white text-slate-800 font-bold text-xs rounded-xl border-2 border-slate-300 focus:border-indigo-500 outline-none">
+                                    <option value="">-- Seleccionar --</option>
+                                    <template x-for="(catSub, cIdx) in subseriesCatalogoActuales" :key="cIdx">
+                                        <option :value="cIdx" x-text="'[' + catSub.codigo + '] ' + catSub.nombre"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
+
+                        <div :class="subseriesCatalogoActuales.length > 0 ? 'md:col-span-3' : 'md:col-span-4'">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código Subserie <span class="text-comfaRed">*</span></label>
+                            <input type="text" x-model="subForm_codigo" placeholder="Ej: 64.41.1" 
+                                   class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+
+                        <div :class="subseriesCatalogoActuales.length > 0 ? 'md:col-span-5' : 'md:col-span-8'">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre de la Subserie <span class="text-comfaRed">*</span></label>
+                            <input type="text" x-model="subForm_nombre" placeholder="Ej: Historias de Beneficiarios..." class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Soporte, Retención, Disposición, Rep. Técnica -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-white p-4 rounded-2xl border border-indigo-200">
+                        <!-- Soporte -->
+                        <div>
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Soporte Subserie</span>
+                            <div class="flex items-center gap-2">
+                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                    <input type="checkbox" x-model="subForm_soporte_papel" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <span>Papel</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                    <input type="checkbox" x-model="subForm_soporte_electronico" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <span>Elec.</span>
+                                </label>
+                                <input type="text" x-show="subForm_soporte_electronico" x-model="subForm_extensiones" placeholder=".pdf" class="w-14 px-1.5 py-0.5 text-[10px] border border-slate-300 rounded bg-white font-mono">
+                            </div>
+                        </div>
+
+                        <!-- Retención -->
+                        <div>
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Retención (Años)</span>
+                            <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1" title="Años en Gestión">
+                                    <span class="text-[9px] font-black text-slate-400">G:</span>
+                                    <input type="number" x-model="subForm_retencion_gestion" min="0" max="100" placeholder="0" class="w-11 px-1 py-1 text-xs text-center font-black border border-slate-300 rounded-lg bg-white">
+                                </div>
+                                <div class="flex items-center gap-1" title="Años en Central">
+                                    <span class="text-[9px] font-black text-slate-400">C:</span>
+                                    <input type="number" x-model="subForm_retencion_central" min="0" max="100" placeholder="0" class="w-11 px-1 py-1 text-xs text-center font-black border border-slate-300 rounded-lg bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Disposición -->
+                        <div>
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Disposición Subserie</span>
+                            <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 gap-0.5">
+                                <button type="button" @click="subForm_disposicion_final = (subForm_disposicion_final === 'C' ? '' : 'C')"
+                                        :class="subForm_disposicion_final === 'C' ? 'bg-amber-500 text-white font-black' : 'text-slate-500 hover:text-slate-800 font-bold'"
+                                        class="px-2.5 py-0.5 rounded text-[10px] transition-all cursor-pointer">C</button>
+                                <button type="button" @click="subForm_disposicion_final = (subForm_disposicion_final === 'S' ? '' : 'S')"
+                                        :class="subForm_disposicion_final === 'S' ? 'bg-blue-500 text-white font-black' : 'text-slate-500 hover:text-slate-800 font-bold'"
+                                        class="px-2.5 py-0.5 rounded text-[10px] transition-all cursor-pointer">S</button>
+                                <button type="button" @click="subForm_disposicion_final = (subForm_disposicion_final === 'E' ? '' : 'E')"
+                                        :class="subForm_disposicion_final === 'E' ? 'bg-red-500 text-white font-black' : 'text-slate-500 hover:text-slate-800 font-bold'"
+                                        class="px-2.5 py-0.5 rounded text-[10px] transition-all cursor-pointer">E</button>
+                            </div>
+                        </div>
+
+                        <!-- Rep. Técnica -->
+                        <div>
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Reproducción Técnica (D)</span>
+                            <label class="inline-flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer">
+                                <input type="checkbox" :checked="subForm_reproduccion_tecnica === 'D'" @change="subForm_reproduccion_tecnica = $event.target.checked ? 'D' : ''" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>Digitalización (D)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Procedimiento de la Subserie -->
+                    <div>
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Procedimiento Oficial de esta Subserie</label>
+                        <textarea x-model="subForm_procedimiento" rows="2" placeholder="Sustento de valoración o criterios aplicables a esta subserie..." class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all text-xs"></textarea>
+                    </div>
+
+                    <!-- Tipos Documentales de esta Subserie -->
+                    <div class="bg-white p-4 rounded-2xl border border-indigo-100 space-y-3">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-comfaBlue flex items-center gap-1.5">
+                            <i class="fas fa-file-circle-plus text-comfaBlue"></i> Tipos Documentales de esta Subserie (<span x-text="subForm_tiposDocumentales.length"></span>)
+                        </span>
+
+                        <div class="flex gap-2">
+                            <input type="text" x-model="subForm_nuevoTipoDoc" @keydown.enter.prevent="agregarTipoASubForm()"
+                                   placeholder="Escribe un tipo documental (ej. Formulario, Acta, Certificado...) y presiona Enter"
+                                   class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:border-comfaBlue focus:bg-white outline-none">
+                            <button type="button" @click="agregarTipoASubForm()"
+                                    class="px-4 py-2.5 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer shrink-0 shadow-sm">
+                                <i class="fas fa-plus"></i> Agregar Tipo
+                            </button>
+                        </div>
+
+                        <!-- Mini-tabla de Tipos Documentales de la Subserie actual -->
+                        <template x-if="subForm_tiposDocumentales.length > 0">
+                            <div class="overflow-x-auto border border-blue-200 rounded-xl bg-white shadow-sm">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-blue-50/70 text-blue-950 border-b border-blue-200 text-[10px] font-black uppercase tracking-wider">
+                                            <th class="py-2 px-3 text-center w-12">#</th>
+                                            <th class="py-2 px-3">Tipo Documental</th>
+                                            <th class="py-2 px-3 text-center min-w-[180px]">Soporte / Formato</th>
+                                            <th class="py-2 px-3 text-center w-12"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <template x-for="(tipo, tIdx) in subForm_tiposDocumentales" :key="tIdx">
+                                            <tr class="hover:bg-slate-50 transition-colors">
+                                                <td class="py-2 px-3 align-middle text-center font-bold text-slate-400 text-xs">
+                                                    <span class="w-6 h-6 rounded-md bg-blue-100 text-comfaBlue inline-flex items-center justify-center text-[10px] font-black" x-text="tIdx + 1"></span>
+                                                </td>
+                                                <td class="py-2 px-3 align-middle">
+                                                    <input type="text" x-model="tipo.nombre" class="w-full px-2 py-1 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-slate-300 focus:border-comfaBlue rounded-lg font-bold text-slate-800 text-xs outline-none">
+                                                </td>
+                                                <td class="py-2 px-3 align-middle text-center">
+                                                    <div class="inline-flex items-center justify-center gap-2">
+                                                        <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                                             <input type="checkbox" x-model="tipo.soporte_papel" class="w-4 h-4 accent-comfaBlue rounded">
+                                                            <span>Papel</span>
+                                                        </label>
+                                                        <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                                             <input type="checkbox" x-model="tipo.soporte_electronico" class="w-4 h-4 accent-comfaBlue rounded">
+                                                            <span>Elec.</span>
+                                                        </label>
+                                                        <input type="text" x-show="tipo.soporte_electronico" x-model="tipo.extensiones" placeholder=".pdf" class="w-14 px-1 py-0.5 text-[10px] border border-slate-300 rounded bg-white font-mono">
+                                                    </div>
+                                                </td>
+                                                <td class="py-2 px-3 align-middle text-center">
+                                                    <button type="button" @click="eliminarTipoDeSubForm(tIdx)" class="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 inline-flex items-center justify-center transition-colors cursor-pointer" title="Eliminar tipo documental">
+                                                        <i class="fas fa-trash-can text-xs"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Botón para Agregar / Bajar la Subserie a la Lista -->
+                    <div class="flex items-center justify-between pt-2 border-t border-indigo-100">
+                        <template x-if="subForm_editandoIdx !== null">
+                            <button type="button" @click="cancelarEdicionSubForm()"
+                                    class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer">
+                                Cancelar Edición
+                            </button>
+                        </template>
+                        <template x-if="subForm_editandoIdx === null">
+                            <span class="text-[11px] text-slate-500 font-bold">
+                                Completa los campos y haz clic en agregar para bajar esta subserie a la lista.
+                            </span>
+                        </template>
+
+                        <button type="button" @click="guardarSubserieEnLista()"
+                                :class="subForm_editandoIdx !== null ? 'bg-comfaBlue hover:bg-[#003a6b]' : 'bg-indigo-600 hover:bg-indigo-700'"
+                                class="px-6 py-3 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer">
+                            <i :class="subForm_editandoIdx !== null ? 'fas fa-check' : 'fas fa-arrow-down'"></i>
+                            <span x-text="subForm_editandoIdx !== null ? 'Guardar Cambios de Subserie' : 'Agregar Subserie a la Lista (Bajar)'"></span>
+                        </button>
+                    </div>
+                </div>
+
+                {# --- 2. LISTA DE SUBSERIES YA AGREGADAS --- #}
+                <div class="bg-white border-2 border-indigo-200 rounded-3xl p-6 shadow-md space-y-4">
+                    <div class="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <i class="fas fa-list-check text-indigo-600 mr-1.5"></i> Subseries Agregadas a esta Serie
+                            </span>
+                            <span class="px-2.5 py-0.5 bg-indigo-100 text-indigo-900 rounded-full text-xs font-black" x-text="subseries.length"></span>
+                        </div>
+                    </div>
+
+                    <template x-if="subseries.length === 0">
+                        <div class="p-8 text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl">
+                            <i class="fas fa-inbox text-3xl text-slate-300 mb-2"></i>
+                            <p class="text-xs font-bold text-slate-500">Aún no has bajado ninguna subserie a la lista.</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Diligencia los datos arriba y pulsa <b>"Agregar Subserie a la Lista"</b>.</p>
+                        </div>
+                    </template>
+
+                    <div x-show="subseries.length > 0" class="space-y-3">
+                        <template x-for="(sub, sIdx) in subseries" :key="sIdx">
+                            <div class="bg-slate-50 border border-indigo-200 hover:border-indigo-400 rounded-2xl p-4 transition-all space-y-2">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-6 h-6 rounded-md bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black" x-text="sIdx + 1"></span>
+                                        <span class="px-2.5 py-1 bg-white border border-indigo-300 rounded-lg text-xs font-black text-indigo-950" x-text="sub.codigo"></span>
+                                        <span class="text-xs font-black text-slate-800 truncate" x-text="sub.nombre"></span>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" @click="editarSubserieDeLista(sIdx)"
+                                                class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer">
+                                            <i class="fas fa-pen"></i> Editar
+                                        </button>
+                                        <button type="button" @click="eliminarSubserieDeLista(sIdx)"
+                                                class="px-3 py-1.5 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer">
+                                            <i class="fas fa-trash-can"></i> Quitar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-600">
+                                    <span class="px-2 py-0.5 bg-white rounded border border-slate-200">
+                                        Soporte: <b x-text="renderSoporte(sub.soporte_papel, sub.soporte_electronico, sub.extensiones)"></b>
+                                    </span>
+                                    <span class="px-2 py-0.5 bg-white rounded border border-slate-200">
+                                        Retención: <b>G: <span x-text="sub.retencion_gestion || 0"></span> / C: <span x-text="sub.retencion_central || 0"></span></b>
+                                    </span>
+                                    <span x-show="sub.disposicion_final" class="px-2 py-0.5 bg-white rounded border border-slate-200">
+                                        Disp: <b x-text="sub.disposicion_final"></b>
+                                    </span>
+                                    <span x-show="sub.reproduccion_tecnica" class="px-2 py-0.5 bg-white rounded border border-slate-200">
+                                        Rep: <b x-text="sub.reproduccion_tecnica"></b>
+                                    </span>
+                                    <span class="px-2 py-0.5 bg-blue-50 text-comfaBlue rounded border border-blue-200">
+                                        <i class="fas fa-file-lines mr-1"></i> <b x-text="(sub.tipos_documentales || []).length"></b> tipos documentales
+                                    </span>
+                                </div>
+
+                                <div x-show="sub.procedimiento" class="text-[11px] text-slate-500 italic bg-white p-2 rounded-lg border border-slate-100 line-clamp-2" x-text="sub.procedimiento"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+            {# ========================================================================= #}
+            {# --- MODO B: SERIE SIMPLE (TIPOS Y PROCEDIMIENTO DIRECTOS DE LA SERIE) --- #}
+            {# ========================================================================= #}
+            <div x-show="!tieneSubserie" x-cloak class="space-y-6">
+                {# --- TIPOS DOCUMENTALES DE LA SERIE --- #}
+                <fieldset class="border-2 border-blue-200 bg-blue-50/30 rounded-2xl p-6 space-y-4">
+                    <legend class="px-3 mx-2 bg-white border-2 rounded-lg text-[10px] font-black uppercase tracking-widest border-blue-200 text-comfaBlue">
+                        <i class="fas fa-file-circle-plus mr-1.5"></i> 2. Tipos Documentales de la Serie
+                    </legend>
+
+                    <div class="space-y-3">
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Escribe el Tipo Documental y presiona "Agregar"</label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="relative flex-1">
+                                <input type="text" x-ref="inputTipoDoc" x-model="nuevoTipoDoc" @keydown.enter.prevent="agregarTipoDoc()"
+                                       placeholder="Ej: Oficio de solicitud, Minuta de contrato, Lista de asistencia, Póliza..."
+                                       class="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all shadow-sm">
+                                <i class="fas fa-file-lines absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            </div>
+                            <button type="button" @click="agregarTipoDoc()"
+                                    class="px-6 py-3.5 bg-comfaBlue hover:bg-[#003a6b] text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0">
+                                <i class="fas fa-plus-circle text-sm"></i> Agregar Tipo Documental
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lista visual de tipos documentales agregados a la serie simple -->
+                    <div class="bg-white rounded-xl border-2 border-blue-100 p-4 min-h-[70px] flex flex-col justify-center">
+                        <template x-if="tiposDocumentales.length === 0">
+                            <div class="text-center py-2 text-slate-400 text-xs font-bold flex items-center justify-center gap-2">
+                                <i class="fas fa-arrow-up text-comfaBlue"></i>
+                                <span>No has agregado tipos documentales aún. Escribe uno arriba y pulsa <b>"Agregar Tipo Documental"</b> o pulsa <b>Enter</b>.</span>
+                            </div>
+                        </template>
+
+                        <template x-if="tiposDocumentales.length > 0">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-comfaBlue flex items-center gap-1.5">
+                                        <i class="fas fa-list-check text-comfaBlue"></i> Tipos Documentales Agregados (<span x-text="tiposDocumentales.length"></span>)
+                                    </span>
+                                    <div class="flex items-center gap-3">
+                                        <button type="button" @click="ordenarTiposConsecutivoSerieSimple()" title="Ordenar alfabéticamente" class="text-[9px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer">
+                                            <i class="fas fa-arrow-down-a-z mr-1"></i> Ordenar A-Z
+                                        </button>
+                                        <button type="button" @click="tiposDocumentales = []" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors cursor-pointer">
+                                            <i class="fas fa-trash-can mr-1"></i> Limpiar todos
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="overflow-x-auto border border-blue-200 rounded-xl bg-white shadow-sm">
+                                    <table class="w-full text-left text-xs border-collapse">
+                                        <thead>
+                                            <tr class="bg-blue-50/70 text-blue-950 border-b border-blue-200 text-[10px] font-black uppercase tracking-wider">
+                                                <th class="py-2.5 px-3 text-center w-12">#</th>
+                                                <th class="py-2.5 px-3">Tipo Documental (Nombre)</th>
+                                                <th class="py-2.5 px-3 text-center min-w-[180px]">Soporte / Formato</th>
+                                                <th class="py-2.5 px-3 text-center w-12"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100">
+                                            <template x-for="(tipo, idx) in tiposDocumentales" :key="idx">
+                                                <tr class="hover:bg-slate-50 transition-colors">
+                                                    <td class="py-2 px-3 align-middle text-center font-bold text-slate-400 text-xs">
+                                                        <span class="w-5 h-5 rounded-md bg-blue-100 text-comfaBlue inline-flex items-center justify-center text-[10px] font-black" x-text="idx + 1"></span>
+                                                    </td>
+                                                    <td class="py-2 px-3 align-middle">
+                                                        <input type="text" x-model="tipo.nombre" class="w-full px-2.5 py-1.5 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-slate-300 focus:border-comfaBlue rounded-lg font-bold text-slate-800 text-xs outline-none shadow-sm transition-all">
+                                                    </td>
+                                                    <td class="py-2 px-3 align-middle text-center">
+                                                        <div class="inline-flex items-center justify-center gap-2">
+                                                            <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                                                <input type="checkbox" x-model="tipo.soporte_papel" class="w-4 h-4 accent-comfaBlue rounded cursor-pointer">
+                                                                <span>Papel</span>
+                                                            </label>
+                                                            <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                                                <input type="checkbox" x-model="tipo.soporte_electronico" class="w-4 h-4 accent-comfaBlue rounded cursor-pointer">
+                                                                <span>Elec.</span>
+                                                            </label>
+                                                            <input type="text" x-show="tipo.soporte_electronico" x-model="tipo.extensiones" placeholder=".pdf" class="w-16 px-1.5 py-0.5 text-[10px] border border-slate-300 rounded bg-white font-mono">
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-2 px-3 align-middle text-center">
+                                                        <button type="button" @click="eliminarTipoDoc(idx)" class="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 inline-flex items-center justify-center transition-colors cursor-pointer" title="Eliminar tipo documental">
+                                                            <i class="fas fa-trash-can text-xs"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                         </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </fieldset>
+            </div>
+
+        </div>
+
+        <!-- Barra inferior de acciones -->
+        <div class="bg-slate-100 px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t-2 border-slate-200">
+            <button type="button" @click="limpiarTodo()" class="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-red-600 transition-colors flex items-center gap-1.5 cursor-pointer">
+                <i class="fas fa-rotate-left"></i> Limpiar Formulario
+            </button>
+
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button type="submit" class="w-full sm:w-auto px-10 py-4 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-floppy-disk text-comfaYellow text-sm"></i> Guardar Estructura Completa en la TRD
+                </button>
+            </div>
+        </div>
+    </form>
+
+    {# ========================================================================= #}
+    {# --- MODAL CREAR / GESTIONAR CATÁLOGO CCD --- #}
+    {# ========================================================================= #}
+        <div x-show="mostrarModalNuevoCatalogo" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+                <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-book-bookmark text-xl text-comfaYellow"></i>
+                        <h3 class="text-xs font-black uppercase tracking-widest">Catálogo de Series &middot; {{ encabezado.oficina_productora }}</h3>
+                    </div>
+                    <button type="button" @click="mostrarModalNuevoCatalogo = false" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Pestañas del Modal -->
+                <div class="flex border-b border-slate-200 bg-slate-100 px-6 pt-3 gap-2">
+                    <button type="button" @click="tabCatalogo = 'crear'"
+                            :class="tabCatalogo === 'crear' ? 'bg-white text-indigo-900 border-t-2 border-l-2 border-r-2 border-slate-200 rounded-t-xl font-black shadow-sm' : 'text-slate-600 font-bold hover:text-slate-900'"
+                            class="px-4 py-2.5 text-xs uppercase tracking-wider transition-all cursor-pointer">
+                        <i class="fas fa-plus mr-1.5 text-amber-500"></i> + Crear Nueva Serie
+                    </button>
+                    <button type="button" @click="tabCatalogo = 'gestionar'"
+                            :class="tabCatalogo === 'gestionar' ? 'bg-white text-indigo-900 border-t-2 border-l-2 border-r-2 border-slate-200 rounded-t-xl font-black shadow-sm' : 'text-slate-600 font-bold hover:text-slate-900'"
+                            class="px-4 py-2.5 text-xs uppercase tracking-wider transition-all cursor-pointer">
+                        <i class="fas fa-pen-to-square mr-1.5 text-indigo-600"></i> ⚙️ Corregir / Gestionar Catálogo
+                    </button>
+                </div>
+
+                <!-- PESTAÑA 1: CREAR NUEVA SERIE -->
+                <div x-show="tabCatalogo === 'crear'" class="p-6 space-y-4">
+                    <p class="text-xs text-slate-600 font-medium">Esta nueva serie o subserie se registrará de inmediato en el catálogo de <b class="text-comfaBlue">{{ encabezado.oficina_productora }}</b> para que esté disponible hoy y en futuras TRD.</p>
+
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código Serie <span class="text-slate-400 font-normal lowercase">(solo el número de la serie)</span></label>
+                                <span class="text-[10px] text-slate-500 font-bold">Prefijo oficina: <b class="text-comfaBlue" x-text="prefijoOficina"></b></span>
+                            </div>
+                            <input type="text" x-model="nuevoCat_serieCod" placeholder="Ej: 42 (sin el prefijo)" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            <p class="text-[10px] text-slate-400 mt-1">Si dejas el código vacío, el sistema le asignará automáticamente el número siguiente.</p>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre de la Serie <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="nuevoCat_serieNom" placeholder="Ej: INVENTARIOS" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200">
+                            <label class="flex items-center gap-2 cursor-pointer select-none mb-2">
+                                <input type="checkbox" x-model="nuevoCat_incluirSub" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span class="text-xs font-black uppercase text-indigo-900">¿Deseas agregarle una Subserie inicial?</span>
+                            </label>
+                        </div>
+
+                        <div x-show="nuevoCat_incluirSub" class="space-y-3 bg-indigo-50/50 p-4 rounded-xl border border-indigo-200">
+                            <div>
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código Subserie <span class="text-slate-400 font-normal lowercase">(opcional)</span></label>
+                                <input type="text" x-model="nuevoCat_subCod" placeholder="Ej: 42.1 o dejar vacío" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre Subserie <span class="text-red-500">*</span></label>
+                                <input type="text" x-model="nuevoCat_subNom" placeholder="Ej: Inventarios Documentales" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 -mx-6 -mb-6 px-6 py-4 flex items-center justify-between border-t border-slate-200 mt-6">
+                        <button type="button" @click="mostrarModalNuevoCatalogo = false" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="button" @click="guardarNuevaSerieEnCatalogo()" :disabled="guardandoCatalogo"
+                                class="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50">
+                            <i class="fas fa-floppy-disk"></i>
+                            <span x-text="guardandoCatalogo ? 'Guardando...' : 'Guardar en Catálogo'"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA 2: GESTIONAR / CORREGIR CÓDIGOS DEL CATÁLOGO -->
+                <div x-show="tabCatalogo === 'gestionar'" class="p-6 space-y-4">
+                    <p class="text-xs text-slate-600 font-medium">Aquí puedes <b>modificar el código</b> o el nombre de cualquier serie registrada en el catálogo si te equivocaste al crearla, o eliminarla si ya no se usa.</p>
+
+                    <div class="max-h-[340px] overflow-y-auto space-y-2 border border-slate-200 rounded-2xl p-3 bg-slate-50">
+                        <template x-for="(s, sIdx) in series" :key="sIdx">
+                            <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex flex-col gap-2">
+                                <!-- Modo Lectura -->
+                                <div x-show="serieEditandoCod !== s.codigo" class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <span class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-lg text-xs font-black text-indigo-900" x-text="formatearCodigo(s.codigo)"></span>
+                                        <span class="text-xs font-black text-slate-800 uppercase truncate" x-text="s.nombre"></span>
+                                        <span x-show="s.subseries && s.subseries.length > 0" class="text-[9px] bg-slate-100 text-slate-500 font-bold px-1.5 py-0.5 rounded" x-text="s.subseries.length + ' subseries'"></span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 shrink-0">
+                                        <button type="button" @click="iniciarEdicionSerie(s)"
+                                                class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer">
+                                            <i class="fas fa-pen"></i> Corregir
+                                        </button>
+                                        <button type="button" @click="eliminarSerieCatalogo(s)"
+                                                class="w-7 h-7 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white rounded-lg flex items-center justify-center transition-all cursor-pointer" title="Eliminar del catálogo">
+                                            <i class="fas fa-trash text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Modo Edición -->
+                                <div x-show="serieEditandoCod === s.codigo" class="space-y-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200 animate-in fade-in duration-150">
+                                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                                        <div class="sm:col-span-4">
+                                            <label class="text-[9px] font-black uppercase text-slate-600 block mb-1">Código Serie (sin prefijo)</label>
+                                            <input type="text" x-model="serieEditandoNuevoCod" placeholder="Ej: 42" class="w-full px-2.5 py-1.5 text-xs font-black text-indigo-900 border border-slate-300 rounded-lg bg-white">
+                                        </div>
+                                        <div class="sm:col-span-8">
+                                            <label class="text-[9px] font-black uppercase text-slate-600 block mb-1">Nombre Serie</label>
+                                            <input type="text" x-model="serieEditandoNuevoNom" class="w-full px-2.5 py-1.5 text-xs font-bold text-slate-800 border border-slate-300 rounded-lg bg-white">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-end gap-2 pt-1">
+                                        <button type="button" @click="serieEditandoCod = null"
+                                                class="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold cursor-pointer">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" @click="guardarEdicionSerie(s)"
+                                                class="px-4 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-black uppercase tracking-wider cursor-pointer flex items-center gap-1">
+                                            <i class="fas fa-check"></i> Guardar Corrección
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="bg-slate-100 -mx-6 -mb-6 px-6 py-4 flex items-center justify-end border-t border-slate-200 mt-6">
+                        <button type="button" @click="mostrarModalNuevoCatalogo = false" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b-2 border-slate-200 px-8 py-5 gap-4 bg-slate-50/50">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-layer-group text-comfaBlue text-xl"></i>
+                <div>
+                    <h3 class="text-xs font-black text-comfaBlue uppercase tracking-widest flex items-center gap-2">
+                        Contenido de la Tabla de Retención
+                    </h3>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                        <span x-show="modoVistaContenido === 'acordeon'">Estructura interactiva: haz clic sobre cualquier serie o subserie para desplegar</span>
+                        <span x-show="modoVistaContenido === 'tabla'">Vista previa oficial estructurada tipo matriz documental</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                <!-- Selector de Vista (Acordeón vs Vista Previa Tabla) -->
+                <div class="inline-flex p-1 bg-slate-200/90 rounded-2xl gap-1 shadow-inner">
+                    <button type="button" @click="modoVistaContenido = 'acordeon'"
+                            :class="modoVistaContenido === 'acordeon' ? 'bg-white text-comfaBlue shadow-xs font-black' : 'text-slate-600 hover:text-slate-900 font-bold'"
+                            class="px-3.5 py-1.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Contenido</span>
+                    </button>
+                    <button type="button" @click="modoVistaContenido = 'tabla'"
+                            :class="modoVistaContenido === 'tabla' ? 'bg-comfaBlue text-white shadow-xs font-black' : 'text-slate-600 hover:text-slate-900 font-bold'"
+                            class="px-3.5 py-1.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-table-list"></i>
+                        <span>Vista Previa (Tabla)</span>
+                    </button>
+                </div>
+
+                <span class="px-2.5 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-900 rounded-xl text-[10px] font-black uppercase">
+                    {{ arbol_series|length }} Series &middot; {{ items|length }} registros
+                </span>
+            </div>
+        </div>
+
+        {% if arbol_series %}
+        {# ========================================================================= #}
+        {# 1. VISTA MODO ACORDEÓN INTERACTIVO #}
+        {# ========================================================================= #}
+        <div x-show="modoVistaContenido === 'acordeon'" class="p-6 space-y-3 bg-slate-100/40">
+            {% for nodo in arbol_series %}
+            <div class="border-2 rounded-2xl overflow-hidden transition-all shadow-sm"
+                 :class="seriesAbiertas['{{ nodo.serie.id or forloop.counter }}'] ? 'border-indigo-400 ring-2 ring-indigo-100 bg-white' : 'border-slate-200 hover:border-slate-300 bg-white'">
+                
+                <!-- Barra Cabecera de la Serie (Clickeable para desplegar) -->
+                <div class="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 cursor-pointer select-none transition-colors"
+                     :class="seriesAbiertas['{{ nodo.serie.id or forloop.counter }}'] ? 'bg-indigo-50/70 border-b border-indigo-200' : 'bg-slate-50/70 hover:bg-slate-100/70'"
+                     @click="toggleSerie('{{ nodo.serie.id or forloop.counter }}')">
+                    
+                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                        <!-- Icono Chevron que rota -->
+                        <div class="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-indigo-700 shadow-sm shrink-0 transition-transform duration-200"
+                             :class="seriesAbiertas['{{ nodo.serie.id or forloop.counter }}'] ? 'rotate-90 bg-indigo-600 text-white border-indigo-600' : ''">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </div>
+
+                        <!-- Código de la Serie -->
+                        <span class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-black text-comfaBlue shadow-sm shrink-0">
+                            {{ nodo.serie.codigo }}
+                        </span>
+
+                        <!-- Nombre de la Serie -->
+                        <div class="min-w-0 flex-1">
+                            <span class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-tight truncate block">
+                                {{ nodo.serie.nombre }}
+                            </span>
+                            {% if avisos.get(nodo.serie.id) %}
+                                {% for aviso in avisos[nodo.serie.id] %}
+                                <p class="text-[10px] font-bold text-amber-700 mt-0.5"><i class="fas fa-triangle-exclamation mr-1"></i>{{ aviso }}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Badges y Acciones -->
+                    <div class="flex flex-wrap items-center gap-2 self-end md:self-center shrink-0" @click.stop>
+                        {% if nodo.subseries %}
+                            <span class="px-2.5 py-1 bg-indigo-100 text-indigo-900 rounded-lg text-[10px] font-black uppercase">
+                                <i class="fas fa-layer-group mr-1"></i> {{ nodo.subseries|length }} Subseries
+                            </span>
+                        {% else %}
+                            <span class="px-2.5 py-1 bg-blue-100 text-comfaBlue rounded-lg text-[10px] font-black uppercase">
+                                <i class="fas fa-file-lines mr-1"></i> {{ nodo.tipos_directos|length }} Tipos Doc.
+                            </span>
+                        {% endif %}
+
+                        {% if nodo.serie.soporte_papel or nodo.serie.soporte_electronico %}
+                            <span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-black">
+                                {% if nodo.serie.soporte_papel %}PAPEL{% endif %}
+                                {% if nodo.serie.soporte_electronico %}{{ nodo.serie.extensiones or 'ELEC' }}{% endif %}
+                            </span>
+                        {% endif %}
+
+                        {% if nodo.serie.retencion_gestion or nodo.serie.retencion_central %}
+                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">
+                                Ret: G:{{ nodo.serie.retencion_gestion }} / C:{{ nodo.serie.retencion_central }}
+                            </span>
+                        {% endif %}
+
+                        {% if nodo.serie.disposicion_final %}
+                            <span class="w-6 h-6 leading-6 text-center text-[10px] font-black rounded text-white {% if nodo.serie.disposicion_final == 'C' %}bg-amber-500{% elif nodo.serie.disposicion_final == 'S' %}bg-blue-500{% else %}bg-red-500{% endif %}" title="{{ nodo.serie.disposicion_nombre }}">
+                                {{ nodo.serie.disposicion_final }}
+                            </span>
+                        {% endif %}
+
+                        {% if nodo.serie.reproduccion_tecnica %}
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-900 border border-purple-300 rounded text-[10px] font-black" title="Reproducción Técnica del Papel (D) / Digitalización">
+                                D (Rep. Técnica)
+                            </span>
+                        {% endif %}
+
+                        <!-- Botones de Acción de la Serie -->
+                        {% if nodo.serie.id %}
+                        <button type="button" @click='abrirModalNuevaSubserieDirecta({{ nodo.serie.to_dict()|tojson }}, {{ (nodo.subseries|length + 1) }})'
+                                class="px-2.5 py-1.5 bg-blue-50 hover:bg-comfaBlue text-comfaBlue hover:text-white border border-blue-200 hover:border-comfaBlue rounded-lg inline-flex items-center gap-1 text-[11px] font-black uppercase transition-all cursor-pointer shadow-xs"
+                                title="Agregar una nueva subserie a esta serie">
+                            <i class="fas fa-plus"></i>
+                            <span>+ Subserie</span>
+                        </button>
+                        <button type="button" @click='abrirModalEditarItem({{ nodo.serie.to_dict()|tojson }})'
+                                class="px-2.5 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-lg inline-flex items-center gap-1 text-[11px] font-black uppercase transition-all cursor-pointer shadow-sm">
+                            <i class="fas fa-pen-to-square"></i>
+                            <span class="hidden sm:inline">Editar</span>
+                        </button>
+                        <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=nodo.serie.id %}"
+                              onsubmit="return confirm('¿Eliminar la serie {{ nodo.serie.nombre }} y todo su contenido?');">
+                            <button type="submit" class="w-7 h-7 bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white rounded-lg inline-flex items-center justify-center transition-all cursor-pointer" title="Eliminar serie completa">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Contenido Desplegable (Subseries o Tipos Documentales) -->
+                <div x-show="seriesAbiertas['{{ nodo.serie.id or forloop.counter }}']" x-cloak class="p-4 sm:p-6 bg-slate-50/50 space-y-4 border-t border-slate-200 animate-in fade-in duration-150">
+                    
+                    <!-- Procedimiento de la Serie si tiene -->
+                    {% if nodo.serie.procedimiento %}
+                    <div class="bg-indigo-50/60 border-l-4 border-indigo-500 p-3 rounded-r-xl text-xs text-slate-700">
+                        <span class="font-black text-indigo-950 uppercase text-[10px] block mb-0.5"><i class="fas fa-circle-info mr-1"></i> Procedimiento Oficial de la Serie</span>
+                        <p class="italic">{{ nodo.serie.procedimiento }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Si tiene Subseries -->
+                    {% if nodo.subseries %}
+                    <div class="space-y-3">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-comfaBlue flex items-center gap-1.5">
+                            <i class="fas fa-layer-group text-comfaBlue"></i> Subseries Registradas ({{ nodo.subseries|length }}) — Haz clic en una subserie para ver o agregar tipos documentales
+                        </span>
+
+                        <div class="space-y-2.5">
+                            {% for sub_item in nodo.subseries %}
+                            <div class="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-2xs hover:border-blue-300 transition-all"
+                                 x-data="{ subAbierta: false, elec: false }">
+                                <!-- Cabecera Subserie (Clic para desplegar) -->
+                                <div @click="subAbierta = !subAbierta"
+                                     class="p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 cursor-pointer select-none transition-colors"
+                                     :class="subAbierta ? 'bg-blue-50/70 border-b border-blue-200' : 'bg-white hover:bg-slate-50'">
+                                    
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <!-- Chevron de la Subserie -->
+                                        <div class="w-6 h-6 rounded-lg flex items-center justify-center transition-transform duration-200 shrink-0"
+                                             :class="subAbierta ? 'bg-comfaBlue text-white rotate-90' : 'bg-slate-100 text-slate-500'">
+                                            <i class="fas fa-chevron-right text-[10px]"></i>
+                                        </div>
+
+                                        <span class="px-2.5 py-1 bg-white border-2 border-slate-300 text-comfaBlue font-mono font-black text-xs rounded-xl shadow-2xs shrink-0">
+                                            {{ sub_item.subserie.codigo }}
+                                        </span>
+
+                                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                            {{ sub_item.subserie.nombre }}
+                                        </h3>
+                                    </div>
+                                    
+                                    <div class="flex flex-wrap items-center gap-2 self-end lg:self-center shrink-0" @click.stop>
+                                        <!-- Soporte -->
+                                        <span class="px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[10px] font-bold">
+                                            {% if sub_item.subserie.soporte_papel and sub_item.subserie.soporte_electronico %}
+                                                Papel + Elec.
+                                            {% elif sub_item.subserie.soporte_electronico %}
+                                                {{ sub_item.subserie.extensiones or 'Elec' }}
+                                            {% else %}
+                                                Papel
+                                            {% endif %}
+                                        </span>
+
+                                        <!-- Retención -->
+                                        <span class="px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[10px] font-bold">
+                                            AG: <b class="text-comfaBlue">{{ sub_item.subserie.retencion_gestion }}a</b> | AC: <b class="text-comfaBlue">{{ sub_item.subserie.retencion_central }}a</b>
+                                        </span>
+
+                                        <!-- Disposición -->
+                                        {% if sub_item.subserie.disposicion_final %}
+                                        <span class="px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider
+                                            {% if sub_item.subserie.disposicion_final == 'C' %}bg-amber-100 text-amber-900 border border-amber-300
+                                            {% elif sub_item.subserie.disposicion_final == 'S' %}bg-blue-100 text-comfaBlue border border-blue-300
+                                            {% else %}bg-red-100 text-comfaRed border border-red-300{% endif %}" title="{{ sub_item.subserie.disposicion_nombre }}">
+                                            {{ sub_item.subserie.disposicion_final }}
+                                        </span>
+                                        {% endif %}
+
+                                        <!-- Rep. Técnica (D) -->
+                                        {% if sub_item.subserie.reproduccion_tecnica %}
+                                        <span class="px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-300" title="Reproducción Técnica del Papel (D) / Digitalización">
+                                            D (Rep. Técnica)
+                                        </span>
+                                        {% endif %}
+
+                                        <!-- Conteo de Tipos -->
+                                        <span class="px-2 py-0.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600">
+                                            <i class="fas fa-file-lines text-comfaBlue mr-0.5"></i> {{ sub_item.tipos|length }} Tipos
+                                        </span>
+
+                                        <!-- Botones de Acción de la Subserie -->
+                                        {% if sub_item.subserie.id %}
+                                        <button type="button" @click='abrirModalEditarItem({{ sub_item.subserie.to_dict()|tojson }})'
+                                                class="px-2 py-1 bg-white hover:bg-comfaBlue text-comfaBlue hover:text-white border border-slate-300 hover:border-comfaBlue rounded-lg text-[10px] font-black uppercase transition-all cursor-pointer" title="Editar subserie">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=sub_item.subserie.id %}"
+                                              onsubmit="return confirm('¿Eliminar la subserie {{ sub_item.subserie.nombre }}?');">
+                                            <button type="submit" class="w-6 h-6 bg-red-50 hover:bg-comfaRed text-comfaRed hover:text-white border border-red-200 hover:border-comfaRed rounded-lg flex items-center justify-center transition-all cursor-pointer" title="Eliminar subserie">
+                                                <i class="fas fa-trash text-[10px]"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Contenido Desplegable de la Subserie (Tipos Documentales y Formulario Rápido) -->
+                                <div x-show="subAbierta" x-collapse x-cloak class="p-4 sm:p-5 bg-slate-50/50 space-y-4 border-t border-slate-100">
+                                    {% if sub_item.subserie.procedimiento %}
+                                    <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-200 text-xs text-slate-700 space-y-0.5">
+                                        <span class="font-black text-comfaBlue uppercase text-[10px] block"><i class="fas fa-gavel mr-1"></i> Procedimiento Oficial de la Subserie</span>
+                                        <p class="italic leading-relaxed text-slate-800">{{ sub_item.subserie.procedimiento }}</p>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Tipos documentales de esta subserie -->
+                                    <div class="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
+                                        <span class="text-[10px] font-black uppercase tracking-wider text-comfaBlue flex items-center gap-1.5">
+                                            <i class="fas fa-file-circle-check text-comfaBlue"></i> Tipos Documentales Registrados ({{ sub_item.tipos|length }})
+                                        </span>
+
+                                        {% if sub_item.tipos %}
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                            {% for td in sub_item.tipos %}
+                                            <div class="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-xl p-2.5 flex items-center justify-between gap-2 shadow-2xs transition-colors">
+                                                <div class="min-w-0 flex items-center gap-1.5">
+                                                    <span class="text-comfaBlue font-black text-xs mr-0.5">{{ forloop.counter }}.</span>
+                                                    <span class="text-xs font-bold text-slate-800 truncate" title="{{ td.nombre }}">{{ td.nombre }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-1 shrink-0">
+                                                    {% if td.soporte_papel %}<span class="px-1.5 py-0.5 bg-white border border-slate-200 text-slate-600 rounded text-[9px] font-black uppercase">Papel</span>{% endif %}
+                                                    {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded text-[9px] font-black uppercase font-mono">{{ td.extensiones or 'Elec' }}</span>{% endif %}
+                                                    <button type="button" @click='abrirModalEditarItem({{ td.to_dict()|tojson }})' class="text-slate-400 hover:text-comfaBlue p-1 cursor-pointer" title="Editar tipo"><i class="fas fa-pen text-[10px]"></i></button>
+                                                    <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=td.id %}" onsubmit="return confirm('¿Eliminar tipo documental?');">
+                                                        <button type="submit" class="text-slate-400 hover:text-comfaRed p-1 cursor-pointer" title="Eliminar tipo"><i class="fas fa-trash text-[10px]"></i></button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <p class="text-xs text-slate-400 italic">No hay tipos documentales registrados en esta subserie.</p>
+                                        {% endif %}
+
+                                        <!-- Formulario Rápido Directo para Agregar Tipo Documental a la Subserie -->
+                                        {% if sub_item.subserie.id %}
+                                        <form method="post" action="/trd/{{ enc_id }}/item/{{ sub_item.subserie.id }}/agregar_tipo" class="pt-3 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center gap-2">
+                                            <div class="relative flex-1 min-w-[180px]">
+                                                <input type="text" name="nombre" placeholder="➕ Escribe un Tipo Documental y pulsa Enter..." required
+                                                       class="w-full px-3 py-2 bg-slate-50 focus:bg-white border border-slate-300 focus:border-comfaBlue rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none shadow-2xs">
+                                            </div>
+                                            <div class="flex items-center gap-2 shrink-0 bg-slate-50 px-2.5 py-1.5 border border-slate-200 rounded-xl">
+                                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                                    <input type="checkbox" name="soporte_papel" value="1" class="w-3.5 h-3.5 accent-comfaBlue rounded">
+                                                    <span>Papel</span>
+                                                </label>
+                                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                                    <input type="checkbox" name="soporte_electronico" value="1" x-model="elec" class="w-3.5 h-3.5 accent-comfaBlue rounded">
+                                                    <span>Elec.</span>
+                                                </label>
+                                                <input type="text" x-show="elec" name="extensiones" value=".pdf" placeholder=".pdf" class="w-12 px-1 py-0.5 text-[10px] border border-slate-300 rounded font-mono">
+                                            </div>
+                                            <button type="submit"
+                                                    class="px-3.5 py-2 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center gap-1 cursor-pointer shrink-0">
+                                                <i class="fas fa-plus"></i>
+                                                <span>Agregar</span>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Si tiene Tipos Documentales directos (Serie Simple) -->
+                    {% if nodo.tipos_directos or not nodo.subseries %}
+                    <div class="space-y-3 bg-white p-4 rounded-2xl border border-blue-100" x-data="{ elec: false }">
+                         <span class="text-[11px] font-black uppercase tracking-wider text-comfaBlue flex items-center gap-1.5">
+                             <i class="fas fa-file-circle-plus text-comfaBlue"></i> Tipos Documentales de la Serie ({{ nodo.tipos_directos|length }})
+                         </span>
+
+                         {% if nodo.tipos_directos %}
+                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                             {% for td in nodo.tipos_directos %}
+                             <div class="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-xl p-3 flex items-center justify-between gap-2 shadow-xs transition-all">
+                                 <div class="min-w-0 flex items-center gap-2">
+                                     <span class="w-5 h-5 rounded-md bg-blue-100 text-comfaBlue flex items-center justify-center text-[10px] font-black shrink-0">{{ forloop.counter }}</span>
+                                     <span class="text-xs font-bold text-slate-800 truncate" title="{{ td.nombre }}">{{ td.nombre }}</span>
+                                 </div>
+                                 <div class="flex items-center gap-1 shrink-0">
+                                     {% if td.soporte_papel %}<span class="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[9px] font-black">PAPEL</span>{% endif %}
+                                     {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-black">{{ td.extensiones or 'ELEC' }}</span>{% endif %}
+                                     <button type="button" @click='abrirModalEditarItem({{ td.to_dict()|tojson }})' class="text-slate-400 hover:text-indigo-600 p-1.5 cursor-pointer" title="Editar tipo"><i class="fas fa-pen text-xs"></i></button>
+                                     <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=td.id %}" onsubmit="return confirm('¿Eliminar tipo documental?');">
+                                         <button type="submit" class="text-slate-400 hover:text-red-600 p-1.5 cursor-pointer" title="Eliminar tipo"><i class="fas fa-trash text-xs"></i></button>
+                                     </form>
+                                 </div>
+                             </div>
+                             {% endfor %}
+                         </div>
+                         {% else %}
+                         <p class="text-[11px] text-slate-400 italic">No hay tipos documentales directos registrados en esta serie.</p>
+                         {% endif %}
+
+                         <!-- Formulario Rápido Directo para Agregar Tipo Documental a la Serie -->
+                         {% if nodo.serie.id %}
+                         <form method="post" action="/trd/{{ enc_id }}/item/{{ nodo.serie.id }}/agregar_tipo" class="pt-2 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center gap-2">
+                             <div class="relative flex-1 min-w-[180px]">
+                                 <input type="text" name="nombre" placeholder="➕ Escribe un Tipo Documental para esta Serie y pulsa Enter..." required
+                                        class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-300 focus:border-comfaBlue rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none shadow-2xs">
+                             </div>
+                             <div class="flex items-center gap-2 shrink-0 bg-slate-50 px-2 py-1 border border-slate-200 rounded-xl">
+                                 <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                     <input type="checkbox" name="soporte_papel" value="1" class="w-3.5 h-3.5 accent-comfaBlue rounded">
+                                     <span>Papel</span>
+                                 </label>
+                                 <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                     <input type="checkbox" name="soporte_electronico" value="1" x-model="elec" class="w-3.5 h-3.5 accent-comfaBlue rounded">
+                                     <span>Elec.</span>
+                                 </label>
+                                 <input type="text" x-show="elec" name="extensiones" value=".pdf" placeholder=".pdf" class="w-12 px-1 py-0.5 text-[10px] border border-slate-300 rounded font-mono">
+                             </div>
+                             <button type="submit"
+                                     class="px-3.5 py-2 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center gap-1 cursor-pointer shrink-0">
+                                 <i class="fas fa-plus"></i>
+                                 <span>Agregar</span>
+                             </button>
+                         </form>
+                         {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if not nodo.subseries and not nodo.tipos_directos %}
+                    <div class="p-4 text-center bg-white rounded-xl border border-dashed border-slate-300 text-slate-400 text-xs font-bold">
+                        Esta serie no tiene subseries ni tipos documentales agregados aún.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {# ========================================================================= #}
+        {# 2. VISTA MODO PREVIA (TABLA DE RETENCIÓN ESTRUCTURADA OFICIAL) #}
+        {# ========================================================================= #}
+        <div x-show="modoVistaContenido === 'tabla'" x-cloak class="p-6 bg-slate-100/60 space-y-4">
+            <!-- Encabezado informativo de la vista previa -->
+            <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-comfaBlue text-lg">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-tight">
+                            {{ encabezado.oficina_productora }} &middot; Código {{ encabezado.codigo_oficina }}
+                        </h4>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                            Tabla de Retención Documental &middot; Versión {{ encabezado.version or '1.0' }} &middot; {{ arbol_series|length }} Series &middot; {{ items|length }} Registros
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-[10px] font-black uppercase">
+                        C: Conservación
+                    </span>
+                    <span class="px-2.5 py-1 bg-blue-100 text-comfaBlue border border-blue-300 rounded-lg text-[10px] font-black uppercase">
+                        S: Selección
+                    </span>
+                    <span class="px-2.5 py-1 bg-red-100 text-comfaRed border border-red-300 rounded-lg text-[10px] font-black uppercase">
+                        E: Eliminación
+                    </span>
+                    <span class="px-2.5 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg text-[10px] font-black uppercase">
+                        REPRODUCCIÓN TÉCNICA DEL PAPEL (D): X
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tabla TRD de Alta Legibilidad -->
+            <div class="bg-white border-2 border-slate-300 rounded-2xl overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-comfaBlue text-white text-[10px] font-black uppercase tracking-wider">
+                                <th rowspan="2" class="py-3 px-3 text-center border-r border-blue-400/40 w-24">Código</th>
+                                <th rowspan="2" class="py-3 px-4 border-r border-blue-400/40 min-w-[280px]">Series, Subseries y Tipos Documentales</th>
+                                <th rowspan="2" class="py-3 px-2 text-center border-r border-blue-400/40 w-24">Soporte</th>
+                                <th colspan="2" class="py-1.5 px-2 text-center border-b border-r border-blue-400/40 bg-[#003d70]">Retención (Años)</th>
+                                <th colspan="3" class="py-1.5 px-2 text-center border-b border-r border-blue-400/40 bg-[#003d70]">Disposición Final</th>
+                                <th rowspan="2" class="py-2 px-2 text-center border-r border-blue-400/40 w-28 text-[9px] font-black uppercase tracking-wider leading-tight" title="Digitalización / Reproducción Técnica">REPRODUCCIÓN TÉCNICA DEL PAPEL (D)</th>
+                                <th rowspan="2" class="py-3 px-4 min-w-[320px]">Procedimiento Oficial</th>
+                            </tr>
+                            <tr class="bg-[#003d70] text-white text-[9px] font-black uppercase tracking-wider">
+                                <th class="py-1 px-2 text-center border-r border-blue-400/40 w-12" title="Archivo de Gestión">AG</th>
+                                <th class="py-1 px-2 text-center border-r border-blue-400/40 w-12" title="Archivo Central">AC</th>
+                                <th class="py-1 px-2 text-center border-r border-blue-400/40 w-10" title="Conservación">C</th>
+                                <th class="py-1 px-2 text-center border-r border-blue-400/40 w-10" title="Selección">S</th>
+                                <th class="py-1 px-2 text-center border-r border-blue-400/40 w-10" title="Eliminación">E</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            {% for nodo in arbol_series %}
+                            <!-- ================= FILA SERIE ================= -->
+                            <tr class="bg-blue-50/90 font-black border-t-2 border-slate-300">
+                                <td class="py-3 px-3 text-center font-mono font-black text-comfaBlue text-xs border-r border-slate-200">
+                                    <span class="px-2 py-0.5 bg-white border border-blue-300 rounded-md shadow-2xs">{{ nodo.serie.codigo }}</span>
+                                </td>
+                                <td class="py-3 px-4 text-xs font-black uppercase text-comfaBlue tracking-tight border-r border-slate-200">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-folder text-comfaBlue text-sm"></i>
+                                        <span>{{ nodo.serie.nombre }}</span>
+                                        {% if nodo.subseries %}
+                                        <span class="ml-1 px-2 py-0.5 bg-white border border-blue-200 text-comfaBlue rounded-md text-[9px] font-bold lowercase tracking-normal">
+                                            ({{ nodo.subseries|length }} subseries)
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                
+                                {% if not nodo.subseries %}
+                                <!-- Serie Simple sin subseries: muestra sus propios metadatos -->
+                                <td class="py-3 px-2 text-center border-r border-slate-200 text-[10px] font-bold">
+                                    {% if nodo.serie.soporte_papel and nodo.serie.soporte_electronico %}
+                                        <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel + Elec</span>
+                                    {% elif nodo.serie.soporte_electronico %}
+                                        <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded font-mono">{{ nodo.serie.extensiones or 'Elec' }}</span>
+                                    {% elif nodo.serie.soporte_papel %}
+                                        <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel</span>
+                                    {% else %}-{% endif %}
+                                </td>
+                                <td class="py-3 px-2 text-center text-xs font-black text-slate-800 border-r border-slate-200">{{ nodo.serie.retencion_gestion or 0 }}</td>
+                                <td class="py-3 px-2 text-center text-xs font-black text-slate-800 border-r border-slate-200">{{ nodo.serie.retencion_central or 0 }}</td>
+                                <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.disposicion_final == 'C' or nodo.serie.disposicion_final == 'CT' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-amber-500 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.disposicion_final == 'S' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-blue-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.disposicion_final == 'E' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-red-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                <td class="py-3 px-2 text-center text-xs font-black border-r border-slate-200">{% if nodo.serie.reproduccion_tecnica %}<span class="w-5 h-5 inline-flex items-center justify-center bg-purple-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                <td class="py-3 px-4 text-xs text-slate-700 italic leading-relaxed">{{ nodo.serie.procedimiento or '-' }}</td>
+                                {% else %}
+                                <!-- Serie con subseries: celdas vacías en la fila padre -->
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-2 text-center text-slate-300 border-r border-slate-200">&mdash;</td>
+                                <td class="py-3 px-4 text-xs text-slate-500 italic">{{ nodo.serie.procedimiento or '-' }}</td>
+                                {% endif %}
+                            </tr>
+
+                            <!-- ================= FILAS DE SUBSERIES ================= -->
+                            {% if nodo.subseries %}
+                                {% for sub_item in nodo.subseries %}
+                                <tr class="bg-slate-50/90 font-bold border-t border-slate-200">
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-indigo-900 text-xs border-r border-slate-200">
+                                        <span class="px-2 py-0.5 bg-indigo-50 border border-indigo-200 rounded text-[11px]">{{ sub_item.subserie.codigo }}</span>
+                                    </td>
+                                    <td class="py-2.5 px-4 text-xs font-bold text-slate-900 pl-8 border-r border-slate-200">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-comfaBlue font-black text-sm">↳</span>
+                                            <span>{{ sub_item.subserie.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-2.5 px-2 text-center border-r border-slate-200 text-[10px] font-bold">
+                                        {% if sub_item.subserie.soporte_papel and sub_item.subserie.soporte_electronico %}
+                                            <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel + Elec</span>
+                                        {% elif sub_item.subserie.soporte_electronico %}
+                                            <span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded font-mono">{{ sub_item.subserie.extensiones or 'Elec' }}</span>
+                                        {% elif sub_item.subserie.soporte_papel %}
+                                            <span class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700">Papel</span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="py-2.5 px-2 text-center text-xs font-black text-slate-800 bg-amber-50/50 border-r border-slate-200">{{ sub_item.subserie.retencion_gestion or 0 }}</td>
+                                    <td class="py-2.5 px-2 text-center text-xs font-black text-slate-800 bg-amber-50/50 border-r border-slate-200">{{ sub_item.subserie.retencion_central or 0 }}</td>
+                                    <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.disposicion_final == 'C' or sub_item.subserie.disposicion_final == 'CT' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-amber-500 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                    <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.disposicion_final == 'S' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-blue-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                    <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.disposicion_final == 'E' %}<span class="w-5 h-5 inline-flex items-center justify-center bg-red-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                    <td class="py-2.5 px-2 text-center text-xs font-black border-r border-slate-200">{% if sub_item.subserie.reproduccion_tecnica %}<span class="w-5 h-5 inline-flex items-center justify-center bg-purple-600 text-white rounded text-[10px] font-black">X</span>{% else %}-{% endif %}</td>
+                                    <td class="py-2.5 px-4 text-xs text-slate-700 leading-relaxed font-normal bg-white/70">{{ sub_item.subserie.procedimiento or '-' }}</td>
+                                </tr>
+
+                                <!-- TIPOS DOCUMENTALES DE LA SUBSERIE -->
+                                {% for td in sub_item.tipos %}
+                                <tr class="hover:bg-blue-50/30 text-slate-700 transition-colors border-t border-slate-100">
+                                    <td class="py-1.5 px-3 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-4 pl-14 text-xs font-medium text-slate-700 border-r border-slate-200">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-slate-400 text-xs">&bull;</span>
+                                            <span>{{ td.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1.5 px-2 text-center border-r border-slate-200 text-[9px] font-bold">
+                                        {% if td.soporte_papel and td.soporte_electronico %}
+                                            <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">P + E</span>
+                                        {% elif td.soporte_electronico %}
+                                            <span class="px-1.5 py-0.5 bg-blue-50 text-comfaBlue rounded font-mono">{{ td.extensiones or '.pdf' }}</span>
+                                        {% elif td.soporte_papel %}
+                                            <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">Papel</span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-4 text-slate-300 text-center text-xs">&mdash;</td>
+                                </tr>
+                                {% endfor %}
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- ================= TIPOS DIRECTOS DE SERIE SIMPLE ================= -->
+                            {% if nodo.tipos_directos %}
+                                {% for td in nodo.tipos_directos %}
+                                <tr class="hover:bg-blue-50/30 text-slate-700 transition-colors border-t border-slate-100">
+                                    <td class="py-1.5 px-3 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-4 pl-12 text-xs font-medium text-slate-700 border-r border-slate-200">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-slate-400 text-xs">&bull;</span>
+                                            <span>{{ td.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1.5 px-2 text-center border-r border-slate-200 text-[9px] font-bold">
+                                        {% if td.soporte_papel and td.soporte_electronico %}
+                                            <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">P + E</span>
+                                        {% elif td.soporte_electronico %}
+                                            <span class="px-1.5 py-0.5 bg-blue-50 text-comfaBlue rounded font-mono">{{ td.extensiones or '.pdf' }}</span>
+                                        {% elif td.soporte_papel %}
+                                            <span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">Papel</span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-2 text-center text-slate-300 text-xs border-r border-slate-200">&mdash;</td>
+                                    <td class="py-1.5 px-4 text-slate-300 text-center text-xs">&mdash;</td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra Inferior de Exportación Oficial -->
+        <div class="bg-slate-50 border-t-2 border-slate-200 px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-600 text-xs font-bold">
+                <i class="fas fa-file-export text-comfaBlue text-base"></i>
+                <span>Descarga y Exportación Oficial de la TRD (Formato PADO308-PR004-FADO004)</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+                <a href="{% url 'trd:exportar_pdf' enc_id=enc_id %}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 bg-comfaRed hover:bg-[#b8050f] text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2">
+                    <i class="fas fa-file-pdf"></i> Ver / Descargar PDF Oficial
+                </a>
+                <a href="{% url 'trd:exportar' enc_id=enc_id %}" class="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-green-600 hover:text-white hover:border-green-600 border-2 border-green-500 text-green-700 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-file-excel"></i> Exportar Excel Editable
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="px-8 py-16 text-center">
+            <i class="fas fa-layer-group text-5xl text-slate-300 mb-4"></i>
+            <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Esta tabla aun no tiene registros</p>
+            <p class="text-[11px] text-slate-500 mt-2">Comience agregando una <span class="font-black text-comfaBlue">SERIE</span> con el formulario superior.</p>
+        </div>
+        {% endif %}
+
+        {# Modal de Edición Rápida de Registro #}
+        <div x-show="mostrarModalEditar" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+                <form method="post" :action="'/trd/{{ enc_id }}/item/' + edit_id + '/editar'">
+                    <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-pen-to-square text-xl text-comfaYellow"></i>
+                            <h3 class="text-xs font-black uppercase tracking-widest">Editar <span x-text="edit_nivel"></span></h3>
+                        </div>
+                        <button type="button" @click="mostrarModalEditar = false" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <div class="md:col-span-4" x-show="edit_nivel !== 'TIPO DOCUMENTAL'">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código <span class="text-comfaRed">*</span></label>
+                                <input type="text" name="codigo" x-model="edit_codigo" required class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                            <div :class="edit_nivel !== 'TIPO DOCUMENTAL' ? 'md:col-span-8' : 'md:col-span-12'">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-comfaRed">*</span></label>
+                                <input type="text" name="nombre" x-model="edit_nombre" required class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Soporte</span>
+                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="soporte_papel" value="1" :checked="edit_papel" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <span>Papel</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer ml-1">
+                                    <input type="checkbox" name="soporte_electronico" value="1" :checked="edit_elec" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <span>Elec.</span>
+                                </label>
+                            </div>
+                            <div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Extensión</span>
+                                <input type="text" name="extensiones" x-model="edit_ext" placeholder=".pdf" class="w-full px-2 py-1 text-xs border border-slate-300 rounded bg-white">
+                            </div>
+                            <div x-show="edit_nivel !== 'TIPO DOCUMENTAL'">
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Retención (G/C)</span>
+                                <div class="flex gap-1">
+                                    <input type="number" name="retencion_gestion" x-model="edit_ret_g" placeholder="G" class="w-1/2 px-1 py-1 text-xs text-center border border-slate-300 rounded bg-white font-bold" title="Gestión">
+                                    <input type="number" name="retencion_central" x-model="edit_ret_c" placeholder="C" class="w-1/2 px-1 py-1 text-xs text-center border border-slate-300 rounded bg-white font-bold" title="Central">
+                                </div>
+                            </div>
+                            <div x-show="edit_nivel !== 'TIPO DOCUMENTAL'">
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Disposición</span>
+                                <select name="disposicion_final" x-model="edit_disp" class="w-full px-2 py-1 text-xs border border-slate-300 rounded bg-white font-bold">
+                                    <option value="">-- Ninguna --</option>
+                                    <option value="C">C - Conservación</option>
+                                    <option value="S">S - Selección</option>
+                                    <option value="E">E - Eliminación</option>
+                                </select>
+                            </div>
+                            <div x-show="edit_nivel !== 'TIPO DOCUMENTAL'">
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1" title="Reproducción Técnica del Papel (D)">Rep. Técnica (D)</span>
+                                <label class="inline-flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer mt-1">
+                                    <input type="checkbox" name="reproduccion_tecnica" value="D" :checked="edit_rep === 'D' || edit_rep === true" @change="edit_rep = $event.target.checked ? 'D' : ''" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <span>Digitalización (D)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="edit_nivel !== 'TIPO DOCUMENTAL'">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Procedimiento Oficial</label>
+                            <textarea name="procedimiento" x-model="edit_proc" rows="2" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all text-xs"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 px-6 py-4 flex items-center justify-between border-t border-slate-200">
+                        <button type="button" @click="mostrarModalEditar = false" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer">
+                            <i class="fas fa-check"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {# Modal Agregar Nueva Subserie Directa a una Serie #}
+        <div x-show="mostrarModalNuevaSubserieDirecta" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+                <form method="post" :action="'/trd/{{ enc_id }}/serie/' + modalSub_serieId + '/agregar_subserie'" @submit="prepararEnvioModalSubserie($event)">
+                    <input type="hidden" name="tipos_json" :value="JSON.stringify(modalSub_tipos)">
+                    
+                    <div class="bg-comfaBlue text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fas fa-layer-group text-xl text-comfaYellow"></i>
+                            <div>
+                                <h3 class="text-xs font-black uppercase tracking-widest">Agregar Subserie a Serie</h3>
+                                <p class="text-[10px] text-blue-100 font-bold truncate max-w-md">Serie: <span x-text="'[' + modalSub_serieCodigo + '] ' + modalSub_serieNombre"></span></p>
+                            </div>
+                        </div>
+                        <button type="button" @click="mostrarModalNuevaSubserieDirecta = false" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                        <!-- Selector del Catálogo CCD si la serie tiene subseries registradas -->
+                        <template x-if="modalSub_subseriesCatalogo.length > 0">
+                            <div class="bg-blue-50/60 p-3.5 rounded-2xl border border-blue-200">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5 text-comfaBlue flex items-center justify-between">
+                                    <span><i class="fas fa-book-bookmark text-comfaBlue mr-1"></i> Elegir Subserie del Catálogo Oficial</span>
+                                    <span class="text-[10px] text-slate-500 font-bold" x-text="modalSub_subseriesCatalogo.length + ' subseries registradas'"></span>
+                                </label>
+                                <select @change="alSeleccionarSubserieEnModalSub($event.target.value)"
+                                        class="w-full px-3 py-2 bg-white text-slate-800 font-bold text-xs rounded-xl border border-slate-300 focus:border-comfaBlue outline-none">
+                                    <option value="">-- Seleccionar del Catálogo o Escribir Nueva abajo --</option>
+                                    <template x-for="(catSub, cIdx) in modalSub_subseriesCatalogo" :key="cIdx">
+                                        <option :value="cIdx" x-text="'[' + catSub.codigo + '] ' + catSub.nombre"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                            <div class="sm:col-span-4">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código Subserie <span class="text-comfaRed">*</span></label>
+                                <input type="text" name="codigo" x-model="modalSub_codigo" required class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                            <div class="sm:col-span-8">
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre de la Subserie <span class="text-comfaRed">*</span></label>
+                                <input type="text" name="nombre" x-model="modalSub_nombre" placeholder="Ej: Historias Laborales..." required class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Soporte, Retención, Disposición -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                            <div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Soporte</span>
+                                <div class="flex items-center gap-2">
+                                    <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="soporte_papel" value="1" x-model="modalSub_soporte_papel" class="w-4 h-4 accent-comfaBlue rounded">
+                                        <span>Papel</span>
+                                    </label>
+                                    <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="soporte_electronico" value="1" x-model="modalSub_soporte_electronico" class="w-4 h-4 accent-comfaBlue rounded">
+                                        <span>Elec.</span>
+                                    </label>
+                                </div>
+                                <input type="text" x-show="modalSub_soporte_electronico" name="extensiones" x-model="modalSub_extensiones" placeholder=".pdf" class="w-full mt-1 px-1.5 py-0.5 text-[10px] border border-slate-300 rounded bg-white font-mono">
+                            </div>
+
+                            <div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Retención (Años)</span>
+                                <div class="flex items-center gap-1">
+                                    <input type="number" name="retencion_gestion" x-model="modalSub_retencion_gestion" min="0" placeholder="G" class="w-1/2 px-1 py-1 text-xs text-center border border-slate-300 rounded bg-white font-bold" title="Gestión">
+                                    <input type="number" name="retencion_central" x-model="modalSub_retencion_central" min="0" placeholder="C" class="w-1/2 px-1 py-1 text-xs text-center border border-slate-300 rounded bg-white font-bold" title="Central">
+                                </div>
+                            </div>
+
+                            <div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Disposición</span>
+                                <select name="disposicion_final" x-model="modalSub_disposicion_final" class="w-full px-2 py-1 text-xs border border-slate-300 rounded bg-white font-bold">
+                                    <option value="">-- Ninguna --</option>
+                                    <option value="C">C - Conservación</option>
+                                    <option value="S">S - Selección</option>
+                                    <option value="E">E - Eliminación</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Rep. Técnica</span>
+                                <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
+                                    <input type="checkbox" name="reproduccion_tecnica" value="D" :checked="modalSub_reproduccion_tecnica === 'D'" @change="modalSub_reproduccion_tecnica = $event.target.checked ? 'D' : ''" class="w-4 h-4 accent-comfaBlue rounded">
+                                    <span>Digitalización (D)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Procedimiento Oficial</label>
+                            <textarea name="procedimiento" x-model="modalSub_procedimiento" rows="2" placeholder="Criterios de valoración para esta subserie..." class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all text-xs"></textarea>
+                        </div>
+
+                        <!-- Tipos Documentales para la nueva subserie -->
+                        <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-200 space-y-3">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-comfaBlue flex items-center gap-1.5">
+                                <i class="fas fa-file-circle-plus text-comfaBlue"></i> Tipos Documentales de esta Subserie (<span x-text="modalSub_tipos.length"></span>)
+                            </span>
+
+                            <div class="flex gap-2">
+                                <input type="text" x-model="modalSub_nuevoTipoDoc" @keydown.enter.prevent="agregarTipoAModalSub()"
+                                       placeholder="Escribe un tipo documental (ej. Formulario, Acta, Certificado...) y pulsa Enter"
+                                       class="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:border-comfaBlue outline-none">
+                                <button type="button" @click="agregarTipoAModalSub()"
+                                        class="px-4 py-2 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0">
+                                    <i class="fas fa-plus"></i> Agregar
+                                </button>
+                            </div>
+
+                            <template x-if="modalSub_tipos.length > 0">
+                                <div class="space-y-1.5 max-h-36 overflow-y-auto">
+                                    <template x-for="(td, tIdx) in modalSub_tipos" :key="tIdx">
+                                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex items-center justify-between gap-2 shadow-xs">
+                                            <span class="text-xs font-bold text-slate-800 truncate" x-text="(tIdx + 1) + '. ' + td.nombre"></span>
+                                            <div class="flex items-center gap-1 shrink-0">
+                                                <label class="inline-flex items-center gap-1 text-[10px] font-black text-slate-600 cursor-pointer">
+                                                    <input type="checkbox" x-model="td.soporte_papel" class="w-3.5 h-3.5 accent-comfaBlue rounded"> Papel
+                                                </label>
+                                                <label class="inline-flex items-center gap-1 text-[10px] font-black text-slate-600 cursor-pointer ml-1">
+                                                    <input type="checkbox" x-model="td.soporte_electronico" class="w-3.5 h-3.5 accent-comfaBlue rounded"> Elec.
+                                                </label>
+                                                <input type="text" x-show="td.soporte_electronico" x-model="td.extensiones" placeholder=".pdf" class="w-14 px-1.5 py-0.5 text-[10px] border border-slate-300 rounded bg-white font-mono ml-1">
+                                                <button type="button" @click="eliminarTipoDeModalSub(tIdx)" class="text-slate-400 hover:text-comfaRed p-1 cursor-pointer ml-1" title="Quitar tipo">
+                                                    <i class="fas fa-trash text-xs"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 px-6 py-4 flex items-center justify-between border-t border-slate-200">
+                        <button type="button" @click="mostrarModalNuevaSubserieDirecta = false" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer">
+                            <i class="fas fa-floppy-disk"></i> Guardar Subserie en la Serie
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {# Modal Crear Nueva Versión de TRD #}
+        <div x-show="mostrarModalNuevaVersion" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+                <form method="post" action="{% url 'trd:crear_nueva_version' enc_id=enc_id %}">
+                    <div class="bg-comfaBlue text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fas fa-code-branch text-xl text-comfaYellow"></i>
+                            <div>
+                                <h3 class="text-xs font-black uppercase tracking-widest">Crear Nueva Versión TRD</h3>
+                                <p class="text-[10px] text-blue-100 font-bold truncate">{{ encabezado.oficina_productora }}</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="mostrarModalNuevaVersion = false" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        <div class="p-3.5 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-1 text-xs">
+                            <p class="font-black text-comfaBlue uppercase text-[10px] tracking-wider flex items-center gap-1">
+                                <i class="fas fa-circle-info"></i> Control de Versiones Anual
+                            </p>
+                            <p class="text-slate-600 font-medium leading-relaxed">
+                                La versión actual (v{{ encabezado.version or '1.0' }}) pasará a estado <b>HISTÓRICA</b> y se creará una nueva versión <b>VIGENTE</b> para esta misma oficina.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Número Versión <span class="text-comfaRed">*</span></label>
+                                <input type="text" name="nueva_version" value="2.0" required class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Año / Vigencia</label>
+                                <input type="text" name="vigencia_ano" placeholder="Ej. 2027" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 pt-2 border-t border-slate-100">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Estructura inicial de la nueva versión</label>
+                            
+                            <label class="p-3.5 bg-slate-50 hover:bg-blue-50/50 border-2 border-slate-200 rounded-2xl flex items-start gap-3 cursor-pointer transition-colors">
+                                <input type="radio" name="modo_creacion" value="copiar" checked class="w-4 h-4 accent-comfaBlue mt-0.5">
+                                <div>
+                                    <span class="text-xs font-black text-slate-800 block">Duplicar estructura actual (Recomendado)</span>
+                                    <span class="text-[11px] text-slate-500 font-medium block">Copia todas las Series, Subseries y Tipos Documentales para que solo edites los cambios de este año.</span>
+                                </div>
+                            </label>
+
+                            <label class="p-3.5 bg-slate-50 hover:bg-blue-50/50 border-2 border-slate-200 rounded-2xl flex items-start gap-3 cursor-pointer transition-colors">
+                                <input type="radio" name="modo_creacion" value="blanco" class="w-4 h-4 accent-comfaBlue mt-0.5">
+                                <div>
+                                    <span class="text-xs font-black text-slate-800 block">Iniciar en blanco</span>
+                                    <span class="text-[11px] text-slate-500 font-medium block">Crea la nueva versión con el encabezado institucional pero sin ninguna serie precargada.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 px-6 py-4 flex items-center justify-between border-t border-slate-200">
+                        <button type="button" @click="mostrarModalNuevaVersion = false" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer">
+                            <i class="fas fa-check"></i> Crear Nueva Versión
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function formTRDData() {
+    return {
+        formularioAbierto: {% if arbol_series and arbol_series|length > 0 %}false{% else %}true{% endif %},
+        mostrarModalNuevaVersion: false,
+        catalogo: {{ catalogo_json|safe }},
+        oficinaProductora: "{{ encabezado.oficina_productora }}",
+        serieSeleccionadaIdx: '',
+        
+        serieCodigo: '',
+        serieNombre: '',
+        serie_soporte_papel: false,
+        serie_soporte_electronico: false,
+        serie_extensiones: '',
+        serie_retencion_gestion: '',
+        serie_retencion_central: '',
+        serie_disposicion_final: '',
+        serie_reproduccion_tecnica: '',
+        
+        tieneSubserie: false,
+        subseries: [],
+        
+        // SubForm para entrada fija y ágil de subseries (bajar a la lista)
+        subForm_editandoIdx: null,
+        subForm_codigo: '',
+        subForm_nombre: '',
+        subForm_soporte_papel: false,
+        subForm_soporte_electronico: false,
+        subForm_extensiones: '',
+        subForm_retencion_gestion: '',
+        subForm_retencion_central: '',
+        subForm_disposicion_final: '',
+        subForm_reproduccion_tecnica: '',
+        subForm_procedimiento: '',
+        subForm_nuevoTipoDoc: '',
+        subForm_tiposDocumentales: [],
+        
+        nuevoTipoDoc: '',
+        tiposDocumentales: [],
+        procedimiento: '',
+
+        mostrarModalPreview: false,
+        mostrarModalNuevoCatalogo: false,
+        guardandoCatalogo: false,
+        tabCatalogo: 'crear',
+        serieEditandoCod: null,
+        serieEditandoNuevoCod: '',
+        serieEditandoNuevoNom: '',
+        nuevoCat_serieCod: '',
+        nuevoCat_serieNom: '',
+        nuevoCat_incluirSub: false,
+        nuevoCat_subCod: '',
+        nuevoCat_subNom: '',
+        mostrarModalEditar: false,
+        edit_id: '',
+        edit_codigo: '',
+        edit_nombre: '',
+        edit_papel: false,
+        edit_elec: false,
+        edit_ext: '',
+        edit_ret_g: '',
+        edit_ret_c: '',
+        edit_disp: '',
+        edit_rep: '',
+        edit_proc: '',
+        edit_nivel: '',
+
+        // Estado del Modal para Agregar Subserie Directa
+        mostrarModalNuevaSubserieDirecta: false,
+        modalSub_serieId: null,
+        modalSub_serieCodigo: '',
+        modalSub_serieNombre: '',
+        modalSub_subseriesCatalogo: [],
+        modalSub_codigo: '',
+        modalSub_nombre: '',
+        modalSub_soporte_papel: false,
+        modalSub_soporte_electronico: false,
+        modalSub_extensiones: '',
+        modalSub_retencion_gestion: '',
+        modalSub_retencion_central: '',
+        modalSub_disposicion_final: '',
+        modalSub_reproduccion_tecnica: '',
+        modalSub_procedimiento: '',
+        modalSub_nuevoTipoDoc: '',
+        modalSub_tipos: [],
+
+        abrirModalNuevaSubserieDirecta(serie, consecutivoSugerido) {
+            if (!serie) return;
+            this.modalSub_serieId = serie.id;
+            this.modalSub_serieCodigo = serie.codigo || '';
+            this.modalSub_serieNombre = serie.nombre || '';
+
+            // Buscar subseries en el catálogo para esta serie específica
+            const sCat = (this.catalogo.series || []).find(s => 
+                this.formatearCodigo(s.codigo) === (serie.codigo || '') || (s.nombre && s.nombre.toUpperCase() === (serie.nombre || '').toUpperCase())
+            );
+            this.modalSub_subseriesCatalogo = (sCat && sCat.subseries) ? sCat.subseries : [];
+
+            this.modalSub_codigo = `${serie.codigo}.${consecutivoSugerido || 1}`;
+            this.modalSub_nombre = '';
+            this.modalSub_soporte_papel = false;
+            this.modalSub_soporte_electronico = false;
+            this.modalSub_extensiones = '';
+            this.modalSub_retencion_gestion = '';
+            this.modalSub_retencion_central = '';
+            this.modalSub_disposicion_final = '';
+            this.modalSub_reproduccion_tecnica = '';
+            this.modalSub_procedimiento = '';
+            this.modalSub_nuevoTipoDoc = '';
+            this.modalSub_tipos = [];
+            this.mostrarModalNuevaSubserieDirecta = true;
+        },
+
+        alSeleccionarSubserieEnModalSub(catIdx) {
+            if (catIdx === '' || !this.modalSub_subseriesCatalogo[catIdx]) return;
+            const subCat = this.modalSub_subseriesCatalogo[catIdx];
+            const pref = this.prefijoOficina;
+            let cod = subCat.codigo || '';
+            if (pref && !cod.startsWith(pref + '.')) {
+                if (this.modalSub_serieCodigo && !cod.startsWith(this.modalSub_serieCodigo + '.')) {
+                    cod = `${this.modalSub_serieCodigo}.${cod}`;
+                } else {
+                    cod = `${pref}.${cod}`;
+                }
+            }
+            this.modalSub_codigo = cod;
+            this.modalSub_nombre = subCat.nombre;
+        },
+
+        agregarTipoAModalSub() {
+            const val = (this.modalSub_nuevoTipoDoc || '').trim();
+            if (!val) return;
+            this.modalSub_tipos.push({
+                nombre: this.toTitleCase(val),
+                soporte_papel: false,
+                soporte_electronico: false,
+                extensiones: ''
+            });
+            this.modalSub_nuevoTipoDoc = '';
+        },
+
+        eliminarTipoDeModalSub(idx) {
+            this.modalSub_tipos.splice(idx, 1);
+        },
+
+        prepararEnvioModalSubserie(e) {
+            const cod = (this.modalSub_codigo || '').trim();
+            const nom = (this.modalSub_nombre || '').trim();
+            if (!cod || !nom) {
+                alert('El código y el nombre de la subserie son obligatorios.');
+                e.preventDefault();
+                return;
+            }
+        },
+
+        abrirModalEditarItem(item) {
+            if (!item) return;
+            this.edit_id = item.id;
+            this.edit_codigo = item.codigo || '';
+            this.edit_nombre = item.nombre || '';
+            this.edit_papel = !!item.soporte_papel;
+            this.edit_elec = !!item.soporte_electronico;
+            this.edit_ext = item.extensiones || '';
+            this.edit_ret_g = item.retencion_gestion !== undefined ? item.retencion_gestion : 0;
+            this.edit_ret_c = item.retencion_central !== undefined ? item.retencion_central : 0;
+            this.edit_disp = item.disposicion_final || '';
+            this.edit_rep = item.reproduccion_tecnica || '';
+            this.edit_proc = item.procedimiento || '';
+            this.edit_nivel = item.nivel || 'REGISTRO';
+            this.mostrarModalEditar = true;
+        },
+
+        abrirModalEditar(id, cod, nom, papel, elec, ext, ret_g, ret_c, disp, rep, proc, nivel) {
+            this.edit_id = id;
+            this.edit_codigo = cod || '';
+            this.edit_nombre = nom || '';
+            this.edit_papel = !!papel;
+            this.edit_elec = !!elec;
+            this.edit_ext = ext || '';
+            this.edit_ret_g = ret_g || 0;
+            this.edit_ret_c = ret_c || 0;
+            this.edit_disp = disp || '';
+            this.edit_rep = rep || '';
+            this.edit_proc = proc || '';
+            this.edit_nivel = nivel || 'REGISTRO';
+            this.mostrarModalEditar = true;
+        },
+
+        modoVistaContenido: 'acordeon',
+        seriesAbiertas: {},
+        toggleSerie(id) {
+            this.seriesAbiertas[id] = !this.seriesAbiertas[id];
+        },
+        expandirTodasSeries() {
+            const obj = {};
+            {% if arbol_series %}
+            {% for n in arbol_series %}
+            obj['{{ n.serie.id or forloop.counter }}'] = true;
+            {% endfor %}
+            {% endif %}
+            this.seriesAbiertas = obj;
+        },
+        colapsarTodasSeries() {
+            this.seriesAbiertas = {};
+        },
+
+        erroresValidacion: [],
+        erroresCampos: {},
+        
+        get series() {
+            return (this.catalogo && this.catalogo.series) ? this.catalogo.series : [];
+        },
+        get prefijoOficina() {
+            return (this.catalogo && this.catalogo.prefijo) ? this.catalogo.prefijo : '';
+        },
+        get subseriesCatalogoActuales() {
+            if (this.serieSeleccionadaIdx === '' || !this.series[this.serieSeleccionadaIdx]) return [];
+            return this.series[this.serieSeleccionadaIdx].subseries || [];
+        },
+        
+        formatearCodigo(codBase) {
+            const pref = this.prefijoOficina;
+            if (!pref || !codBase) return codBase || '';
+            return codBase.startsWith(pref + '.') ? codBase : (pref + '.' + codBase);
+        },
+        
+        alSeleccionarSerie() {
+            if (this.serieSeleccionadaIdx === '') {
+                this.serieCodigo = '';
+                this.serieNombre = '';
+                this.tieneSubserie = false;
+                this.subseries = [];
+                this.limpiarSubForm();
+                return;
+            }
+            const s = this.series[this.serieSeleccionadaIdx];
+            if (!s) return;
+            
+            this.serieCodigo = this.formatearCodigo(s.codigo);
+            this.serieNombre = s.nombre;
+            
+            if (s.subseries && s.subseries.length > 0) {
+                this.tieneSubserie = true;
+                this.limpiarSubForm();
+            } else {
+                this.tieneSubserie = false;
+                this.subseries = [];
+                this.limpiarSubForm();
+            }
+        },
+        
+        alCambiarTieneSubserie() {
+            if (!this.tieneSubserie) {
+                this.subseries = [];
+                this.limpiarSubForm();
+            } else {
+                this.limpiarSubForm();
+            }
+        },
+
+        limpiarSubForm() {
+            this.subForm_editandoIdx = null;
+            this.subForm_codigo = '';
+            this.subForm_nombre = '';
+            this.subForm_soporte_papel = false;
+            this.subForm_soporte_electronico = false;
+            this.subForm_extensiones = '';
+            this.subForm_retencion_gestion = '';
+            this.subForm_retencion_central = '';
+            this.subForm_disposicion_final = '';
+            this.subForm_reproduccion_tecnica = '';
+            this.subForm_procedimiento = '';
+            this.subForm_nuevoTipoDoc = '';
+            this.subForm_tiposDocumentales = [];
+
+            if (this.serieCodigo) {
+                const numSub = this.subseries.length + 1;
+                this.subForm_codigo = `${this.serieCodigo}.${numSub}`;
+            }
+        },
+
+        alSeleccionarSubserieEnForm(catIdx) {
+            if (catIdx === '' || !this.subseriesCatalogoActuales[catIdx]) return;
+            const subCat = this.subseriesCatalogoActuales[catIdx];
+            const sActual = (this.serieSeleccionadaIdx !== '' && this.series[this.serieSeleccionadaIdx]) ? this.series[this.serieSeleccionadaIdx] : null;
+            const pref = this.prefijoOficina;
+            let cod = subCat.codigo || '';
+            if (pref && !cod.startsWith(pref + '.')) {
+                if (sActual && cod.startsWith(sActual.codigo + '.')) {
+                    cod = pref + '.' + cod;
+                } else if (sActual) {
+                    cod = pref + '.' + sActual.codigo + '.' + cod;
+                } else {
+                    cod = pref + '.' + cod;
+                }
+            }
+            this.subForm_codigo = cod;
+            this.subForm_nombre = subCat.nombre;
+        },
+
+        toTitleCase(str) {
+            if (!str) return '';
+            return str.replace(/[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+/g, (w) => w.charAt(0).toUpperCase() + w.substr(1).toLowerCase());
+        },
+
+        agregarTipoASubForm() {
+            const val = (this.subForm_nuevoTipoDoc || '').trim();
+            if (!val) return;
+            this.subForm_tiposDocumentales.push({
+                nombre: this.toTitleCase(val),
+                soporte_papel: false,
+                soporte_electronico: false,
+                extensiones: ''
+            });
+            this.subForm_nuevoTipoDoc = '';
+        },
+
+        eliminarTipoDeSubForm(tIdx) {
+            this.subForm_tiposDocumentales.splice(tIdx, 1);
+        },
+
+        guardarSubserieEnLista() {
+            const cod = (this.subForm_codigo || '').trim();
+            const nom = (this.subForm_nombre || '').trim();
+            if (!cod || !nom) {
+                alert('El código y el nombre de la subserie son obligatorios.');
+                return;
+            }
+
+            const subObj = {
+                codigo: cod,
+                nombre: this.toTitleCase(nom),
+                soporte_papel: !!this.subForm_soporte_papel,
+                soporte_electronico: !!this.subForm_soporte_electronico,
+                extensiones: this.subForm_extensiones || '',
+                retencion_gestion: this.subForm_retencion_gestion !== '' ? this.subForm_retencion_gestion : 0,
+                retencion_central: this.subForm_retencion_central !== '' ? this.subForm_retencion_central : 0,
+                disposicion_final: this.subForm_disposicion_final || '',
+                reproduccion_tecnica: this.subForm_reproduccion_tecnica || '',
+                procedimiento: this.subForm_procedimiento || '',
+                tipos_documentales: JSON.parse(JSON.stringify(this.subForm_tiposDocumentales))
+            };
+
+            if (this.subForm_editandoIdx !== null && this.subForm_editandoIdx >= 0) {
+                this.subseries[this.subForm_editandoIdx] = subObj;
+            } else {
+                this.subseries.push(subObj);
+            }
+
+            this.limpiarSubForm();
+        },
+
+        editarSubserieDeLista(idx) {
+            const s = this.subseries[idx];
+            if (!s) return;
+            this.subForm_editandoIdx = idx;
+            this.subForm_codigo = s.codigo || '';
+            this.subForm_nombre = s.nombre || '';
+            this.subForm_soporte_papel = !!s.soporte_papel;
+            this.subForm_soporte_electronico = !!s.soporte_electronico;
+            this.subForm_extensiones = s.extensiones || '';
+            this.subForm_retencion_gestion = s.retencion_gestion !== undefined ? s.retencion_gestion : '';
+            this.subForm_retencion_central = s.retencion_central !== undefined ? s.retencion_central : '';
+            this.subForm_disposicion_final = s.disposicion_final || '';
+            this.subForm_reproduccion_tecnica = s.reproduccion_tecnica || '';
+            this.subForm_procedimiento = s.procedimiento || '';
+            this.subForm_nuevoTipoDoc = '';
+            this.subForm_tiposDocumentales = JSON.parse(JSON.stringify(s.tipos_documentales || []));
+
+            this.$nextTick(() => {
+                if (this.$refs.formularioSubserie) {
+                    this.$refs.formularioSubserie.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        },
+
+        cancelarEdicionSubForm() {
+            this.limpiarSubForm();
+        },
+
+        eliminarSubserieDeLista(idx) {
+            this.subseries.splice(idx, 1);
+            if (this.subForm_editandoIdx === idx) {
+                this.limpiarSubForm();
+            } else if (this.subForm_editandoIdx !== null && this.subForm_editandoIdx > idx) {
+                this.subForm_editandoIdx--;
+            }
+        },
+
+        cargarTodasLasSubseriesDelCatalogo() {
+            const list = this.subseriesCatalogoActuales;
+            if (!list || list.length === 0) return;
+            const sActual = (this.serieSeleccionadaIdx !== '' && this.series[this.serieSeleccionadaIdx]) ? this.series[this.serieSeleccionadaIdx] : null;
+            const pref = this.prefijoOficina;
+            
+            list.forEach(catSub => {
+                let cod = catSub.codigo || '';
+                if (pref && !cod.startsWith(pref + '.')) {
+                    if (sActual && cod.startsWith(sActual.codigo + '.')) {
+                        cod = pref + '.' + cod;
+                    } else if (sActual) {
+                        cod = pref + '.' + sActual.codigo + '.' + cod;
+                    } else {
+                        cod = pref + '.' + cod;
+                    }
+                }
+                const existe = this.subseries.some(s => s.codigo === cod);
+                if (!existe) {
+                    this.subseries.push({
+                        codigo: cod,
+                        nombre: catSub.nombre,
+                        soporte_papel: false,
+                        soporte_electronico: false,
+                        extensiones: '',
+                        retencion_gestion: '',
+                        retencion_central: '',
+                        disposicion_final: '',
+                        reproduccion_tecnica: '',
+                        procedimiento: '',
+                        tipos_documentales: []
+                    });
+                }
+            });
+            this.limpiarSubForm();
+        },
+        
+        agregarTipoDoc() {
+            const val = this.nuevoTipoDoc.trim();
+            if (val.length === 0) return;
+            this.tiposDocumentales.push({
+                nombre: this.toTitleCase(val),
+                soporte_papel: false,
+                soporte_electronico: false,
+                extensiones: ''
+            });
+            this.nuevoTipoDoc = '';
+            this.$nextTick(() => {
+                if (this.$refs.inputTipoDoc) this.$refs.inputTipoDoc.focus();
+            });
+        },
+        
+        eliminarTipoDoc(idx) {
+            this.tiposDocumentales.splice(idx, 1);
+        },
+
+        ordenarTiposConsecutivoSerieSimple() {
+            this.tiposDocumentales.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+        },
+
+        renderSoporte(papel, elec, ext) {
+            let res = [];
+            if (papel) res.push('PAPEL');
+            if (elec) res.push(ext || 'ELEC');
+            return res.join(' / ') || 'PAPEL';
+        },
+
+        abrirModalNuevaSerieSubserie(tab = 'crear') {
+            this.tabCatalogo = tab;
+            this.serieEditandoCod = null;
+            this.nuevoCat_serieCod = '';
+            this.nuevoCat_serieNom = '';
+            this.nuevoCat_incluirSub = false;
+            this.nuevoCat_subCod = '';
+            this.nuevoCat_subNom = '';
+            this.mostrarModalNuevoCatalogo = true;
+        },
+
+        iniciarEdicionSerie(s) {
+            this.serieEditandoCod = s.codigo;
+            this.serieEditandoNuevoCod = s.codigo;
+            this.serieEditandoNuevoNom = s.nombre;
+        },
+
+        async guardarEdicionSerie(s) {
+            const nuevoCod = this.serieEditandoNuevoCod.trim();
+            const nuevoNom = this.serieEditandoNuevoNom.trim();
+            if (!nuevoCod || !nuevoNom) {
+                alert('El código y el nombre son obligatorios.');
+                return;
+            }
+            try {
+                const resp = await fetch('/api/ccd/actualizar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        oficina: this.oficinaProductora,
+                        codigo_actual: s.codigo,
+                        nuevo_codigo: nuevoCod,
+                        nuevo_nombre: nuevoNom
+                    })
+                });
+                const res = await resp.json();
+                if (res.ok && res.catalogo) {
+                    this.catalogo = res.catalogo;
+                    this.serieEditandoCod = null;
+                } else {
+                    alert('Error actualizando serie: ' + (res.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de conexión: ' + err.message);
+            }
+        },
+
+        async eliminarSerieCatalogo(s) {
+            if (!confirm(`¿Estás seguro de eliminar la serie '${s.nombre}' del catálogo?`)) return;
+            try {
+                const resp = await fetch('/api/ccd/eliminar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        oficina: this.oficinaProductora,
+                        codigo_serie: s.codigo
+                    })
+                });
+                const res = await resp.json();
+                if (res.ok && res.catalogo) {
+                    this.catalogo = res.catalogo;
+                } else {
+                    alert('Error eliminando serie: ' + (res.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de conexión: ' + err.message);
+            }
+        },
+
+        async guardarNuevaSerieEnCatalogo() {
+            const sCod = this.nuevoCat_serieCod.trim();
+            const sNom = this.nuevoCat_serieNom.trim();
+            if (!sNom) {
+                alert('Por favor ingresa el nombre de la serie.');
+                return;
+            }
+
+            if (this.nuevoCat_incluirSub && !this.nuevoCat_subNom.trim()) {
+                alert('Por favor ingresa el nombre de la subserie.');
+                return;
+            }
+
+            this.guardandoCatalogo = true;
+            try {
+                const resp = await fetch('/api/ccd/guardar_personalizado', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        oficina: this.oficinaProductora,
+                        serie_codigo: sCod,
+                        serie_nombre: sNom,
+                        subserie_codigo: this.nuevoCat_incluirSub ? this.nuevoCat_subCod.trim() : '',
+                        subserie_nombre: this.nuevoCat_incluirSub ? this.nuevoCat_subNom.trim() : ''
+                    })
+                });
+                const res = await resp.json();
+                if (res.ok && res.catalogo) {
+                    this.catalogo = res.catalogo;
+                    this.mostrarModalNuevoCatalogo = false;
+                    
+                    // Buscar la serie recién guardada en el catálogo actualizado
+                    const serieCreada = (this.catalogo.series || []).find(s => 
+                        s.nombre.toUpperCase() === sNom.toUpperCase() || (sCod && s.codigo === sCod)
+                    );
+                    
+                    if (serieCreada) {
+                        this.serieCodigo = this.formatearCodigo(serieCreada.codigo);
+                        this.serieNombre = serieCreada.nombre.toUpperCase();
+                        
+                        if (this.nuevoCat_incluirSub && this.nuevoCat_subNom) {
+                            this.tieneSubserie = true;
+                            this.subseries = [];
+                            const subCreada = (serieCreada.subseries || []).find(sub => 
+                                sub.nombre.toUpperCase() === this.nuevoCat_subNom.trim().toUpperCase()
+                            );
+                            this.subseries.push({
+                                codigo: subCreada ? subCreada.codigo : (this.nuevoCat_subCod || `${serieCreada.codigo}.1`),
+                                nombre: this.nuevoCat_subNom.trim(),
+                                soporte_papel: false,
+                                soporte_electronico: false,
+                                extensiones: '',
+                                retencion_gestion: '',
+                                retencion_central: '',
+                                disposicion_final: '',
+                                reproduccion_tecnica: '',
+                                procedimiento: '',
+                                tipos_documentales: []
+                            });
+                            this.limpiarSubForm();
+                        }
+                    } else {
+                        this.serieCodigo = this.formatearCodigo(sCod || '1');
+                        this.serieNombre = sNom.toUpperCase();
+                    }
+                } else {
+                    alert('Error guardando en el catálogo: ' + (res.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de conexión al guardar en catálogo: ' + err.message);
+            } finally {
+                this.guardandoCatalogo = false;
+            }
+        },
+
+        abrirVistaPrevia() {
+            this.validarCampos();
+            this.mostrarModalPreview = true;
+        },
+
+        validarCampos() {
+            this.erroresValidacion = [];
+            this.erroresCampos = {};
+
+            if (!this.serieCodigo.trim()) {
+                this.erroresValidacion.push('El código de la Serie es obligatorio.');
+                this.erroresCampos.serieCodigo = true;
+                this.erroresCampos.serie = true;
+            }
+            if (!this.serieNombre.trim()) {
+                this.erroresValidacion.push('El nombre de la Serie es obligatorio.');
+                this.erroresCampos.serieNombre = true;
+                this.erroresCampos.serie = true;
+            }
+
+            if (this.tieneSubserie) {
+                if (this.subseries.length === 0) {
+                    this.erroresValidacion.push('Indicaste que la serie contiene subseries, pero no has agregado ninguna subserie.');
+                }
+                this.subseries.forEach((s, idx) => {
+                    if (!s.codigo.trim() || !s.nombre.trim()) {
+                        this.erroresValidacion.push(`La Subserie #${idx + 1} debe tener código y nombre definidos.`);
+                        this.erroresCampos['subserie_' + idx] = true;
+                    }
+                });
+            }
+
+            return this.erroresValidacion.length === 0;
+        },
+
+        enviarFormulario() {
+            if (!this.validarCampos()) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            const formElem = this.$refs.formularioTRD || document.querySelector('form');
+            let hidden = formElem.querySelector('input[name="estructura_arbol_json"]');
+            if (!hidden) {
+                hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'estructura_arbol_json';
+                formElem.appendChild(hidden);
+            }
+            hidden.value = JSON.stringify(this.construirArbol());
+            formElem.submit();
+        },
+
+        construirArbol() {
+            return {
+                serie_codigo: this.serieCodigo,
+                serie_nombre: this.serieNombre,
+                serie_soporte_papel: this.serie_soporte_papel,
+                serie_soporte_electronico: this.serie_soporte_electronico,
+                serie_extensiones: this.serie_extensiones,
+                serie_retencion_gestion: this.serie_retencion_gestion,
+                serie_retencion_central: this.serie_retencion_central,
+                serie_disposicion_final: this.serie_disposicion_final,
+                serie_reproduccion_tecnica: this.serie_reproduccion_tecnica,
+                tiene_subserie: this.tieneSubserie,
+                procedimiento: this.procedimiento,
+                tipos_documentales: this.tiposDocumentales,
+                subseries: this.subseries.map(s => ({
+                    codigo: s.codigo,
+                    nombre: s.nombre,
+                    soporte_papel: s.soporte_papel,
+                    soporte_electronico: s.soporte_electronico,
+                    extensiones: s.extensiones,
+                    retencion_gestion: s.retencion_gestion,
+                    retencion_central: s.retencion_central,
+                    disposicion_final: s.disposicion_final,
+                    reproduccion_tecnica: s.reproduccion_tecnica,
+                    procedimiento: s.procedimiento,
+                    tipos_documentales: s.tipos_documentales || []
+                }))
+            };
+        },
+        
+        limpiarTodo() {
+            this.serieSeleccionadaIdx = '';
+            this.serieCodigo = '';
+            this.serieNombre = '';
+            this.serie_soporte_papel = false;
+            this.serie_soporte_electronico = false;
+            this.serie_extensiones = '';
+            this.serie_retencion_gestion = '';
+            this.serie_retencion_central = '';
+            this.serie_disposicion_final = '';
+            this.serie_reproduccion_tecnica = '';
+            
+            this.tieneSubserie = false;
+            this.subseries = [];
+            this.limpiarSubForm();
+            
+            this.nuevoTipoDoc = '';
+            this.tiposDocumentales = [];
+            this.procedimiento = '';
+            this.erroresValidacion = [];
+            this.erroresCampos = {};
+        }
+    };
+}
+</script>
+{% endblock %}

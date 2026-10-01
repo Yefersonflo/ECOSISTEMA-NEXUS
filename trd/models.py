@@ -38,3 +38,11 @@ class ItemTRD(models.Model):
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
+from django.db import models
+
+class OficinaProductora(models.Model):
+    prefijo = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=200, unique=True)
+
+    def __str__(self):
+        return f"{self.prefijo} - {self.nombre}"
