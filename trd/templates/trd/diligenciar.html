@@ -5,16 +5,14 @@
 {% block header_title %}Tablas de Retención Documental{% endblock %}
 
 {% block content %}
-{% extends 'layout/base.html' %}
 
 {% block title %}Diligenciar TRD | Comfacasanare{% endblock %}
 {% block header_title %}Diligenciar Nueva TRD{% endblock %}
 
 {#- Clases compartidas de alto contraste (una sola fuente de verdad por template) -#}
-{% set INPUT = "w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all" %}
-{% set LABEL = "text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5" %}
 
-{% block content %}
+
+
 <div class="max-w-5xl mx-auto py-6">
 
     <form method="post" class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden">
@@ -37,13 +35,13 @@
                 </legend>
 
                 <div>
-                    <label class="{{ LABEL }}">Entidad Productora</label>
-                    <input type="text" name="entidad_productora" value="{{ entidad }}" class="{{ INPUT }}">
+                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Entidad Productora</label>
+                    <input type="text" name="entidad_productora" value="{{ entidad }}" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                 </div>
 
                 <div>
-                    <label class="{{ LABEL }}">Oficina Productora <span class="text-comfaRed">*</span></label>
-                    <select name="oficina_productora" required class="{{ INPUT }}">
+                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Oficina Productora <span class="text-comfaRed">*</span></label>
+                    <select name="oficina_productora" required class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         <option value="">-- Seleccione la oficina --</option>
                         {% for o in oficinas %}
                         <option value="{{ o.nombre }}">{{ o.prefijo }} &middot; {{ o.nombre }}</option>
@@ -68,12 +66,12 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="{{ LABEL }}">Fecha Aprobacion</label>
-                        <input type="text" name="fecha_aprobacion" placeholder="DD/MM/AAAA" class="{{ INPUT }}">
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Fecha Aprobacion</label>
+                        <input type="text" name="fecha_aprobacion" placeholder="DD/MM/AAAA" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                     </div>
                     <div>
-                        <label class="{{ LABEL }}">Version de Tabla <span class="text-slate-400 font-bold normal-case tracking-normal">(opcional)</span></label>
-                        <input type="text" name="fecha_convalidacion" placeholder="Ej. 1.0" class="{{ INPUT }}">
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Version de Tabla <span class="text-slate-400 font-bold normal-case tracking-normal">(opcional)</span></label>
+                        <input type="text" name="fecha_convalidacion" placeholder="Ej. 1.0" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                     </div>
                 </div>
             </fieldset>
@@ -96,12 +94,12 @@
                             <i class="fas fa-user-shield mr-1.5"></i> Responsable del Area de Gestion Documental
                         </p>
                         <div>
-                            <label class="{{ LABEL }}">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
-                            <input type="text" name="responsable" placeholder="Nombres y apellidos" class="{{ INPUT }}">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
+                            <input type="text" name="responsable" placeholder="Nombres y apellidos" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="{{ LABEL }}">Cargo</label>
-                            <input type="text" name="cargo_responsable" placeholder="Ej. Lider de Gestion Documental" class="{{ INPUT }}">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Cargo</label>
+                            <input type="text" name="cargo_responsable" placeholder="Ej. Lider de Gestion Documental" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         </div>
                     </div>
 
@@ -110,12 +108,12 @@
                             <i class="fas fa-user-pen mr-1.5"></i> Responsable de Area
                         </p>
                         <div>
-                            <label class="{{ LABEL }}">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
-                            <input type="text" name="responsable_area" placeholder="Nombres y apellidos" class="{{ INPUT }}">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
+                            <input type="text" name="responsable_area" placeholder="Nombres y apellidos" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="{{ LABEL }}">Cargo</label>
-                            <input type="text" name="cargo_responsable_area" placeholder="Ej. Lider de Area" class="{{ INPUT }}">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Cargo</label>
+                            <input type="text" name="cargo_responsable_area" placeholder="Ej. Lider de Area" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         </div>
                     </div>
 
@@ -124,12 +122,12 @@
                             <i class="fas fa-user-tie mr-1.5"></i> Superior Jerarquico
                         </p>
                         <div>
-                            <label class="{{ LABEL }}">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
-                            <input type="text" name="superior" placeholder="Nombres y apellidos" class="{{ INPUT }}">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
+                            <input type="text" name="superior" placeholder="Nombres y apellidos" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="{{ LABEL }}">Cargo</label>
-                            <input type="text" name="cargo_superior" placeholder="Ej. Subdirector Administrativo" class="{{ INPUT }}">
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Cargo</label>
+                            <input type="text" name="cargo_superior" placeholder="Ej. Subdirector Administrativo" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                         </div>
                     </div>
 
