@@ -38,7 +38,7 @@ def _normalizar(texto: str) -> str:
 
 def obtener_datos_oficina(nombre_o_prefijo: str) -> Optional[dict[str, Any]]:
     """Busca y devuelve los datos y series de una oficina por su codigo/prefijo o nombre."""
-    import oficinas
+    from trd.utils import oficinas
     catalogo = cargar_catalogo()
     busqueda = _normalizar(nombre_o_prefijo)
     if not busqueda:
@@ -96,7 +96,7 @@ def registrar_serie_o_subserie_personalizada(nombre_o_prefijo: str, serie_cod: s
     of = obtener_datos_oficina(nombre_o_prefijo)
     if not of:
         # Si la oficina no existe en el catálogo, la creamos
-        import oficinas
+        from trd.utils import oficinas
         pref = oficinas.prefijo_de(nombre_o_prefijo) or "00"
         of = {
             "key": f"{pref} - {nombre_o_prefijo.upper()}",
