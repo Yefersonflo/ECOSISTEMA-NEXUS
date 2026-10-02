@@ -886,7 +886,7 @@
 
                         <!-- Botones de Acción de la Serie -->
                         {% if nodo.serie.id %}
-                        <button type="button" @click='abrirModalNuevaSubserieDirecta({{ nodo.serie.to_json|safe }}, {{ nodo.subseries|length|add:'1' }})'
+                        <button type="button" @click='abrirModalNuevaSubserieDirecta({{ nodo.serie.to_json|safe }}, {{ nodo.subseries|length|add:"1" }})'
                                 class="px-2.5 py-1.5 bg-blue-50 hover:bg-comfaBlue text-comfaBlue hover:text-white border border-blue-200 hover:border-comfaBlue rounded-lg inline-flex items-center gap-1 text-[11px] font-black uppercase transition-all cursor-pointer shadow-xs"
                                 title="Agregar una nueva subserie a esta serie">
                             <i class="fas fa-plus"></i>
