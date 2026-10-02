@@ -13,7 +13,7 @@ _CSP = (
     "default-src 'self'; "
     "img-src 'self' data: https:; "
     "style-src 'self' 'unsafe-inline' https:; "
-    "script-src 'self' 'unsafe-inline' https:; "
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; "
     "font-src 'self' data: https:; "
     "frame-ancestors 'none'"
 )
