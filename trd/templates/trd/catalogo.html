@@ -47,7 +47,18 @@
     </div>
 
     <!-- Formulario de Filtros Avanzados -->
-    <form method="get" x-data
+    <form method="get" x-data="{
+        abierto: false,
+        busqueda: '{{ filtros.texto|escapejs }}',
+        seleccionadas: {{ oficinas_seleccionadas|safe }},
+        marcarTodas() {
+            this.seleccionadas = [{% for o in oficinas %}'{{ o.nombre|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+        },
+        limpiarTodas() {
+            this.seleccionadas = [];
+        }
+    }" @click.outside="abierto = false"
+
           class="bg-white rounded-3xl shadow-lg border-2 border-slate-200 p-6 space-y-4">
         
         <!-- Fila 1: Búsqueda de texto y Oficina -->
@@ -65,17 +76,7 @@
                 </div>
             </div>
 
-            <div class="md:col-span-5 relative" x-data="{
-                abierto: false,
-                busqueda: '',
-                seleccionadas: {{ oficinas_seleccionadas | safe }},
-                marcarTodas() {
-                    this.seleccionadas = [{% for o in oficinas %}'{{ o.nombre }}',{% endfor %}];
-                },
-                limpiarTodas() {
-                    this.seleccionadas = [];
-                }
-            }" @click.outside="abierto = false">
+            <div class="md:col-span-5 relative" >
                 <div class="flex items-center justify-between mb-1.5">
                     <label class="text-[10px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                         <i class="fas fa-sitemap text-comfaBlue"></i> Oficinas Productoras (Multi-selección)
