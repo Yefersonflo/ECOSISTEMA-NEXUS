@@ -57,7 +57,7 @@
             <button type="button" @click="formularioAbierto = !formularioAbierto; if (formularioAbierto) { $nextTick(() => $refs.formularioTRD.scrollIntoView({ behavior: 'smooth' })) }"
                     class="px-5 py-4 bg-amber-400 hover:bg-amber-300 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 cursor-pointer">
                 <i class="fas" :class="formularioAbierto ? 'fa-xmark text-red-700' : 'fa-plus'"></i>
-                <span x-text="formularioAbierto ? 'Ocultar Formulario' : '+ Agregar Nueva Serie a la TRD'"></span>
+                <span x-text="formularioAbierto ? 'Ocultar Formulario' : '+ Agregar Nueva Serie a la TRD'">+ Agregar Nueva Serie a la TRD</span>
             </button>
             <button type="button" onclick="document.getElementById('modalNuevaVersion').classList.remove('hidden'); document.getElementById('modalNuevaVersion').classList.add('flex');"
                     class="px-5 py-4 bg-comfaBlue hover:bg-[#003a6b] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 cursor-pointer">
@@ -67,10 +67,9 @@
     </div>
 
     <form method="post" action="{% url 'trd:crear_item' enc_id=enc_id %}"
+          id="formularioTRD"
           x-ref="formularioTRD"
           x-show="formularioAbierto"
-          x-collapse
-          x-cloak
           @submit.prevent="enviarFormulario()"
           class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden relative">
 
@@ -1006,7 +1005,7 @@
                                 </div>
 
                                 <!-- Contenido Desplegable de la Subserie (Tipos Documentales y Formulario Rápido) -->
-                                <div x-show="subAbierta" x-collapse x-cloak class="p-4 sm:p-5 bg-slate-50/50 space-y-4 border-t border-slate-100">
+                                <div x-show="subAbierta"  x-cloak class="p-4 sm:p-5 bg-slate-50/50 space-y-4 border-t border-slate-100">
                                     {% if sub_item.subserie.procedimiento %}
                                     <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-200 text-xs text-slate-700 space-y-0.5">
                                         <span class="font-black text-comfaBlue uppercase text-[10px] block"><i class="fas fa-gavel mr-1"></i> Procedimiento Oficial de la Subserie</span>
