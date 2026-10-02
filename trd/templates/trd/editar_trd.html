@@ -2390,4 +2390,15 @@ function formTRDData() {
     };
 }
 </script>
+
+<script>
+window.addEventListener('alpine:init', () => {
+    console.log('Alpine is initializing...');
+});
+window.addEventListener('error', function(e) {
+    if (e.message) {
+        document.body.insertAdjacentHTML('afterbegin', '<div style="background:red;color:white;padding:10px;z-index:9999;position:fixed;top:0;left:0;right:0;">JS ERROR: ' + e.message + ' at ' + e.filename + ':' + e.lineno + '</div>');
+    }
+});
+</script>
 {% endblock %}
