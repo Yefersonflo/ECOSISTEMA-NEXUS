@@ -136,7 +136,7 @@ def crear_item(request, enc_id):
             td_elec = bool(td_data.get("soporte_electronico", False))
             td_ext = str(td_data.get("extensiones", "")).strip() if td_elec else ""
             ItemTRD.objects.update_or_create(
-                encabezado=encabezado, parent_id=sub_item.id, nombre=td_nom, nivel="Tipo",
+                encabezado=encabezado, parent_id=sub_item.id, nombre=td_nom, nivel="TIPO DOCUMENTAL",
                 defaults={
                     "codigo": sub_cod,
                     "soporte_papel": bool(td_data.get("soporte_papel", True)),
@@ -153,7 +153,7 @@ def crear_item(request, enc_id):
         td_elec = bool(td_data.get("soporte_electronico", False))
         td_ext = str(td_data.get("extensiones", "")).strip() if td_elec else ""
         ItemTRD.objects.update_or_create(
-            encabezado=encabezado, parent_id=serie.id, nombre=td_nom, nivel="Tipo",
+            encabezado=encabezado, parent_id=serie.id, nombre=td_nom, nivel="TIPO DOCUMENTAL",
             defaults={
                 "codigo": serie_cod,
                 "soporte_papel": bool(td_data.get("soporte_papel", True)),
@@ -211,12 +211,12 @@ def agregar_tipo_documental(request, enc_id, padre_id):
     td_ext = request.POST.get("extensiones", "").strip() if td_elec else ""
     
     ItemTRD.objects.create(
-        encabezado=encabezado, parent_id=padre.id, codigo=padre.codigo, nombre=td_nom, nivel="Tipo",
+        encabezado=encabezado, parent_id=padre.id, codigo=padre.codigo, nombre=td_nom, nivel="TIPO DOCUMENTAL",
         soporte_papel=request.POST.get("soporte_papel") in ("1", "true", "on"),
         soporte_electronico=td_elec,
         extensiones=td_ext,
         disposicion_final="C",
-        orden=ItemTRD.objects.filter(parent_id=padre.id, nivel="Tipo").count()
+        orden=ItemTRD.objects.filter(parent_id=padre.id, nivel="TIPO DOCUMENTAL").count()
     )
     
     messages.success(request, f"Tipo documental '{td_nom}' agregado.")
