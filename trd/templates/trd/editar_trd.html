@@ -109,7 +109,7 @@
         </div>
 
         <!-- Banner de Errores de Validación Visual -->
-        <div x-show="erroresValidacion.length > 0" x-cloak class="mx-8 mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-2xl animate-in fade-in duration-200">
+        <div x-show="erroresValidacion.length > 0" style="display: none;" class="mx-8 mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-2xl animate-in fade-in duration-200">
             <div class="flex items-center gap-2 text-red-800 font-black text-xs uppercase tracking-wider mb-1">
                 <i class="fas fa-triangle-exclamation text-sm text-red-600"></i> Por favor corrige los siguientes campos antes de guardar:
             </div>
@@ -630,7 +630,7 @@
     {# ========================================================================= #}
     {# --- MODAL CREAR / GESTIONAR CATÁLOGO CCD --- #}
     {# ========================================================================= #}
-        <div x-show="mostrarModalNuevoCatalogo" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div x-show="mostrarModalNuevoCatalogo" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                 <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
                     <div class="flex items-center gap-2">
@@ -1375,7 +1375,7 @@
         {% endif %}
 
         {# Modal de Edición Rápida de Registro #}
-        <div x-show="mostrarModalEditar" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div x-show="mostrarModalEditar" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                 <form method="post" :action="'/trd/{{ enc_id }}/item/' + edit_id + '/editar'">
                     <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
@@ -1460,7 +1460,7 @@
         </div>
 
         {# Modal Agregar Nueva Subserie Directa a una Serie #}
-        <div x-show="mostrarModalNuevaSubserieDirecta" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div x-show="mostrarModalNuevaSubserieDirecta" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                 <form method="post" :action="'/trd/{{ enc_id }}/serie/' + modalSub_serieId + '/agregar_subserie'" @submit="prepararEnvioModalSubserie($event)">
                     <input type="hidden" name="tipos_json" :value="JSON.stringify(modalSub_tipos)">
