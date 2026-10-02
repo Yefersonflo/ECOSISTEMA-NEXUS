@@ -29,7 +29,7 @@ NIVELES = ["SERIE", "SUBSERIE", "TIPO"]
 ENTIDAD_POR_DEFECTO = "COMFACASANARE"
 NIVEL_SERIE = "SERIE"
 NIVEL_SUBSERIE = "SUBSERIE"
-NIVEL_TIPO = "TIPO"
+NIVEL_TIPO = "TIPO DOCUMENTAL"
 
 def normalizar_disposicion(disp):
     disp = str(disp).strip().upper()
