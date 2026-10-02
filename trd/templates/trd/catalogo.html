@@ -57,7 +57,7 @@
         limpiarTodas() {
             this.seleccionadas = [];
         }
-    }" @click.outside="abierto = false"
+    }"
 
           class="bg-white rounded-3xl shadow-lg border-2 border-slate-200 p-6 space-y-4">
         
@@ -89,7 +89,7 @@
                 </div>
                 
                 <!-- Botón activador del Dropdown -->
-                <button type="button" @click="abierto = !abierto"
+                <button type="button" onclick="document.getElementById('ofi-panel-dropdown').classList.toggle('hidden'); document.getElementById('ofi-chevron').classList.toggle('rotate-180');"
                         class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-2xl text-xs font-bold text-slate-800 hover:border-slate-400 focus:border-comfaBlue focus:bg-white flex items-center justify-between transition-all">
                     <div class="flex items-center gap-2 truncate">
                         <template x-if="seleccionadas.length === 0">
@@ -102,15 +102,15 @@
                             </span>
                         </template>
                     </div>
-                    <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform duration-200" :class="abierto ? 'rotate-180 text-comfaBlue' : ''"></i>
+                    <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform duration-200" id="ofi-chevron"></i>
                 </button>
 
                 <!-- Panel flotante del desplegable -->
-                <div x-show="abierto" x-cloak
-                     x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                     class="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border-2 border-slate-300 p-3 z-50 space-y-2">
+                <div id="ofi-panel-dropdown" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border-2 border-slate-300 p-3 z-50 space-y-2"
+                     
+                     
+                     
+                     >
                     
                     <!-- Buscador rápido dentro del selector de oficinas -->
                     <div class="relative">
