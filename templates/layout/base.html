@@ -90,17 +90,18 @@
             
             
 
+
 <!-- MENU DESPLEGABLE TRD -->
-<div x-data="{ open: false }" class="relative w-full">
-    <button type="button" @click="open = !open" class="w-full flex items-center justify-between p-4 rounded-xl text-white font-bold hover:bg-white/10 transition-colors {% if '/trd/' in request.path %}bg-white/10{% endif %}">
+<div class="relative w-full">
+    <button type="button" onclick="document.getElementById('trd-submenu').classList.toggle('hidden'); document.getElementById('trd-chevron').classList.toggle('rotate-180');" class="w-full flex items-center justify-between p-4 rounded-xl text-white font-bold hover:bg-white/10 transition-colors {% if '/trd/' in request.path %}bg-white/10{% endif %}">
         <div class="flex items-center space-x-4 pointer-events-none">
             <i class="fas fa-file-signature w-8 text-center text-xl text-blue-400"></i>
             <span class="sidebar-text text-xs uppercase tracking-widest">Módulo TRD</span>
         </div>
-        <i class="fas fa-chevron-down text-[10px] sidebar-text transition-transform duration-300 pointer-events-none" :class="{'rotate-180': open}"></i>
+        <i id="trd-chevron" class="fas fa-chevron-down text-[10px] sidebar-text transition-transform duration-300 pointer-events-none"></i>
     </button>
     
-    <div x-show="open" style="display: none;" x-transition class="pl-14 pr-4 space-y-1 mt-1 sidebar-text">
+    <div id="trd-submenu" class="hidden pl-14 pr-4 space-y-1 mt-1 sidebar-text transition-all">
         <a href="{% url 'trd:inicio' %}" class="block py-2 text-[10px] font-bold text-slate-300 hover:text-comfaYellow transition-colors {% if request.resolver_match.url_name == 'inicio' %}text-comfaYellow{% endif %} uppercase tracking-wider">
             <i class="fas fa-chart-pie mr-2 opacity-50"></i> Panel Principal
         </a>
@@ -115,6 +116,7 @@
         </a>
     </div>
 </div>
+
 
 
 
