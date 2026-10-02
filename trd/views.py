@@ -217,8 +217,27 @@ def catalogo(request):
     }
     
     oficinas_all = OficinaProductora.objects.all().order_by('nombre')
+    
+    oficinas_tarjetas = []
+    items_por_oficina = {}
+    for item in qs:
+        oficina = item.encabezado.oficina_productora if item.encabezado else "SIN OFICINA"
+        if oficina not in items_por_oficina:
+            items_por_oficina[oficina] = []
+        items_por_oficina[oficina].append(item)
+    
+    for oficina, items_oficina in items_por_oficina.items():
+        oficinas_tarjetas.append({
+            "nombre": oficina,
+            "series": agrupar_items_jerarquia(items_oficina),
+            "total_items": len(items_oficina)
+        })
+    oficinas_tarjetas.sort(key=lambda x: x["nombre"])
+
     return render(request, "trd/catalogo.html", {
-        "resultados": resultados,
+        "resultados": list(qs),
+        "oficinas_tarjetas": oficinas_tarjetas,
+
         "conteos": conteos,
         "oficinas": oficinas_all,
         "disposiciones": DISPOSICIONES,
