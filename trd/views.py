@@ -414,10 +414,10 @@ def eliminar_trd(request, enc_id):
         messages.error(request, 'No tienes permisos para eliminar Tablas de Retención.')
         return redirect('trd:inicio')
     from django.shortcuts import get_object_or_404
-    from .models import TRDEncabezado
+    from .models import EncabezadoTRD
     try:
-        trd = get_object_or_404(TRDEncabezado, id=enc_id)
-        nombre = f"{trd.oficina.nombre} (V{trd.version})"
+        trd = get_object_or_404(EncabezadoTRD, id=enc_id)
+        nombre = f"{trd.oficina_productora} (V{trd.version})"
         trd.delete()
         messages.success(request, f'La TRD de {nombre} fue eliminada exitosamente.')
     except Exception as e:
