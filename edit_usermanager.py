@@ -1,4 +1,101 @@
-{% extends 'layout/base.html' %}
+import os
+
+base_dir = r'C:\Users\YEFERSON\Desktop\ECOSISTEMA NEXUS\4. Plataforma Web'
+views_path = os.path.join(base_dir, 'afiliados', 'views.py')
+template_path = os.path.join(base_dir, 'templates', 'afiliados', 'gestion_usuarios.html')
+
+# 1. Reescribir la vista gestion_usuarios para soportar edición
+with open(views_path, 'r', encoding='utf8') as f:
+    views_code = f.read()
+
+# Borramos la función anterior y escribimos la nueva
+import re
+views_code = re.sub(r'@login_required\ndef gestion_usuarios\(request\):.*?(?=@login_required|\Z)', '', views_code, flags=re.DOTALL)
+
+new_view = """
+@login_required
+def gestion_usuarios(request):
+    if not is_super(request.user):
+        messages.error(request, 'Solo el Súper Administrador puede gestionar personal.')
+        return redirect('gestion_documental')
+        
+    from django.contrib.auth.models import User
+    from .models import Profile
+    
+    usuarios = User.objects.all().select_related('profile').order_by('-is_superuser', 'username')
+    
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        username = request.POST.get('username')
+        email = request.POST.get('email', '')
+        nombre = request.POST.get('nombre', '')
+        apellidos = request.POST.get('apellidos', '')
+        password = request.POST.get('password')
+        rol = request.POST.get('rol', 'USER')
+        is_active = request.POST.get('is_active') == 'on'
+        
+        if user_id:
+            # MODO EDICIÓN
+            try:
+                user_obj = User.objects.get(id=user_id)
+                # Validación para no bloquear al admin principal
+                if user_obj.username == 'admin' and not is_active:
+                    messages.error(request, 'No puedes desactivar al administrador principal.')
+                else:
+                    user_obj.username = username
+                    user_obj.email = email
+                    user_obj.first_name = nombre
+                    user_obj.last_name = apellidos
+                    user_obj.is_active = is_active
+                    
+                    if password and password.strip():
+                        user_obj.set_password(password)
+                        
+                    if rol == 'SUPERADMIN':
+                        user_obj.is_superuser = True
+                        user_obj.is_staff = True
+                        user_obj.save()
+                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': 'SUPER'})
+                    else:
+                        if user_obj.username != 'admin':  # Nunca quitar superadmin al usuario root
+                            user_obj.is_superuser = False
+                            user_obj.is_staff = False
+                        user_obj.save()
+                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': rol})
+                        
+                    messages.success(request, f'Usuario {username} actualizado exitosamente.')
+            except Exception as e:
+                messages.error(request, f'Error al actualizar: {str(e)}')
+                
+        else:
+            # MODO CREACIÓN
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'El nombre de usuario ya existe en el sistema.')
+            else:
+                try:
+                    new_user = User.objects.create_user(username=username, email=email, password=password, first_name=nombre, last_name=apellidos)
+                    if rol == 'SUPERADMIN':
+                        new_user.is_superuser = True
+                        new_user.is_staff = True
+                        new_user.save()
+                        Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER'})
+                    else:
+                        Profile.objects.update_or_create(user=new_user, defaults={'rol': rol})
+                    messages.success(request, f'¡El usuario {username} fue creado exitosamente!')
+                except Exception as e:
+                    messages.error(request, f'Error al crear usuario: {str(e)}')
+                    
+        return redirect('gestion_usuarios')
+        
+    return render(request, 'afiliados/gestion_usuarios.html', {'usuarios': usuarios})
+"""
+
+with open(views_path, 'a', encoding='utf8') as f:
+    f.write(new_view)
+
+
+# 2. Reescribir el template para añadir botón y modal de edición
+template_code = """{% extends 'layout/base.html' %}
 
 {% block title %}Gestión de Personal | Nexus Comfacasanare{% endblock %}
 
@@ -212,3 +309,8 @@
     </div>
 </div>
 {% endblock %}
+"""
+with open(template_path, 'w', encoding='utf8') as f:
+    f.write(template_code)
+
+print("Botón de edición y lógica de backend implementados con éxito.")

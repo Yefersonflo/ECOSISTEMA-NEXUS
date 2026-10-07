@@ -926,3 +926,79 @@ def gestion_usuarios(request):
         return redirect('gestion_usuarios')
         
     return render(request, 'afiliados/gestion_usuarios.html', {'usuarios': usuarios})
+
+@login_required
+def gestion_usuarios(request):
+    if not is_super(request.user):
+        messages.error(request, 'Solo el Súper Administrador puede gestionar personal.')
+        return redirect('gestion_documental')
+        
+    from django.contrib.auth.models import User
+    from .models import Profile
+    
+    usuarios = User.objects.all().select_related('profile').order_by('-is_superuser', 'username')
+    
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        username = request.POST.get('username')
+        email = request.POST.get('email', '')
+        nombre = request.POST.get('nombre', '')
+        apellidos = request.POST.get('apellidos', '')
+        password = request.POST.get('password')
+        rol = request.POST.get('rol', 'USER')
+        is_active = request.POST.get('is_active') == 'on'
+        
+        if user_id:
+            # MODO EDICIÓN
+            try:
+                user_obj = User.objects.get(id=user_id)
+                # Validación para no bloquear al admin principal
+                if user_obj.username == 'admin' and not is_active:
+                    messages.error(request, 'No puedes desactivar al administrador principal.')
+                else:
+                    user_obj.username = username
+                    user_obj.email = email
+                    user_obj.first_name = nombre
+                    user_obj.last_name = apellidos
+                    user_obj.is_active = is_active
+                    
+                    if password and password.strip():
+                        user_obj.set_password(password)
+                        
+                    if rol == 'SUPERADMIN':
+                        user_obj.is_superuser = True
+                        user_obj.is_staff = True
+                        user_obj.save()
+                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': 'SUPER'})
+                    else:
+                        if user_obj.username != 'admin':  # Nunca quitar superadmin al usuario root
+                            user_obj.is_superuser = False
+                            user_obj.is_staff = False
+                        user_obj.save()
+                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': rol})
+                        
+                    messages.success(request, f'Usuario {username} actualizado exitosamente.')
+            except Exception as e:
+                messages.error(request, f'Error al actualizar: {str(e)}')
+                
+        else:
+            # MODO CREACIÓN
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'El nombre de usuario ya existe en el sistema.')
+            else:
+                try:
+                    new_user = User.objects.create_user(username=username, email=email, password=password, first_name=nombre, last_name=apellidos)
+                    if rol == 'SUPERADMIN':
+                        new_user.is_superuser = True
+                        new_user.is_staff = True
+                        new_user.save()
+                        Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER'})
+                    else:
+                        Profile.objects.update_or_create(user=new_user, defaults={'rol': rol})
+                    messages.success(request, f'¡El usuario {username} fue creado exitosamente!')
+                except Exception as e:
+                    messages.error(request, f'Error al crear usuario: {str(e)}')
+                    
+        return redirect('gestion_usuarios')
+        
+    return render(request, 'afiliados/gestion_usuarios.html', {'usuarios': usuarios})
