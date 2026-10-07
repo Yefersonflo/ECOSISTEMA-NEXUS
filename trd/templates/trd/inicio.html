@@ -126,6 +126,14 @@
                             <a href="{% url 'trd:exportar_pdf' enc_id=t.id %}" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-red-50 border-2 border-red-200 text-comfaRed rounded-2xl inline-flex items-center justify-center hover:bg-comfaRed hover:text-white hover:border-comfaRed transition-all shadow-sm" title="Ver / Descargar PDF oficial">
                                 <i class="fas fa-file-pdf"></i>
                             </a>
+
+                              <!-- BOTÓN ELIMINAR TRD (SOLO JEFES Y ADMINS) -->
+                              {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}
+                              <a href="{% url 'trd:eliminar_trd' enc_id=t.id %}" onclick="return confirm('¿Está seguro de eliminar toda esta Tabla de Retención Documental? Esta acción borrará todas sus series, subseries y tipos documentales. ¡No se puede deshacer!');" class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl inline-flex items-center justify-center hover:bg-comfaRed hover:text-white transition-all shadow-sm" title="Eliminar Tabla">
+                                  <i class="fas fa-trash-alt text-lg"></i>
+                              </a>
+                              {% endif %}
+                              
                             <a href="{% url 'trd:exportar' enc_id=t.id %}" class="w-12 h-12 bg-green-50 border-2 border-green-200 text-green-600 rounded-2xl inline-flex items-center justify-center hover:bg-green-600 hover:text-white hover:border-green-600 transition-all shadow-sm" title="Exportar Excel editable">
                                 <i class="fas fa-file-excel text-lg"></i>
                             </a>

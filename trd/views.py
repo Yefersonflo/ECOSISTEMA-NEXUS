@@ -408,3 +408,18 @@ def api_eliminar_ccd(request):
         return JsonResponse({"ok": True, "catalogo": datos_actualizados})
     except Exception as e:
         return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+def eliminar_trd(request, enc_id):
+    if not is_trd_admin(request.user):
+        messages.error(request, 'No tienes permisos para eliminar Tablas de Retención.')
+        return redirect('trd:inicio')
+    from django.shortcuts import get_object_or_404
+    from .models import TRDEncabezado
+    try:
+        trd = get_object_or_404(TRDEncabezado, id=enc_id)
+        nombre = f"{trd.oficina.nombre} (V{trd.version})"
+        trd.delete()
+        messages.success(request, f'La TRD de {nombre} fue eliminada exitosamente.')
+    except Exception as e:
+        messages.error(request, f'Error al eliminar TRD: {str(e)}')
+    return redirect('trd:inicio')
