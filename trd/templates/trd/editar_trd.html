@@ -13,7 +13,7 @@
 
 
 {% block content %}
-<div class="max-w-[110rem] mx-auto space-y-8 py-6" x-data="formTRDData()">
+<div class="max-w-[110rem] mx-auto space-y-8 py-6" x-data="{ ...formTRDData(), showModalMetadatos: false }">
 
     <div class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="space-y-2">
@@ -28,6 +28,12 @@
                 <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-[10px] font-black uppercase tracking-wider">
                     Vigencia {{ encabezado.vigencia_ano }}
                 </span>
+                {% endif %}
+
+                {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}
+                <button @click="showModalMetadatos = true" class="px-3 py-1 bg-comfaBlue/10 text-comfaBlue hover:bg-comfaBlue hover:text-white transition-colors border border-comfaBlue/30 rounded-xl text-[10px] font-black uppercase tracking-wider ml-2 cursor-pointer shadow-sm">
+                    <i class="fas fa-cog mr-1"></i> Editar Datos
+                </button>
                 {% endif %}
 
                 {% if versiones_oficina and versiones_oficina|length > 1 %}

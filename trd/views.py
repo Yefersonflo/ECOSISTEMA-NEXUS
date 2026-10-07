@@ -423,3 +423,35 @@ def eliminar_trd(request, enc_id):
     except Exception as e:
         messages.error(request, f'Error al eliminar TRD: {str(e)}')
     return redirect('trd:inicio')
+
+def actualizar_encabezado_trd(request, enc_id):
+    if not is_trd_admin(request.user):
+        messages.error(request, 'No tienes permisos para editar los metadatos de la Tabla de Retención.')
+        return redirect('trd:editar_trd', enc_id=enc_id)
+        
+    if request.method == 'POST':
+        from django.shortcuts import get_object_or_404
+        from .models import EncabezadoTRD
+        
+        try:
+            enc = get_object_or_404(EncabezadoTRD, id=enc_id)
+            enc.entidad_productora = request.POST.get('entidad_productora', enc.entidad_productora).strip()
+            enc.fecha_creacion = request.POST.get('fecha_creacion', enc.fecha_creacion).strip()
+            enc.fecha_ajuste = request.POST.get('fecha_ajuste', enc.fecha_ajuste).strip()
+            enc.fecha_aprobacion = request.POST.get('fecha_aprobacion', enc.fecha_aprobacion).strip()
+            enc.fecha_convalidacion = request.POST.get('fecha_convalidacion', enc.fecha_convalidacion).strip()
+            enc.responsable_gestion_documental = request.POST.get('resp_gd', enc.responsable_gestion_documental).strip()
+            enc.cargo_responsable_gestion_documental = request.POST.get('cargo_gd', enc.cargo_responsable_gestion_documental).strip()
+            enc.responsable_area = request.POST.get('resp_area', enc.responsable_area).strip()
+            enc.cargo_responsable_area = request.POST.get('cargo_area', enc.cargo_responsable_area).strip()
+            enc.superior_jerarquico = request.POST.get('resp_sup', enc.superior_jerarquico).strip()
+            enc.cargo_superior_jerarquico = request.POST.get('cargo_sup', enc.cargo_superior_jerarquico).strip()
+            enc.version = request.POST.get('version', enc.version).strip()
+            enc.estado = request.POST.get('estado', enc.estado).strip()
+            enc.vigencia_ano = request.POST.get('vigencia_ano', enc.vigencia_ano).strip()
+            enc.save()
+            messages.success(request, '¡Los datos principales de la TRD fueron actualizados con éxito!')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar TRD: {str(e)}')
+            
+    return redirect('trd:editar_trd', enc_id=enc_id)
