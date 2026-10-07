@@ -13,7 +13,7 @@
 
 
 {% block content %}
-<div class="max-w-[110rem] mx-auto space-y-8 py-6" x-data="{ ...formTRDData(), showModalMetadatos: false }">
+<div class="max-w-[110rem] mx-auto space-y-8 py-6" x-data="formTRDData()">
 
     <div class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="space-y-2">
@@ -1690,6 +1690,7 @@
 <script>
 function formTRDData() {
     return {
+        showModalMetadatos: false,
         formularioAbierto: {% if arbol_series and arbol_series|length > 0 %}false{% else %}true{% endif %},
         mostrarModalNuevaVersion: false,
         catalogo: {{ catalogo_json|safe }},
