@@ -137,3 +137,10 @@ Copia y pega el siguiente texto en tu nuevo chat en el PC de mesa para retomar e
 
 ---
 *Archivo generado automáticamente por Antigravity AI para continuidad operativa de Comfacasanare.*
+
+
+
+## 🚀 [NUEVA ARQUITECTURA OFICIAL] - VPS y Monolito Django
+- **Entorno de Producción:** El proyecto está 100% alojado en un VPS propio (IP: 179.236.225.125) usando Ubuntu 26.04, Coolify, Traefik y Docker.
+- **Enlace Principal Único:** https://app.nexusflz.tech/
+- **Regla Estricta de Desarrollo:** Ya no se utilizan servicios como Render. TODO nuevo módulo, función o característica (como el de Tablas de Retención Documental) debe desarrollarse y montarse como una app interna dentro de la Plataforma Web principal (monolito Django), y quedar anclado a una ruta bajo el dominio principal (ej: /trd/, /afiliados/, etc.). No se deben crear microservicios separados o subdominios extra a menos que sea estrictamente necesario.
