@@ -3,6 +3,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
+from django.shortcuts import redirect
+
+def is_trd_admin(user):
+    return user.is_superuser or (hasattr(user, 'profile') and user.profile.rol in ['SUPER', 'JEFE'])
+
+from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Q
@@ -264,6 +270,10 @@ def oficinas(request):
 
 @require_POST
 def crear_oficina(request):
+    if not is_trd_admin(request.user):
+        messages.error(request, 'Solo el Administrador y el Jefe de Archivo pueden crear oficinas.')
+        return redirect('trd:oficinas')
+
     prefijo = request.POST.get("prefijo", "").strip()
     nombre = request.POST.get("nombre", "").strip()
     if not prefijo.isdigit() or not nombre:
@@ -279,6 +289,10 @@ def crear_oficina(request):
 
 @require_POST
 def eliminar_oficina(request, oficina_id):
+    if not is_trd_admin(request.user):
+        messages.error(request, 'No tienes permisos para eliminar oficinas.')
+        return redirect('trd:oficinas')
+
     oficina = get_object_or_404(OficinaProductora, id=oficina_id)
     oficina.delete()
     messages.success(request, "Oficina eliminada del catálogo.")
@@ -319,6 +333,9 @@ def api_ccd_oficina(request, nombre_oficina):
 @csrf_exempt
 @require_POST
 def api_guardar_ccd_personalizado(request):
+    if not is_trd_admin(request.user):
+        return JsonResponse({'success': False, 'error': 'Permiso denegado.'}, status=403)
+
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:

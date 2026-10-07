@@ -874,3 +874,55 @@ def crear_registro(request):
             messages.error(request, 'Revisa los campos del formulario.')
             
     return render(request, 'afiliados/crear_registro.html', {'form': form, 'cat_activa': cat_activa})
+
+
+@login_required
+def gestion_usuarios(request):
+    if not is_super(request.user):
+        messages.error(request, 'Solo el Súper Administrador puede gestionar personal.')
+        return redirect('gestion_documental')
+        
+    from django.contrib.auth.models import User
+    from .models import Profile
+    
+    usuarios = User.objects.all().select_related('profile').order_by('-is_superuser', 'username')
+    
+    if request.method == 'POST':
+        # Lógica de crear usuario
+        username = request.POST.get('username')
+        email = request.POST.get('email', '')
+        nombre = request.POST.get('nombre', '')
+        apellidos = request.POST.get('apellidos', '')
+        password = request.POST.get('password')
+        rol = request.POST.get('rol', 'USER')
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'El nombre de usuario ya existe en el sistema.')
+        else:
+            try:
+                new_user = User.objects.create_user(username=username, email=email, password=password, first_name=nombre, last_name=apellidos)
+                if rol == 'SUPERADMIN':
+                    new_user.is_superuser = True
+                    new_user.is_staff = True
+                    new_user.save()
+                    Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER'})
+                else:
+                    Profile.objects.update_or_create(user=new_user, defaults={'rol': rol})
+                
+                try:
+                    from .models import HistorialAuditoria
+                    HistorialAuditoria.objects.create(
+                        usuario=request.user,
+                        accion='CREAR',
+                        modulo='SEGURIDAD',
+                        detalles=f'Creación de usuario: {username} con rol {rol}'
+                    )
+                except: pass
+                
+                messages.success(request, f'¡El usuario {username} fue creado exitosamente!')
+            except Exception as e:
+                messages.error(request, f'Error al crear usuario: {str(e)}')
+                
+        return redirect('gestion_usuarios')
+        
+    return render(request, 'afiliados/gestion_usuarios.html', {'usuarios': usuarios})
