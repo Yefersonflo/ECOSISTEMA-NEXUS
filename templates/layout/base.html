@@ -124,14 +124,14 @@
         <a href="{% url 'trd:inicio' %}" class="block py-2 text-[10px] font-bold text-slate-300 hover:text-comfaYellow transition-colors {% if request.resolver_match.url_name == 'inicio' %}text-comfaYellow{% endif %} uppercase tracking-wider">
             <i class="fas fa-chart-pie mr-2 opacity-50"></i> Panel Principal
         </a>
+        <a href="{% url 'trd:diligenciar' %}" class="block py-2 text-[10px] font-bold text-slate-300 hover:text-comfaYellow transition-colors {% if request.resolver_match.url_name == 'diligenciar' %}text-comfaYellow{% endif %} uppercase tracking-wider">
+            <i class="fas fa-plus-circle mr-2 opacity-50"></i> Nueva Tabla
+        </a>
         <a href="{% url 'trd:oficinas' %}" class="block py-2 text-[10px] font-bold text-slate-300 hover:text-comfaYellow transition-colors {% if request.resolver_match.url_name == 'oficinas' %}text-comfaYellow{% endif %} uppercase tracking-wider">
             <i class="fas fa-building mr-2 opacity-50"></i> Oficinas
         </a>
         <a href="{% url 'trd:catalogo' %}" class="block py-2 text-[10px] font-bold text-slate-300 hover:text-comfaYellow transition-colors {% if request.resolver_match.url_name == 'catalogo' %}text-comfaYellow{% endif %} uppercase tracking-wider">
             <i class="fas fa-book mr-2 opacity-50"></i> Catálogo CCD
-        </a>
-        <a href="{% url 'trd:diligenciar' %}" class="block py-2 text-[10px] font-bold text-slate-300 hover:text-comfaYellow transition-colors {% if request.resolver_match.url_name == 'diligenciar' %}text-comfaYellow{% endif %} uppercase tracking-wider">
-            <i class="fas fa-plus-circle mr-2 opacity-50"></i> Nueva Tabla
         </a>
     </div>
 </div>
