@@ -37,9 +37,7 @@
             <div class="flex items-center space-x-4">
                 {% if cat_activa %}
                 {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}
-                <!-- <button type="button" onclick="abrirModalRegistro()" class="bg-comfaBlue text-white font-black px-10 py-5 rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest flex items-center cursor-pointer">
-                    <i class="fas fa-plus-circle mr-3 text-lg"></i> NUEVO REGISTRO EN {{ cat_activa }}
-                </button>
+                
                 {% endif %}
                 {% endif %}
                 <button @click="showSearch = !showSearch" class="w-16 h-16 rounded-2xl border-2 transition-all flex items-center justify-center text-xl shadow-lg" :class="showSearch ? 'bg-comfaRed border-comfaRed text-white rotate-90' : 'bg-white border-slate-100 text-comfaBlue hover:border-comfaBlue'">
