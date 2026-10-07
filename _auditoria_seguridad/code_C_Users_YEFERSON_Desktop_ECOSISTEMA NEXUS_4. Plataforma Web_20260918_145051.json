@@ -1,0 +1,70 @@
+{
+  "tool": {
+    "name": "nexus-sec",
+    "version": "2.3.1"
+  },
+  "generated_at": "2026-09-18T19:50:51+00:00",
+  "meta": {
+    "scanner": "code",
+    "target": "C:/Users/YEFERSON/Desktop/ECOSISTEMA NEXUS/4. Plataforma Web",
+    "tool_version": "2.3.1"
+  },
+  "summary": {
+    "CRITICAL": 1,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0,
+    "INFO": 0,
+    "TOTAL": 2
+  },
+  "findings": [
+    {
+      "rule_id": "SAST-FILE-001",
+      "title": "Archivo .env (credenciales)",
+      "category": "sensitive-file",
+      "severity": "CRITICAL",
+      "confidence": "CONFIRMED",
+      "location": {
+        "target": "",
+        "url": "",
+        "file": ".env",
+        "line": 0,
+        "port": 0
+      },
+      "description": "",
+      "evidence": ".env",
+      "remediation": "Retirar del proyecto o excluir con .gitignore.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/538.html"
+      ],
+      "detected_at": "2026-09-18T19:50:50+00:00",
+      "cwe": "CWE-538",
+      "owasp": "A01:2021-Broken-Access-Control",
+      "fingerprint": "63be9b3d6d30b672"
+    },
+    {
+      "rule_id": "SAST-XSS-001",
+      "title": "Escritura directa en el DOM (riesgo XSS)",
+      "category": "xss",
+      "severity": "HIGH",
+      "confidence": "TENTATIVE",
+      "location": {
+        "target": "",
+        "url": "",
+        "file": "templates\\afiliados\\detalle.html",
+        "line": 316,
+        "port": 0
+      },
+      "description": "",
+      "evidence": "_t.innerHTML = '<i class=\"fas fa-file-pdf text-comfaRed text-lg mr-3\"></i> ';",
+      "remediation": "Sanitizar la entrada o usar textContent.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/79.html"
+      ],
+      "detected_at": "2026-09-18T19:50:51+00:00",
+      "cwe": "CWE-79",
+      "owasp": "A03:2021-Injection",
+      "fingerprint": "ccdf6be3d255c7ce"
+    }
+  ]
+}

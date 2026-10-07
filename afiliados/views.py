@@ -834,3 +834,43 @@ def exportar_auditoria_excel(request):
 
 # FIN DE VISTAS DE AFILIADOS
 
+
+
+@login_required
+def crear_registro(request):
+    cat_activa = request.GET.get('cat', 'TRABAJADOR').upper()
+    form = CarpetaForm(initial={'categoria': cat_activa})
+    
+    if request.method == 'POST':
+        if not is_jefe(request.user):
+            messages.error(request, 'No tiene permisos para crear nuevos registros.')
+            return redirect('gestion_documental')
+            
+        form = CarpetaForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                nueva_carpeta = form.save(commit=False)
+                nueva_carpeta.modificado_por = request.user
+                
+                # Asignación automática de niveles según tipo
+                if nueva_carpeta.categoria == 'PATRONAL':
+                    for nivel in ['nivel_1', 'nivel_2', 'nivel_3', 'nivel_4', 'nivel_5', 'nivel_6']:
+                        if not getattr(nueva_carpeta, nivel):
+                            setattr(nueva_carpeta, nivel, 'NA')
+                            
+                nueva_carpeta.save()
+                
+                HistorialAuditoria.objects.create(
+                    usuario=request.user,
+                    accion='CREAR',
+                    modulo='ARCHIVO_CENTRAL',
+                    detalles=f'Creación de expediente {nueva_carpeta.categoria}: {nueva_carpeta.identificacion} - {nueva_carpeta.nombre}'
+                )
+                messages.success(request, f'¡Expediente de {nueva_carpeta.categoria} guardado con éxito!')
+                return redirect('/gestion-documental/?cat=' + nueva_carpeta.categoria)
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
+        else:
+            messages.error(request, 'Revisa los campos del formulario.')
+            
+    return render(request, 'afiliados/crear_registro.html', {'form': form, 'cat_activa': cat_activa})

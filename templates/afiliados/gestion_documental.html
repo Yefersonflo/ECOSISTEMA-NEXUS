@@ -37,7 +37,7 @@
             <div class="flex items-center space-x-4">
                 {% if cat_activa %}
                 {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}
-                <button type="button" onclick="abrirModalRegistro()" class="bg-comfaBlue text-white font-black px-10 py-5 rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest flex items-center cursor-pointer">
+                <!-- <button type="button" onclick="abrirModalRegistro()" class="bg-comfaBlue text-white font-black px-10 py-5 rounded-2xl shadow-xl hover:bg-comfaRed transition-all uppercase text-[11px] tracking-widest flex items-center cursor-pointer">
                     <i class="fas fa-plus-circle mr-3 text-lg"></i> NUEVO REGISTRO EN {{ cat_activa }}
                 </button>
                 {% endif %}
@@ -276,3 +276,4 @@
     {% endif %}
 </script>
 {% endblock %}
+

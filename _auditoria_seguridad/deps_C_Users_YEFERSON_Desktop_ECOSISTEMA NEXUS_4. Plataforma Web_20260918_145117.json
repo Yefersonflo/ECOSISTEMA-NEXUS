@@ -1,0 +1,21 @@
+{
+  "tool": {
+    "name": "nexus-sec",
+    "version": "2.3.1"
+  },
+  "generated_at": "2026-09-18T19:51:17+00:00",
+  "meta": {
+    "scanner": "deps",
+    "target": "C:/Users/YEFERSON/Desktop/ECOSISTEMA NEXUS/4. Plataforma Web",
+    "tool_version": "2.3.1"
+  },
+  "summary": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0,
+    "INFO": 0,
+    "TOTAL": 0
+  },
+  "findings": []
+}

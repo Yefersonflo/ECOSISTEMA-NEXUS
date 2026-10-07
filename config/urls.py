@@ -18,7 +18,7 @@ class CustomLoginView(auth_views.LoginView):
 
 from afiliados.views import (
     dashboard, detalle_carpeta, borrar_documento, borrar_carpeta, 
-    mapa_visual, gestion_documental, panel_reportes, exportar_excel_archivo,
+    mapa_visual, gestion_documental, crear_registro, panel_reportes, exportar_excel_archivo,
     historial_auditoria, exportar_auditoria_excel, api_buscar_afiliado, api_sincronizar_afiliados,
     cerrar_sesion_remota
 )
@@ -41,6 +41,7 @@ urlpatterns = [
     # SECCIÓN: GESTIÓN DOCUMENTAL (ARCHIVO FÍSICO)
     # Panel principal de gestión de archivos y carpetas
     path('gestion-documental/', gestion_documental, name='gestion_documental'),
+    path('nuevo-registro/', crear_registro, name='crear_registro'),
     # Consulta de contenidos de una carpeta específica
     path('dashboard/folder/<int:carpeta_id>/', detalle_carpeta, name='detalle_carpeta'),
     # Eliminación de carpetas (Acceso restringido)
