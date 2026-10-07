@@ -905,9 +905,9 @@ def gestion_usuarios(request):
                     new_user.is_superuser = True
                     new_user.is_staff = True
                     new_user.save()
-                    Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER'})
+                    Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER', 'acceso_web': True})
                 else:
-                    Profile.objects.update_or_create(user=new_user, defaults={'rol': rol})
+                    Profile.objects.update_or_create(user=new_user, defaults={'rol': rol, 'acceso_web': True})
                 
                 try:
                     from .models import HistorialAuditoria
@@ -969,13 +969,13 @@ def gestion_usuarios(request):
                         user_obj.is_superuser = True
                         user_obj.is_staff = True
                         user_obj.save()
-                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': 'SUPER'})
+                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': 'SUPER', 'acceso_web': True})
                     else:
                         if user_obj.username != 'admin':  # Nunca quitar superadmin al usuario root
                             user_obj.is_superuser = False
                             user_obj.is_staff = False
                         user_obj.save()
-                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': rol})
+                        Profile.objects.update_or_create(user=user_obj, defaults={'rol': rol, 'acceso_web': True})
                         
                     messages.success(request, f'Usuario {username} actualizado exitosamente.')
             except Exception as e:
@@ -992,9 +992,9 @@ def gestion_usuarios(request):
                         new_user.is_superuser = True
                         new_user.is_staff = True
                         new_user.save()
-                        Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER'})
+                        Profile.objects.update_or_create(user=new_user, defaults={'rol': 'SUPER', 'acceso_web': True})
                     else:
-                        Profile.objects.update_or_create(user=new_user, defaults={'rol': rol})
+                        Profile.objects.update_or_create(user=new_user, defaults={'rol': rol, 'acceso_web': True})
                     messages.success(request, f'¡El usuario {username} fue creado exitosamente!')
                 except Exception as e:
                     messages.error(request, f'Error al crear usuario: {str(e)}')
