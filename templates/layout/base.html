@@ -10,7 +10,7 @@
     <script defer crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.13.3/dist/cdn.min.js"></script>
     <script defer crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { 'montserrat': ['Montserrat', 'sans-serif'] }, colors: { comfaBlue: '#1B51A2', comfaRed: '#F05623', comfaYellow: '#FFD101' } } } }
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { 'montserrat': ['Montserrat', 'sans-serif'] }, colors: { comfaBlue: '#1B51A2', comfaRed: '#F05623', comfaYellow: '#FFD101' } } } }</script>
     <script>
         // MODO DIA POR DEFECTO. Solo activa oscuro si el usuario lo pide explícitamente.
         if (localStorage.getItem('theme') === 'dark') {
@@ -18,7 +18,6 @@
         } else {
             document.documentElement.classList.remove('dark');
         }
-    </script>
     </script>
     <style>
         [x-cloak] { display: none !important; }
@@ -271,4 +270,5 @@
 
 </body>
 </html>
+
 
