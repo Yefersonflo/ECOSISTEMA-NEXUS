@@ -423,7 +423,7 @@ def mapa_visual(request):
         
         if mod_id:
             nivel = 'ESTANTE'
-            breadcrumb.append({'nombre': f'MÃ³dulo {mod_id}', 'url': f'?cat={cat}&mod={mod_id}'})
+            breadcrumb.append({'nombre': f'Modulo {mod_id}', 'url': f'?cat={cat}&mod={mod_id}'})
             
             if est_id:
                 nivel = 'BANDEJA'
@@ -435,7 +435,7 @@ def mapa_visual(request):
                     
                     if cub_id:
                         nivel = 'CARPETA'
-                        breadcrumb.append({'nombre': f'CubÃ­culo {cub_id}', 'url': f'?cat={cat}&mod={mod_id}&est={est_id}&ban={ban_id}&cub={cub_id}'})
+                        breadcrumb.append({'nombre': f'Cubiculo {cub_id}', 'url': f'?cat={cat}&mod={mod_id}&est={est_id}&ban={ban_id}&cub={cub_id}'})
                         objetos = Carpeta.objects.filter(categoria=cat, modulo=mod_id, estante=est_id, bandeja=ban_id, cubiculo=cub_id).order_by('numero_carpeta')
                     else:
                         cub_nums = Carpeta.objects.filter(categoria=cat, modulo=mod_id, estante=est_id, bandeja=ban_id).values_list('cubiculo', flat=True).distinct().order_by('cubiculo')
