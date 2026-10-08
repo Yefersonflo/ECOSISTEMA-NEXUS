@@ -179,6 +179,34 @@
         <div class="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">{% block content %}{% endblock %}</div>       
     </main>
 
+
+    <script>
+        // Redirigir al login después de 10 minutos exactos de inactividad total
+        let inactivityTime = function () {
+            let time;
+            // Reiniciar el contador si hay alguna interacción
+            window.onload = resetTimer;
+            document.onmousemove = resetTimer;
+            document.onkeypress = resetTimer;
+            document.onscroll = resetTimer;
+            document.onclick = resetTimer;
+
+            function logout() {
+                // Alerta suave opcional, o simplemente redirección
+                window.location.href = "{% url 'login' %}?next=" + window.location.pathname;
+            }
+
+            function resetTimer() {
+                clearTimeout(time);
+                // 10 minutos = 600,000 milisegundos
+                time = setTimeout(logout, 600000);
+            }
+        };
+        // Solo ejecutar si el usuario está autenticado (para no atraparlos en el login)
+        {% if user.is_authenticated %}
+        inactivityTime();
+        {% endif %}
+    </script>
 </body>
 </html>
 

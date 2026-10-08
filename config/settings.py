@@ -170,7 +170,7 @@ LOGOUT_REDIRECT_URL = 'login'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # 2. Expirar la sesión después de 30 minutos de inactividad (1800 segundos)
-SESSION_COOKIE_AGE = 1800 
+SESSION_COOKIE_AGE = 600 
 
 # 3. Renovar los 30 minutos cada vez que el usuario hace clic o navega en la plataforma
 SESSION_SAVE_EVERY_REQUEST = True
