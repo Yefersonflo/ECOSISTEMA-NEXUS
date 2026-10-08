@@ -163,7 +163,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+# ==========================================
+# CONFIGURACIÓN DE SEGURIDAD DE SESIONES
+# ==========================================
+# 1. Cerrar sesión al cerrar el navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# 2. Expirar la sesión después de 30 minutos de inactividad (1800 segundos)
+SESSION_COOKIE_AGE = 1800 
+
+# 3. Renovar los 30 minutos cada vez que el usuario hace clic o navega en la plataforma
+SESSION_SAVE_EVERY_REQUEST = True
 
 # CONFIGURACIÓN DE ENVÍO DE CORREOS (SMTP / Consola para pruebas)
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
