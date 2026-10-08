@@ -79,6 +79,7 @@
           x-cloak
           @submit.prevent="enviarFormulario()"
           class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden relative">
+{% csrf_token %}
 
         <div class="bg-comfaBlue px-8 py-4 flex flex-col md:flex-row items-start md:items-center justify-between border-b-4 border-comfaYellow">
             <div class="flex items-center gap-3">
@@ -905,6 +906,7 @@
                         </button>
                         <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=nodo.serie.id %}"
                               onsubmit="return confirm('¿Eliminar la serie {{ nodo.serie.nombre }} y todo su contenido?');">
+{% csrf_token %}
                             <button type="submit" class="w-7 h-7 bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white rounded-lg inline-flex items-center justify-center transition-all cursor-pointer" title="Eliminar serie completa">
                                 <i class="fas fa-trash text-xs"></i>
                             </button>
@@ -1003,6 +1005,7 @@
                                         </button>
                                         <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=sub_item.subserie.id %}"
                                               onsubmit="return confirm('¿Eliminar la subserie {{ sub_item.subserie.nombre }}?');">
+{% csrf_token %}
                                             <button type="submit" class="w-6 h-6 bg-red-50 hover:bg-comfaRed text-comfaRed hover:text-white border border-red-200 hover:border-comfaRed rounded-lg flex items-center justify-center transition-all cursor-pointer" title="Eliminar subserie">
                                                 <i class="fas fa-trash text-[10px]"></i>
                                             </button>
@@ -1039,6 +1042,7 @@
                                                     {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-comfaBlue rounded text-[9px] font-black uppercase font-mono">{{td.extensiones|default:'Elec'}}</span>{% endif %}
                                                     <button type="button" @click='abrirModalEditarItem({{ td.to_json|safe }})' class="text-slate-400 hover:text-comfaBlue p-1 cursor-pointer" title="Editar tipo"><i class="fas fa-pen text-[10px]"></i></button>
                                                     <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=td.id %}" onsubmit="return confirm('¿Eliminar tipo documental?');">
+{% csrf_token %}
                                                         <button type="submit" class="text-slate-400 hover:text-comfaRed p-1 cursor-pointer" title="Eliminar tipo"><i class="fas fa-trash text-[10px]"></i></button>
                                                     </form>
                                                 </div>
@@ -1052,6 +1056,7 @@
                                         <!-- Formulario Rápido Directo para Agregar Tipo Documental a la Subserie -->
                                         {% if sub_item.subserie.id %}
                                         <form method="post" action="/trd/{{ enc_id }}/item/{{ sub_item.subserie.id }}/agregar_tipo" class="pt-3 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center gap-2">
+{% csrf_token %}
                                             <div class="relative flex-1 min-w-[180px]">
                                                 <input type="text" name="nombre" placeholder="➕ Escribe un Tipo Documental y pulsa Enter..." required
                                                        class="w-full px-3 py-2 bg-slate-50 focus:bg-white border border-slate-300 focus:border-comfaBlue rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none shadow-2xs">
@@ -1102,6 +1107,7 @@
                                      {% if td.soporte_electronico %}<span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-black">{{td.extensiones|default:'ELEC'}}</span>{% endif %}
                                      <button type="button" @click='abrirModalEditarItem({{ td.to_json|safe }})' class="text-slate-400 hover:text-indigo-600 p-1.5 cursor-pointer" title="Editar tipo"><i class="fas fa-pen text-xs"></i></button>
                                      <form method="post" action="{% url 'trd:eliminar_item' enc_id=enc_id item_id=td.id %}" onsubmit="return confirm('¿Eliminar tipo documental?');">
+{% csrf_token %}
                                          <button type="submit" class="text-slate-400 hover:text-red-600 p-1.5 cursor-pointer" title="Eliminar tipo"><i class="fas fa-trash text-xs"></i></button>
                                      </form>
                                  </div>
@@ -1115,6 +1121,7 @@
                          <!-- Formulario Rápido Directo para Agregar Tipo Documental a la Serie -->
                          {% if nodo.serie.id %}
                          <form method="post" action="/trd/{{ enc_id }}/item/{{ nodo.serie.id }}/agregar_tipo" class="pt-2 border-t border-slate-100 flex flex-wrap sm:flex-nowrap items-center gap-2">
+{% csrf_token %}
                              <div class="relative flex-1 min-w-[180px]">
                                  <input type="text" name="nombre" placeholder="➕ Escribe un Tipo Documental para esta Serie y pulsa Enter..." required
                                         class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-300 focus:border-comfaBlue rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none shadow-2xs">
@@ -1384,6 +1391,7 @@
         <div x-show="mostrarModalEditar" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                 <form method="post" :action="'/trd/{{ enc_id }}/item/' + edit_id + '/editar'">
+{% csrf_token %}
                     <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-pen-to-square text-xl text-comfaYellow"></i>
@@ -1469,6 +1477,7 @@
         <div x-show="mostrarModalNuevaSubserieDirecta" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                 <form method="post" :action="'/trd/{{ enc_id }}/serie/' + modalSub_serieId + '/agregar_subserie'" @submit="prepararEnvioModalSubserie($event)">
+{% csrf_token %}
                     <input type="hidden" name="tipos_json" :value="JSON.stringify(modalSub_tipos)">
                     
                     <div class="bg-comfaBlue text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
@@ -1618,6 +1627,7 @@
         <div id="modalNuevaVersion" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
             <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border-2 border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                 <form method="post" action="{% url 'trd:crear_nueva_version' enc_id=enc_id %}">
+{% csrf_token %}
                     <div class="bg-comfaBlue text-white px-6 py-4 flex items-center justify-between border-b-4 border-comfaYellow">
                         <div class="flex items-center gap-2.5">
                             <i class="fas fa-code-branch text-xl text-comfaYellow"></i>
@@ -1701,7 +1711,8 @@
             </div>
             
             <form method="POST" action="{% url 'trd:actualizar_encabezado_trd' enc_id=enc_id %}" class="p-10 space-y-8">
-                {% csrf_token %}
+{% csrf_token %}
+                
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- DATOS BÁSICOS -->
