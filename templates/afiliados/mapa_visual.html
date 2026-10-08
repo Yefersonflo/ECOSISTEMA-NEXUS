@@ -2,7 +2,7 @@
 
 {% block title %}Visor de Bodega | Nexus{% endblock %}
 
-{% block header_title %}Navegación Visual de Archivo{% endblock %}
+{% block header_title %}Navegacion Visual de Archivo{% endblock %}
 
 {% block current_location %}Interior de Bodega{% endblock %}
 
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- PANTALLA INICIAL: SELECCIÓN DE NAVE -->
+    <!-- PANTALLA INICIAL: SELECCION DE NAVE -->
     {% if nivel == "CATEGORIA" %}
     <div class="max-w-4xl mx-auto py-12 grid grid-cols-1 md:grid-cols-2 gap-10 animate-in fade-in zoom-in-95 duration-700">
         <a href="?cat=TRABAJADOR" class="group bg-white p-12 rounded-[4rem] shadow-2xl border-b-8 border-comfaBlue hover:scale-105 transition-all text-center">
@@ -72,7 +72,7 @@
     </div>
     {% endif %}
 
-    <!-- VISTA FINAL DE CARPETAS CON BOTÓN COPIAR (5 COLUMNAS X 11 FILAS = 55 CARPETAS) -->
+    <!-- VISTA FINAL DE CARPETAS CON BOTON COPIAR (5 COLUMNAS X 11 FILAS = 55 CARPETAS) -->
     {% if nivel == "CARPETA" %}
     <div class="bg-slate-900 p-8 sm:p-10 rounded-[3.5rem] border-[8px] border-white shadow-2xl animate-in fade-in duration-1000">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-5">
@@ -89,7 +89,7 @@
                                     <span class="text-[7px] font-black uppercase opacity-60">ID / CÉDULA</span>
                                     <p class="text-base font-black tracking-tighter leading-none">{{ c.identificacion }}</p>
                                 </div>
-                                <!-- BOTÓN COPIAR -->
+                                <!-- BOTON COPIAR -->
                                 <button @click.stop="navigator.clipboard.writeText('M:{{ c.modulo }} E:{{ c.estante }} B:{{ c.bandeja }} C:{{ c.cubiculo }} #{{ c.numero_carpeta }}'); copied = true; setTimeout(() => copied = false, 2000)" 
                                     class="w-7 h-7 rounded-lg flex items-center justify-center transition-all border border-white/20 hover:bg-white hover:text-slate-900"
                                     :class="copied ? 'bg-green-500 border-green-500 text-white' : 'bg-white/5 text-white/50'">
@@ -103,7 +103,7 @@
 
                             <div class="grid grid-cols-2 gap-1.5 mt-1">
                                 <div class="bg-black/20 p-1 rounded text-center border border-white/10">
-                                    <p class="text-[5px] font-black uppercase opacity-60">Mód</p>
+                                    <p class="text-[5px] font-black uppercase opacity-60">MOD</p>
                                     <p class="text-[9px] font-black">M:{{ c.modulo }}</p>
                                 </div>
                                 <div class="bg-black/20 p-1 rounded text-center border border-white/10">
