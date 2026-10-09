@@ -44,7 +44,7 @@ if env_file.exists():
         pass
 
 # Modo de depuración: False en producción por defecto
-DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 # Clave secreta: SIEMPRE desde variable de entorno (nunca quemada en el código).
 # En desarrollo se genera una efímera; en producción es OBLIGATORIA.
