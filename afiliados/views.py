@@ -180,13 +180,14 @@ def dashboard(request):
     inactivos_cnt = Carpeta.objects.filter(estado='INACTIVO').count()
     muertos_cnt = Carpeta.objects.filter(estado='MUERTO').count()
     
-    # Calcular Alertas Naranja (+10 años inactivos)
+    # Calcular Alertas Naranja (+10 años inactivos) - Optimizado (Sin cargar objetos)
     hoy = datetime.date.today()
     diez_anos_atras = hoy.year - 10
     alertas_naranja = 0
     
-    for c in Carpeta.objects.filter(estado='INACTIVO'):
-        fr = str(c.fecha_retiro or '')
+    fechas_retiro = Carpeta.objects.filter(estado='INACTIVO').values_list('fecha_retiro', flat=True)
+    for fr in fechas_retiro:
+        fr = str(fr or '')
         years = re.findall(r'\b(19\d\d|20\d\d)\b', fr)
         if years:
             try:
