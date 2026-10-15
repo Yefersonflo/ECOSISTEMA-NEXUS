@@ -1730,22 +1730,15 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Entidad Productora</label>
                         <input type="text" name="entidad_productora" value="{{ encabezado.entidad_productora }}" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                     </div>
-                    <div class="space-y-2">
+                    <div class="space-y-2 col-span-1 md:col-span-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Versión (Ej: 1.0)</label>
                         <input type="text" name="version" value="{{ encabezado.version }}" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                     </div>
-                    <div class="space-y-2">
+                    <div class="space-y-2 col-span-1 md:col-span-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Año de Vigencia</label>
                         <input type="text" name="vigencia_ano" value="{{ encabezado.vigencia_ano }}" placeholder="Opcional" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Estado</label>
-                        <select name="estado" class="w-full bg-white border-2 border-slate-200 rounded-xl px-4 py-4 text-sm font-bold focus:border-comfaBlue outline-none transition-all cursor-pointer">
-                            <option value="VIGENTE" {% if encabezado.estado == 'VIGENTE' %}selected{% endif %}>Vigente</option>
-                            <option value="EN ELABORACION" {% if encabezado.estado == 'EN ELABORACION' %}selected{% endif %}>En Elaboración</option>
-                            <option value="OBSOLETO" {% if encabezado.estado == 'OBSOLETO' %}selected{% endif %}>Obsoleto</option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="estado" value="{{ encabezado.estado|default:'VIGENTE' }}">
 
                     <!-- FECHAS DE REGISTRO -->
                     <div class="col-span-1 md:col-span-3 pb-2 border-b border-slate-100 mt-4">
