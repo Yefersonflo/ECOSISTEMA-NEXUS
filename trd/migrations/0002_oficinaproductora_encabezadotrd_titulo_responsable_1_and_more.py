@@ -10,13 +10,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='OficinaProductora',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('prefijo', models.CharField(max_length=50)),
-                ('nombre', models.CharField(max_length=200, unique=True)),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.CreateModel(
+                    name='OficinaProductora',
+                    fields=[
+                        ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                        ('prefijo', models.CharField(max_length=50)),
+                        ('nombre', models.CharField(max_length=200, unique=True)),
+                    ],
+                ),
             ],
+            database_operations=[],
         ),
         migrations.AddField(
             model_name='encabezadotrd',
