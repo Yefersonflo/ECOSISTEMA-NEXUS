@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from trd.models import EncabezadoTRD, ItemTRD
 from trd.utils import catalogo_ccd
@@ -22,6 +23,7 @@ def _entero(valor):
     except (ValueError, TypeError):
         return 0
 
+@login_required
 @require_POST
 def crear_nueva_version(request, enc_id):
     viejo = get_object_or_404(EncabezadoTRD, id=enc_id)
@@ -80,6 +82,7 @@ def crear_nueva_version(request, enc_id):
     messages.success(request, "Nueva versión creada exitosamente.")
     return redirect('trd:editar_trd', enc_id=nuevo.id)
 
+@login_required
 @require_POST
 def crear_item(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
@@ -172,6 +175,7 @@ def crear_item(request, enc_id):
     messages.success(request, f"Serie '{serie_nom}' guardada exitosamente.")
     return redirect('trd:editar_trd', enc_id=enc_id)
 
+@login_required
 @require_POST
 def agregar_subserie_directa(request, enc_id, serie_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
@@ -202,6 +206,7 @@ def agregar_subserie_directa(request, enc_id, serie_id):
     messages.success(request, f"Subserie '{sub_nom}' agregada exitosamente.")
     return redirect('trd:editar_trd', enc_id=enc_id)
 
+@login_required
 @require_POST
 def agregar_tipo_documental(request, enc_id, padre_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
@@ -227,6 +232,7 @@ def agregar_tipo_documental(request, enc_id, padre_id):
     messages.success(request, f"Tipo documental '{td_nom}' agregado.")
     return redirect('trd:editar_trd', enc_id=enc_id)
 
+@login_required
 @require_POST
 def editar_campo_inline(request, enc_id, item_id):
     item = get_object_or_404(ItemTRD, id=item_id, encabezado_id=enc_id)
@@ -270,6 +276,7 @@ def editar_campo_inline(request, enc_id, item_id):
     item.save()
     return redirect('trd:editar_trd', enc_id=enc_id)
 
+@login_required
 @require_POST
 def eliminar_item(request, enc_id, item_id):
     item = get_object_or_404(ItemTRD, id=item_id, encabezado_id=enc_id)

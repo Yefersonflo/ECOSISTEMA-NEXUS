@@ -3,17 +3,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
-from django.shortcuts import redirect
-
-def is_trd_admin(user):
-    return user.is_superuser or (hasattr(user, 'profile') and user.profile.rol in ['SUPER', 'JEFE'])
-
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Q
 
 from .models import EncabezadoTRD, ItemTRD, OficinaProductora
+
+def is_trd_admin(user):
+    if not getattr(user, 'is_authenticated', False):
+        return False
+    if user.is_superuser or user.is_staff:
+        return True
+    if hasattr(user, 'profile'):
+        return user.profile.rol in ['SUPER', 'JEFE', 'AUX']
+    return False
 
 try:
     from .utils.pdf_exporter import generar_pdf, generar_pdf_consolidado
@@ -110,6 +114,7 @@ def agrupar_items_jerarquia(items):
 
     return series
 
+@login_required
 def inicio(request):
     # Limpiar automáticamente tablas huérfanas/borradores vacíos sin series
     EncabezadoTRD.objects.filter(items__isnull=True).delete()
@@ -123,6 +128,7 @@ def inicio(request):
     tablas = EncabezadoTRD.objects.all().order_by('-id')
     return render(request, "trd/inicio.html", {"stats": stats, "tablas": tablas})
 
+@login_required
 def diligenciar(request):
     if request.method == "POST":
         oficina = request.POST.get("oficina_productora", "").strip()
@@ -186,6 +192,7 @@ def diligenciar(request):
         "entidad": ENTIDAD_POR_DEFECTO,
     })
 
+@login_required
 def editar_trd(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
     items = list(encabezado.items.all().order_by('orden', 'codigo'))
@@ -208,6 +215,7 @@ def editar_trd(request, enc_id):
         "versiones_oficina": list(versiones),
     })
 
+@login_required
 def catalogo(request):
     oficinas_sel = request.GET.getlist("oficinas")
     if not oficinas_sel and request.GET.get("oficina"):
@@ -279,10 +287,12 @@ def catalogo(request):
         }
     })
 
+@login_required
 def oficinas(request):
     ofs = OficinaProductora.objects.all().order_by('nombre')
     return render(request, "trd/oficinas.html", {"oficinas": ofs})
 
+@login_required
 @require_POST
 def crear_oficina(request):
     if not is_trd_admin(request.user):
@@ -302,6 +312,7 @@ def crear_oficina(request):
         messages.success(request, f"Oficina {nombre.upper()} registrada.")
     return redirect("trd:oficinas")
 
+@login_required
 @require_POST
 def eliminar_oficina(request, oficina_id):
     if not is_trd_admin(request.user):
@@ -313,6 +324,7 @@ def eliminar_oficina(request, oficina_id):
     messages.success(request, "Oficina eliminada del catálogo.")
     return redirect("trd:oficinas")
 
+@login_required
 def exportar(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
     items = list(encabezado.items.all().order_by('orden', 'codigo'))
@@ -325,6 +337,7 @@ def exportar(request, enc_id):
     except NameError:
         return HttpResponse("Exporter not found", status=500)
 
+@login_required
 def exportar_pdf(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
     items = list(encabezado.items.all().order_by('orden', 'codigo'))
@@ -424,9 +437,11 @@ def api_eliminar_ccd(request):
     except Exception as e:
         return JsonResponse({"ok": False, "error": str(e)}, status=500)
 
+@login_required
+@require_POST
 def eliminar_trd(request, enc_id):
     if not is_trd_admin(request.user):
-        messages.error(request, 'No tienes permisos para eliminar Tablas de Retención.')
+        messages.error(request, 'No tienes permisos para eliminar Tablas de Retención (se requiere Administrador o Jefe de Archivo).')
         return redirect('trd:inicio')
     from django.shortcuts import get_object_or_404
     from .models import EncabezadoTRD
@@ -439,9 +454,10 @@ def eliminar_trd(request, enc_id):
         messages.error(request, f'Error al eliminar TRD: {str(e)}')
     return redirect('trd:inicio')
 
+@login_required
 def actualizar_encabezado_trd(request, enc_id):
     if not is_trd_admin(request.user):
-        messages.error(request, 'No tienes permisos para editar los metadatos de la Tabla de Retención.')
+        messages.error(request, 'No tienes permisos para editar los metadatos de la Tabla de Retención (se requiere rol de Administrador, Jefe de Archivo o Auxiliar).')
         return redirect('trd:editar_trd', enc_id=enc_id)
         
     if request.method == 'POST':
