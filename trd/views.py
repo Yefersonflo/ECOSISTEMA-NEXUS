@@ -435,22 +435,39 @@ def actualizar_encabezado_trd(request, enc_id):
         
         try:
             enc = get_object_or_404(EncabezadoTRD, id=enc_id)
-            enc.entidad_productora = request.POST.get('entidad_productora', enc.entidad_productora).strip()
-            enc.fecha_creacion = request.POST.get('fecha_creacion', enc.fecha_creacion).strip()
-            enc.fecha_ajuste = request.POST.get('fecha_ajuste', enc.fecha_ajuste).strip()
-            enc.fecha_aprobacion = request.POST.get('fecha_aprobacion', enc.fecha_aprobacion).strip()
-            enc.fecha_convalidacion = request.POST.get('fecha_convalidacion', enc.fecha_convalidacion).strip()
-            enc.responsable_gestion_documental = request.POST.get('resp_gd', enc.responsable_gestion_documental).strip()
-            enc.cargo_responsable_gestion_documental = request.POST.get('cargo_gd', enc.cargo_responsable_gestion_documental).strip()
-            enc.responsable_area = request.POST.get('resp_area', enc.responsable_area).strip()
-            enc.cargo_responsable_area = request.POST.get('cargo_area', enc.cargo_responsable_area).strip()
-            enc.superior_jerarquico = request.POST.get('resp_sup', enc.superior_jerarquico).strip()
-            enc.cargo_superior_jerarquico = request.POST.get('cargo_sup', enc.cargo_superior_jerarquico).strip()
-            enc.version = request.POST.get('version', enc.version).strip()
-            enc.estado = request.POST.get('estado', enc.estado).strip()
-            enc.vigencia_ano = request.POST.get('vigencia_ano', enc.vigencia_ano).strip()
+            
+            # Datos generales
+            if 'entidad_productora' in request.POST:
+                enc.entidad_productora = request.POST.get('entidad_productora', enc.entidad_productora).strip()
+            if 'version' in request.POST:
+                enc.version = request.POST.get('version', enc.version).strip()
+            if 'estado' in request.POST:
+                enc.estado = request.POST.get('estado', enc.estado).strip()
+            if 'vigencia_ano' in request.POST:
+                enc.vigencia_ano = request.POST.get('vigencia_ano', enc.vigencia_ano).strip()
+                
+            # Fechas (fecha_creacion y fecha_ajuste quedan fijas, no se alteran)
+            if 'fecha_aprobacion' in request.POST:
+                enc.fecha_aprobacion = request.POST.get('fecha_aprobacion', enc.fecha_aprobacion).strip()
+            if 'fecha_convalidacion' in request.POST:
+                enc.fecha_convalidacion = request.POST.get('fecha_convalidacion', enc.fecha_convalidacion).strip()
+                
+            # Firmas y Responsables
+            if 'resp_gd' in request.POST:
+                enc.responsable_gestion_documental = request.POST.get('resp_gd', enc.responsable_gestion_documental).strip()
+            if 'cargo_gd' in request.POST:
+                enc.cargo_responsable_gestion_documental = request.POST.get('cargo_gd', enc.cargo_responsable_gestion_documental).strip()
+            if 'resp_area' in request.POST:
+                enc.responsable_area = request.POST.get('resp_area', enc.responsable_area).strip()
+            if 'cargo_area' in request.POST:
+                enc.cargo_responsable_area = request.POST.get('cargo_area', enc.cargo_responsable_area).strip()
+            if 'resp_sup' in request.POST:
+                enc.superior_jerarquico = request.POST.get('resp_sup', enc.superior_jerarquico).strip()
+            if 'cargo_sup' in request.POST:
+                enc.cargo_superior_jerarquico = request.POST.get('cargo_sup', enc.cargo_superior_jerarquico).strip()
+                
             enc.save()
-            messages.success(request, '¡Los datos principales de la TRD fueron actualizados con éxito!')
+            messages.success(request, '¡Información de la TRD actualizada con éxito!')
         except Exception as e:
             messages.error(request, f'Error al actualizar TRD: {str(e)}')
             
