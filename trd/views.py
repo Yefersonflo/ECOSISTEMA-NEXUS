@@ -134,6 +134,8 @@ def diligenciar(request):
         t2 = request.POST.get("titulo_resp_2", "Responsable de Área").strip() or "Responsable de Área"
         t3 = request.POST.get("titulo_resp_3", "Subdirectora Administrativa y financiera").strip() or "Subdirectora Administrativa y financiera"
 
+        vigencia = request.POST.get("vigencia_ano", "").strip()
+
         existente = EncabezadoTRD.objects.filter(oficina_productora=oficina).first()
         if existente:
             existente.entidad_productora = request.POST.get("entidad_productora", ENTIDAD_POR_DEFECTO).strip()
@@ -141,6 +143,8 @@ def diligenciar(request):
             existente.fecha_ajuste = request.POST.get("fecha_ajuste", "").strip()
             existente.fecha_aprobacion = request.POST.get("fecha_aprobacion", "").strip()
             existente.fecha_convalidacion = request.POST.get("fecha_convalidacion", "").strip()
+            if vigencia:
+                existente.vigencia_ano = vigencia
             existente.titulo_responsable_1 = t1
             existente.responsable_gestion_documental = request.POST.get("responsable", "").strip()
             existente.cargo_responsable_gestion_documental = request.POST.get("cargo_responsable", "").strip()
@@ -161,6 +165,7 @@ def diligenciar(request):
             fecha_ajuste=request.POST.get("fecha_ajuste", "").strip(),
             fecha_aprobacion=request.POST.get("fecha_aprobacion", "").strip(),
             fecha_convalidacion=request.POST.get("fecha_convalidacion", "").strip(),
+            vigencia_ano=vigencia,
             titulo_responsable_1=t1,
             responsable_gestion_documental=request.POST.get("responsable", "").strip(),
             cargo_responsable_gestion_documental=request.POST.get("cargo_responsable", "").strip(),
