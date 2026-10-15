@@ -226,19 +226,43 @@ def agregar_tipo_documental(request, enc_id, padre_id):
 def editar_campo_inline(request, enc_id, item_id):
     item = get_object_or_404(ItemTRD, id=item_id, encabezado_id=enc_id)
     campo = request.POST.get("campo")
-    valor = request.POST.get("valor", "").strip()
     
-    if campo in ("retencion_gestion", "retencion_central", "orden"):
-        setattr(item, campo, _entero(valor))
-    elif campo in ("soporte_papel", "soporte_electronico"):
-        setattr(item, campo, valor.lower() in ("true", "1", "yes"))
-    elif campo == "disposicion_final":
-        setattr(item, campo, normalizar_disposicion(valor))
-    elif campo in ("nombre", "codigo", "reproduccion_tecnica", "procedimiento", "extensiones"):
-        setattr(item, campo, valor)
+    if campo:
+        valor = request.POST.get("valor", "").strip()
+        if campo in ("retencion_gestion", "retencion_central", "orden"):
+            setattr(item, campo, _entero(valor))
+        elif campo in ("soporte_papel", "soporte_electronico"):
+            setattr(item, campo, valor.lower() in ("true", "1", "yes"))
+        elif campo == "disposicion_final":
+            setattr(item, campo, normalizar_disposicion(valor))
+        elif campo in ("nombre", "codigo", "reproduccion_tecnica", "procedimiento", "extensiones"):
+            setattr(item, campo, valor)
+        messages.success(request, f"Campo {campo} actualizado.")
+    else:
+        # Actualización completa desde modal de edición
+        is_tipo_doc = item.nivel.strip().upper() == "TIPO DOCUMENTAL"
+        if "nombre" in request.POST:
+            item.nombre = request.POST.get("nombre", "").strip()
+        if not is_tipo_doc and "codigo" in request.POST:
+            item.codigo = request.POST.get("codigo", "").strip()
+            
+        item.soporte_papel = request.POST.get("soporte_papel") in ("1", "true", "on")
+        item.soporte_electronico = request.POST.get("soporte_electronico") in ("1", "true", "on")
+        item.extensiones = request.POST.get("extensiones", "").strip() if item.soporte_electronico else ""
+        
+        if not is_tipo_doc:
+            if "retencion_gestion" in request.POST:
+                item.retencion_gestion = _entero(request.POST.get("retencion_gestion"))
+            if "retencion_central" in request.POST:
+                item.retencion_central = _entero(request.POST.get("retencion_central"))
+            if "disposicion_final" in request.POST:
+                item.disposicion_final = normalizar_disposicion(request.POST.get("disposicion_final", ""))
+            item.reproduccion_tecnica = request.POST.get("reproduccion_tecnica", "").strip().upper()
+            item.procedimiento = request.POST.get("procedimiento", "").strip()
+            
+        messages.success(request, f"{item.nivel} '{item.nombre}' actualizado exitosamente.")
         
     item.save()
-    messages.success(request, f"Campo {campo} actualizado.")
     return redirect('trd:editar_trd', enc_id=enc_id)
 
 @require_POST

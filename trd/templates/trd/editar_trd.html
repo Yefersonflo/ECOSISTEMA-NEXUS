@@ -1408,7 +1408,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
                             <div class="md:col-span-4" x-show="edit_nivel !== 'TIPO DOCUMENTAL'">
                                 <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Código <span class="text-comfaRed">*</span></label>
-                                <input type="text" name="codigo" x-model="edit_codigo" required class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                                <input type="text" name="codigo" x-model="edit_codigo" :required="edit_nivel !== 'TIPO DOCUMENTAL'" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl text-sm font-black text-comfaBlue placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
                             </div>
                             <div :class="edit_nivel !== 'TIPO DOCUMENTAL' ? 'md:col-span-8' : 'md:col-span-12'">
                                 <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-comfaRed">*</span></label>
@@ -1420,11 +1420,11 @@
                             <div>
                                 <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">Soporte</span>
                                 <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer">
-                                    <input type="checkbox" name="soporte_papel" value="1" :checked="edit_papel" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <input type="checkbox" name="soporte_papel" value="1" x-model="edit_papel" class="w-4 h-4 accent-indigo-600 rounded">
                                     <span>Papel</span>
                                 </label>
                                 <label class="inline-flex items-center gap-1 text-[11px] font-black text-slate-700 cursor-pointer ml-1">
-                                    <input type="checkbox" name="soporte_electronico" value="1" :checked="edit_elec" class="w-4 h-4 accent-indigo-600 rounded">
+                                    <input type="checkbox" name="soporte_electronico" value="1" x-model="edit_elec" class="w-4 h-4 accent-indigo-600 rounded">
                                     <span>Elec.</span>
                                 </label>
                             </div>
