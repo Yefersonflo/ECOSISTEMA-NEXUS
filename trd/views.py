@@ -130,6 +130,10 @@ def diligenciar(request):
             messages.error(request, "Debe especificar la oficina productora.")
             return redirect("trd:diligenciar")
 
+        t1 = request.POST.get("titulo_resp_1", "Responsable del área de gestión documental de la entidad").strip() or "Responsable del área de gestión documental de la entidad"
+        t2 = request.POST.get("titulo_resp_2", "Responsable de Área").strip() or "Responsable de Área"
+        t3 = request.POST.get("titulo_resp_3", "Subdirectora Administrativa y financiera").strip() or "Subdirectora Administrativa y financiera"
+
         existente = EncabezadoTRD.objects.filter(oficina_productora=oficina).first()
         if existente:
             existente.entidad_productora = request.POST.get("entidad_productora", ENTIDAD_POR_DEFECTO).strip()
@@ -137,10 +141,13 @@ def diligenciar(request):
             existente.fecha_ajuste = request.POST.get("fecha_ajuste", "").strip()
             existente.fecha_aprobacion = request.POST.get("fecha_aprobacion", "").strip()
             existente.fecha_convalidacion = request.POST.get("fecha_convalidacion", "").strip()
+            existente.titulo_responsable_1 = t1
             existente.responsable_gestion_documental = request.POST.get("responsable", "").strip()
             existente.cargo_responsable_gestion_documental = request.POST.get("cargo_responsable", "").strip()
+            existente.titulo_responsable_2 = t2
             existente.responsable_area = request.POST.get("responsable_area", "").strip()
             existente.cargo_responsable_area = request.POST.get("cargo_responsable_area", "").strip()
+            existente.titulo_responsable_3 = t3
             existente.superior_jerarquico = request.POST.get("superior", "").strip()
             existente.cargo_superior_jerarquico = request.POST.get("cargo_superior", "").strip()
             existente.save()
@@ -154,10 +161,13 @@ def diligenciar(request):
             fecha_ajuste=request.POST.get("fecha_ajuste", "").strip(),
             fecha_aprobacion=request.POST.get("fecha_aprobacion", "").strip(),
             fecha_convalidacion=request.POST.get("fecha_convalidacion", "").strip(),
+            titulo_responsable_1=t1,
             responsable_gestion_documental=request.POST.get("responsable", "").strip(),
             cargo_responsable_gestion_documental=request.POST.get("cargo_responsable", "").strip(),
+            titulo_responsable_2=t2,
             responsable_area=request.POST.get("responsable_area", "").strip(),
             cargo_responsable_area=request.POST.get("cargo_responsable_area", "").strip(),
+            titulo_responsable_3=t3,
             superior_jerarquico=request.POST.get("superior", "").strip(),
             cargo_superior_jerarquico=request.POST.get("cargo_superior", "").strip()
         )

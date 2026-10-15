@@ -14,6 +14,7 @@
 <div class="max-w-5xl mx-auto py-6">
 
     <form method="post" class="bg-white border-2 border-slate-200 rounded-3xl shadow-lg overflow-hidden">
+{% csrf_token %}
 
         <div class="bg-comfaBlue px-8 py-6 flex items-center justify-between border-b-4 border-comfaYellow">
             <div>
@@ -75,57 +76,123 @@
             </fieldset>
 
             {# --- Bloque 3: Responsables que firman el formato --- #}
-            <fieldset class="border-2 border-slate-200 bg-white rounded-2xl p-6">
+            <fieldset class="border-2 border-slate-200 bg-white rounded-2xl p-6 space-y-4">
                 <legend class="px-3 mx-2 bg-white border-2 border-slate-200 rounded-lg text-[10px] font-black text-slate-700 uppercase tracking-widest">
-                    <i class="fas fa-user-pen mr-1.5"></i> 3. Responsables
+                    <i class="fas fa-user-pen mr-1.5"></i> 3. Firmas y Responsables Oficiales
                 </legend>
 
-                <p class="text-[11px] text-slate-600 font-bold mb-5 flex items-start gap-1.5">
+                <p class="text-[11px] text-slate-600 font-bold mb-4 flex items-start gap-1.5">
                     <i class="fas fa-circle-info text-comfaBlue mt-0.5"></i>
-                    El formato oficial imprime <b>Nombre</b> y <b>Cargo</b> en renglones separados, con su linea de firma.
+                    <span>Selecciona el rol oficial para cada posición y completa el <b>Nombre</b> y <b>Cargo</b>. El orden seleccionado se sincroniza automáticamente con el formato oficial en <b>PDF</b> y <b>Excel</b>.</span>
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                    <div class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-5 space-y-4">
-                        <p class="text-[10px] font-black text-comfaBlue uppercase tracking-widest min-h-[2.1rem]">
-                            <i class="fas fa-user-shield mr-1.5"></i> Responsable del Area de Gestion Documental
-                        </p>
-                        <div>
-                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
-                            <input type="text" name="responsable" placeholder="Nombres y apellidos" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    <!-- FIRMA 1 (COLUMNA IZQUIERDA) -->
+                    <div class="border-2 border-slate-200/90 bg-slate-50/80 rounded-2xl p-5 space-y-4 hover:border-indigo-300 transition-all">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <span class="inline-flex items-center gap-2 text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[11px] font-black">1</span>
+                                <span>Firma 1 &mdash; Izquierda</span>
+                            </span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">TRD / PDF / Excel</span>
                         </div>
+
                         <div>
-                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Cargo</label>
-                            <input type="text" name="cargo_responsable" placeholder="Ej. Lider de Gestion Documental" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-list-check text-indigo-600 text-xs"></i> Rol / Título en el Documento
+                            </label>
+                            <select name="titulo_resp_1" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all cursor-pointer">
+                                <option value="Responsable del área de gestión documental de la entidad" selected>Responsable del área de gestión documental de la entidad</option>
+                                <option value="Responsable de Área">Responsable de Área</option>
+                                <option value="Subdirectora Administrativa y financiera">Subdirectora Administrativa y financiera</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-user text-indigo-600 text-xs"></i> Nombre Completo
+                            </label>
+                            <input type="text" name="responsable" placeholder="Nombres y apellidos" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-briefcase text-indigo-600 text-xs"></i> Cargo Oficial
+                            </label>
+                            <input type="text" name="cargo_responsable" placeholder="Ej: Gestor Documental / Líder" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all">
                         </div>
                     </div>
 
-                    <div class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-5 space-y-4">
-                        <p class="text-[10px] font-black text-comfaBlue uppercase tracking-widest min-h-[2.1rem]">
-                            <i class="fas fa-user-pen mr-1.5"></i> Responsable de Area
-                        </p>
-                        <div>
-                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
-                            <input type="text" name="responsable_area" placeholder="Nombres y apellidos" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    <!-- FIRMA 2 (COLUMNA CENTRAL) -->
+                    <div class="border-2 border-slate-200/90 bg-slate-50/80 rounded-2xl p-5 space-y-4 hover:border-indigo-300 transition-all">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <span class="inline-flex items-center gap-2 text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[11px] font-black">2</span>
+                                <span>Firma 2 &mdash; Central</span>
+                            </span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">TRD / PDF / Excel</span>
                         </div>
+
                         <div>
-                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Cargo</label>
-                            <input type="text" name="cargo_responsable_area" placeholder="Ej. Lider de Area" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-list-check text-indigo-600 text-xs"></i> Rol / Título en el Documento
+                            </label>
+                            <select name="titulo_resp_2" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all cursor-pointer">
+                                <option value="Responsable de Área" selected>Responsable de Área</option>
+                                <option value="Responsable del área de gestión documental de la entidad">Responsable del área de gestión documental de la entidad</option>
+                                <option value="Subdirectora Administrativa y financiera">Subdirectora Administrativa y financiera</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-user text-indigo-600 text-xs"></i> Nombre Completo
+                            </label>
+                            <input type="text" name="responsable_area" placeholder="Nombres y apellidos" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-briefcase text-indigo-600 text-xs"></i> Cargo Oficial
+                            </label>
+                            <input type="text" name="cargo_responsable_area" placeholder="Ej: Líder de Área" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all">
                         </div>
                     </div>
 
-                    <div class="border-2 border-slate-200 bg-slate-50 rounded-2xl p-5 space-y-4">
-                        <p class="text-[10px] font-black text-comfaBlue uppercase tracking-widest min-h-[2.1rem]">
-                            <i class="fas fa-user-tie mr-1.5"></i> Superior Jerarquico
-                        </p>
-                        <div>
-                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Nombre <span class="text-slate-400 font-bold normal-case tracking-normal">(nombres y apellidos)</span></label>
-                            <input type="text" name="superior" placeholder="Nombres y apellidos" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    <!-- FIRMA 3 (COLUMNA DERECHA) -->
+                    <div class="border-2 border-slate-200/90 bg-slate-50/80 rounded-2xl p-5 space-y-4 hover:border-indigo-300 transition-all">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <span class="inline-flex items-center gap-2 text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[11px] font-black">3</span>
+                                <span>Firma 3 &mdash; Derecha</span>
+                            </span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">TRD / PDF / Excel</span>
                         </div>
+
                         <div>
-                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">Cargo</label>
-                            <input type="text" name="cargo_superior" placeholder="Ej. Subdirector Administrativo" class="w-full px-5 py-3.5 bg-white border-2 border-slate-300 rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-400 placeholder:font-normal hover:border-slate-400 focus:border-comfaBlue focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-list-check text-indigo-600 text-xs"></i> Rol / Título en el Documento
+                            </label>
+                            <select name="titulo_resp_3" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all cursor-pointer">
+                                <option value="Subdirectora Administrativa y financiera" selected>Subdirectora Administrativa y financiera</option>
+                                <option value="Responsable del área de gestión documental de la entidad">Responsable del área de gestión documental de la entidad</option>
+                                <option value="Responsable de Área">Responsable de Área</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-user text-indigo-600 text-xs"></i> Nombre Completo
+                            </label>
+                            <input type="text" name="superior" placeholder="Nombres y apellidos" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-briefcase text-indigo-600 text-xs"></i> Cargo Oficial
+                            </label>
+                            <input type="text" name="cargo_superior" placeholder="Ej: Subdirectora Administrativa y Financiera" class="w-full px-4 py-3 bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl text-xs font-bold text-slate-800 outline-none transition-all">
                         </div>
                     </div>
 
