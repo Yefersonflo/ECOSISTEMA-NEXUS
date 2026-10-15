@@ -1785,9 +1785,9 @@
     </div>
 
     <!-- MODAL EDITAR RESPONSABLES -->
-    <div id="modal-editar-responsables" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md hidden" style="z-index: 9999;">
-        <div class="bg-white w-full max-w-3xl rounded-[3rem] shadow-2xl overflow-y-auto max-h-[90vh] border-2 border-indigo-200">
-            <div class="bg-indigo-950 p-8 text-white flex justify-between items-center border-b-8 border-comfaYellow sticky top-0 z-10">
+    <div id="modal-editar-responsables" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-md hidden" style="z-index: 9999;">
+        <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-y-auto max-h-[90vh] border-2 border-indigo-200">
+            <div class="bg-indigo-950 p-6 sm:p-8 text-white flex justify-between items-center border-b-8 border-comfaYellow sticky top-0 z-10">
                 <div>
                     <h3 class="text-xl font-black uppercase tracking-tight flex items-center gap-2.5">
                         <i class="fas fa-user-pen text-comfaYellow"></i>
@@ -1798,47 +1798,138 @@
                 <button onclick="document.getElementById('modal-editar-responsables').classList.add('hidden');" type="button" class="text-white/50 hover:text-white transition-colors text-2xl cursor-pointer"><i class="fas fa-times"></i></button>
             </div>
             
-            <form method="POST" action="{% url 'trd:actualizar_encabezado_trd' enc_id=enc_id %}" class="p-8 sm:p-10 space-y-6">
+            <form method="POST" action="{% url 'trd:actualizar_encabezado_trd' enc_id=enc_id %}" class="p-6 sm:p-8 space-y-6">
 {% csrf_token %}
+                <div class="bg-indigo-50 border-2 border-indigo-100 rounded-2xl p-4 text-xs text-indigo-950 flex items-start gap-3">
+                    <i class="fas fa-circle-info text-indigo-600 text-base mt-0.5 shrink-0"></i>
+                    <div>
+                        <p class="font-bold">Orden y títulos dinámicos de firmas oficiales</p>
+                        <p class="text-slate-600 text-[11px] mt-0.5">Elige el rol para cada posición y ajusta los nombres y cargos. El orden seleccionado se sincroniza automáticamente con el formato oficial en <strong>PDF</strong> y <strong>Excel</strong>.</p>
+                    </div>
+                </div>
+
                 <div class="space-y-5">
-                    <!-- RESPONSABLE GESTIÓN DOCUMENTAL -->
-                    <div class="space-y-2">
-                        <label class="text-xs font-black text-slate-700 uppercase ml-1 flex items-center justify-between">
-                            <span class="flex items-center gap-1.5"><i class="fas fa-folder-closed text-indigo-600"></i> 1. Responsable Gestión Documental</span>
-                            {% if encabezado.cargo_responsable_gestion_documental %}
-                            <span class="text-[10px] font-bold text-slate-400 normal-case tracking-normal">Cargo: {{ encabezado.cargo_responsable_gestion_documental }}</span>
-                            {% endif %}
-                        </label>
-                        <input type="text" name="resp_gd" value="{{ encabezado.responsable_gestion_documental }}" required placeholder="Nombre completo del responsable" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 focus:border-indigo-600 focus:bg-white outline-none transition-all">
+                    <!-- RESPONSABLE 1 (COLUMNA IZQUIERDA) -->
+                    <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl p-5 space-y-4 hover:border-indigo-300 transition-all">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <span class="inline-flex items-center gap-2 text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[11px] font-black">1</span>
+                                <span>Firma 1 &mdash; Columna Izquierda</span>
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">TRD / PDF / Excel</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                <i class="fas fa-list-check text-indigo-600 text-xs"></i> Rol / Título en el Documento
+                            </label>
+                            <select name="titulo_resp_1" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all cursor-pointer">
+                                <option value="Responsable del área de gestión documental de la entidad" {% if encabezado.titulo_responsable_1 == "Responsable del área de gestión documental de la entidad" or not encabezado.titulo_responsable_1 %}selected{% endif %}>Responsable del área de gestión documental de la entidad</option>
+                                <option value="Responsable de Área" {% if encabezado.titulo_responsable_1 == "Responsable de Área" %}selected{% endif %}>Responsable de Área</option>
+                                <option value="Subdirectora Administrativa y financiera" {% if encabezado.titulo_responsable_1 == "Subdirectora Administrativa y financiera" %}selected{% endif %}>Subdirectora Administrativa y financiera</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                    <i class="fas fa-user text-indigo-600 text-xs"></i> Nombre Completo
+                                </label>
+                                <input type="text" name="resp_gd" value="{{ encabezado.responsable_gestion_documental }}" required placeholder="Nombre del responsable" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                    <i class="fas fa-briefcase text-indigo-600 text-xs"></i> Cargo Oficial
+                                </label>
+                                <input type="text" name="cargo_gd" value="{{ encabezado.cargo_responsable_gestion_documental }}" placeholder="Ej: Gestor Documental" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all">
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- RESPONSABLE DEL ÁREA -->
-                    <div class="space-y-2">
-                        <label class="text-xs font-black text-slate-700 uppercase ml-1 flex items-center justify-between">
-                            <span class="flex items-center gap-1.5"><i class="fas fa-building text-indigo-600"></i> 2. Responsable del Área (Líder de la Oficina)</span>
-                            {% if encabezado.cargo_responsable_area %}
-                            <span class="text-[10px] font-bold text-slate-400 normal-case tracking-normal">Cargo: {{ encabezado.cargo_responsable_area }}</span>
-                            {% endif %}
-                        </label>
-                        <input type="text" name="resp_area" value="{{ encabezado.responsable_area }}" placeholder="Nombre completo del líder de área" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 focus:border-indigo-600 focus:bg-white outline-none transition-all">
+                    <!-- RESPONSABLE 2 (COLUMNA CENTRAL) -->
+                    <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl p-5 space-y-4 hover:border-indigo-300 transition-all">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <span class="inline-flex items-center gap-2 text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[11px] font-black">2</span>
+                                <span>Firma 2 &mdash; Columna Central</span>
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">TRD / PDF / Excel</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                <i class="fas fa-list-check text-indigo-600 text-xs"></i> Rol / Título en el Documento
+                            </label>
+                            <select name="titulo_resp_2" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all cursor-pointer">
+                                <option value="Responsable de Área" {% if encabezado.titulo_responsable_2 == "Responsable de Área" or not encabezado.titulo_responsable_2 %}selected{% endif %}>Responsable de Área</option>
+                                <option value="Responsable del área de gestión documental de la entidad" {% if encabezado.titulo_responsable_2 == "Responsable del área de gestión documental de la entidad" %}selected{% endif %}>Responsable del área de gestión documental de la entidad</option>
+                                <option value="Subdirectora Administrativa y financiera" {% if encabezado.titulo_responsable_2 == "Subdirectora Administrativa y financiera" %}selected{% endif %}>Subdirectora Administrativa y financiera</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                    <i class="fas fa-user text-indigo-600 text-xs"></i> Nombre Completo
+                                </label>
+                                <input type="text" name="resp_area" value="{{ encabezado.responsable_area }}" placeholder="Nombre del líder de área" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                    <i class="fas fa-briefcase text-indigo-600 text-xs"></i> Cargo Oficial
+                                </label>
+                                <input type="text" name="cargo_area" value="{{ encabezado.cargo_responsable_area }}" placeholder="Ej: Jefe de División / Coordinador" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all">
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- SUPERIOR JERÁRQUICO -->
-                    <div class="space-y-2">
-                        <label class="text-xs font-black text-slate-700 uppercase ml-1 flex items-center justify-between">
-                            <span class="flex items-center gap-1.5"><i class="fas fa-stamp text-indigo-600"></i> 3. Superior Jerárquico / Aprobador Final</span>
-                            {% if encabezado.cargo_superior_jerarquico %}
-                            <span class="text-[10px] font-bold text-slate-400 normal-case tracking-normal">Cargo: {{ encabezado.cargo_superior_jerarquico }}</span>
-                            {% endif %}
-                        </label>
-                        <input type="text" name="resp_sup" value="{{ encabezado.superior_jerarquico }}" required placeholder="Nombre completo del superior jerárquico" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 focus:border-indigo-600 focus:bg-white outline-none transition-all">
+                    <!-- RESPONSABLE 3 (COLUMNA DERECHA) -->
+                    <div class="bg-slate-50 border-2 border-slate-200/90 rounded-2xl p-5 space-y-4 hover:border-indigo-300 transition-all">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <span class="inline-flex items-center gap-2 text-xs font-black uppercase text-indigo-950 tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[11px] font-black">3</span>
+                                <span>Firma 3 &mdash; Columna Derecha</span>
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">TRD / PDF / Excel</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                <i class="fas fa-list-check text-indigo-600 text-xs"></i> Rol / Título en el Documento
+                            </label>
+                            <select name="titulo_resp_3" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all cursor-pointer">
+                                <option value="Subdirectora Administrativa y financiera" {% if encabezado.titulo_responsable_3 == "Subdirectora Administrativa y financiera" or not encabezado.titulo_responsable_3 %}selected{% endif %}>Subdirectora Administrativa y financiera</option>
+                                <option value="Responsable del área de gestión documental de la entidad" {% if encabezado.titulo_responsable_3 == "Responsable del área de gestión documental de la entidad" %}selected{% endif %}>Responsable del área de gestión documental de la entidad</option>
+                                <option value="Responsable de Área" {% if encabezado.titulo_responsable_3 == "Responsable de Área" %}selected{% endif %}>Responsable de Área</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                    <i class="fas fa-user text-indigo-600 text-xs"></i> Nombre Completo
+                                </label>
+                                <input type="text" name="resp_sup" value="{{ encabezado.superior_jerarquico }}" required placeholder="Nombre del superior jerárquico" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-700 uppercase mb-1.5 flex items-center gap-1.5">
+                                    <i class="fas fa-briefcase text-indigo-600 text-xs"></i> Cargo Oficial
+                                </label>
+                                <input type="text" name="cargo_sup" value="{{ encabezado.cargo_superior_jerarquico }}" placeholder="Ej: Subdirectora Administrativa y Financiera" class="w-full bg-white border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 outline-none transition-all">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <button type="submit" class="w-full mt-6 py-4 bg-indigo-900 hover:bg-indigo-950 text-white font-black rounded-2xl shadow-xl transition-all uppercase text-[11px] tracking-widest cursor-pointer flex items-center justify-center gap-2">
-                    <i class="fas fa-check"></i>
-                    <span>Guardar Responsables</span>
-                </button>
+                <div class="pt-2 flex items-center justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('modal-editar-responsables').classList.add('hidden');" class="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all uppercase text-[11px] tracking-wider cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-8 py-3.5 bg-indigo-900 hover:bg-indigo-950 text-white font-black rounded-xl shadow-xl transition-all uppercase text-[11px] tracking-widest cursor-pointer flex items-center gap-2">
+                        <i class="fas fa-check"></i>
+                        <span>Guardar Responsables</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>

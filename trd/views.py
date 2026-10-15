@@ -452,15 +452,23 @@ def actualizar_encabezado_trd(request, enc_id):
             if 'fecha_convalidacion' in request.POST:
                 enc.fecha_convalidacion = request.POST.get('fecha_convalidacion', enc.fecha_convalidacion).strip()
                 
-            # Firmas y Responsables
+            # Firmas y Responsables (Títulos dinámicos, Nombres y Cargos)
+            if 'titulo_resp_1' in request.POST:
+                enc.titulo_responsable_1 = request.POST.get('titulo_resp_1', enc.titulo_responsable_1).strip()
             if 'resp_gd' in request.POST:
                 enc.responsable_gestion_documental = request.POST.get('resp_gd', enc.responsable_gestion_documental).strip()
             if 'cargo_gd' in request.POST:
                 enc.cargo_responsable_gestion_documental = request.POST.get('cargo_gd', enc.cargo_responsable_gestion_documental).strip()
+                
+            if 'titulo_resp_2' in request.POST:
+                enc.titulo_responsable_2 = request.POST.get('titulo_resp_2', enc.titulo_responsable_2).strip()
             if 'resp_area' in request.POST:
                 enc.responsable_area = request.POST.get('resp_area', enc.responsable_area).strip()
             if 'cargo_area' in request.POST:
                 enc.cargo_responsable_area = request.POST.get('cargo_area', enc.cargo_responsable_area).strip()
+                
+            if 'titulo_resp_3' in request.POST:
+                enc.titulo_responsable_3 = request.POST.get('titulo_resp_3', enc.titulo_responsable_3).strip()
             if 'resp_sup' in request.POST:
                 enc.superior_jerarquico = request.POST.get('resp_sup', enc.superior_jerarquico).strip()
             if 'cargo_sup' in request.POST:

@@ -239,11 +239,15 @@ def generar_xlsx(encabezado: EncabezadoTRD, items: Iterable[ItemTRD]) -> BytesIO
     from openpyxl.styles import PatternFill
     fill_gris = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
     
+    t1 = getattr(encabezado, 'titulo_responsable_1', None) or "Responsable del área de gestión documental de la entidad"
+    t2 = getattr(encabezado, 'titulo_responsable_2', None) or "Responsable de Área"
+    t3 = getattr(encabezado, 'titulo_responsable_3', None) or "Subdirectora Administrativa y financiera"
+
     # Textos y configuracion general de titulos
     titulos = [
-        (1, 3, "Responsable del área de gestión documental de la entidad"),
-        (4, 10, "Responsable de Área"),
-        (11, 13, "Subdirectora Administrativa y financiera")
+        (1, 3, t1),
+        (4, 10, t2),
+        (11, 13, t3)
     ]
     
     # Aplicar estilos y merge a los Títulos

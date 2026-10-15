@@ -615,12 +615,16 @@ def _dibujar_firmas(lienzo, enc: EncabezadoTRD, tope: float) -> None:
     izquierda, derecha = FIRMAS_X[0], FIRMAS_X[6]
     alto_titulo = FIRMAS_ALTOS[0]
 
+    t1 = getattr(enc, 'titulo_responsable_1', None) or TITULO_RESPONSABLE
+    t2 = getattr(enc, 'titulo_responsable_2', None) or "Responsable de Área"
+    t3 = getattr(enc, 'titulo_responsable_3', None) or TITULO_SUPERIOR
+
     _relleno(lienzo, izquierda, y - alto_titulo, derecha - izquierda, alto_titulo)
-    _texto(lienzo, izquierda + 1.3, y - alto_titulo + 3.0, TITULO_RESPONSABLE,
+    _texto(lienzo, izquierda + 1.3, y - alto_titulo + 3.0, t1,
            NEGRITA, TAM_CABECERA)
-    _texto(lienzo, FIRMAS_X[2] + 1.3, y - alto_titulo + 3.0, "Responsable de Área",
+    _texto(lienzo, FIRMAS_X[2] + 1.3, y - alto_titulo + 3.0, t2,
            NEGRITA, TAM_CABECERA)
-    _texto(lienzo, FIRMAS_X[4] + 1.3, y - alto_titulo + 3.0, TITULO_SUPERIOR,
+    _texto(lienzo, FIRMAS_X[4] + 1.3, y - alto_titulo + 3.0, t3,
            NEGRITA, TAM_CABECERA)
 
     renglones = (
