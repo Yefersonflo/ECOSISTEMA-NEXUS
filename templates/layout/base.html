@@ -181,10 +181,10 @@
 
 
     <script>
-        // Redirigir al login después de 10 minutos exactos de inactividad total
+        // Control de inactividad de sesión (2 horas) y latido en segundo plano
         let inactivityTime = function () {
             let time;
-            // Reiniciar el contador si hay alguna interacción
+            // Reiniciar el contador si hay interacción
             window.onload = resetTimer;
             document.onmousemove = resetTimer;
             document.onkeypress = resetTimer;
@@ -192,17 +192,22 @@
             document.onclick = resetTimer;
 
             function logout() {
-                // Alerta suave opcional, o simplemente redirección
                 window.location.href = "{% url 'login' %}?next=" + window.location.pathname;
             }
 
             function resetTimer() {
                 clearTimeout(time);
-                // 10 minutos = 600,000 milisegundos
-                time = setTimeout(logout, 600000);
+                // 2 horas = 7,200,000 milisegundos
+                time = setTimeout(logout, 7200000);
             }
+
+            // Latido (heartbeat) silencioso cada 3 minutos para mantener la sesión viva en el servidor
+            // mientras el usuario redacta o trabaja en formularios extensos sin recargar la página
+            setInterval(function() {
+                fetch("{% url 'keepalive' %}").catch(function() {});
+            }, 180000);
         };
-        // Solo ejecutar si el usuario está autenticado (para no atraparlos en el login)
+        // Solo ejecutar si el usuario está autenticado
         {% if user.is_authenticated %}
         inactivityTime();
         {% endif %}

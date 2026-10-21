@@ -2572,7 +2572,11 @@ function formTRDData() {
                 return;
             }
 
-            const formElem = this.$refs.formularioTRD || document.querySelector('form');
+            const formElem = document.getElementById('formularioTRD');
+            if (!formElem) {
+                alert('Error del sistema: No se localizó el formulario de guardado.');
+                return;
+            }
             let hidden = formElem.querySelector('input[name="estructura_arbol_json"]');
             if (!hidden) {
                 hidden = document.createElement('input');

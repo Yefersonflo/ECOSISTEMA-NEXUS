@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views, logout
+from django.http import JsonResponse
 
 class CustomLoginView(auth_views.LoginView):
     def get(self, request, *args, **kwargs):
@@ -32,6 +33,7 @@ urlpatterns = [
     # API JSON para Gestor de Escritorio remoto
     path('api/buscar/', api_buscar_afiliado, name='api_buscar_afiliado'),
     path('api/sincronizar/', api_sincronizar_afiliados, name='api_sincronizar_afiliados'),
+    path('api/keepalive/', lambda r: JsonResponse({'status': 'ok'}) if r.user.is_authenticated else JsonResponse({'status': 'unauthenticated'}, status=401), name='keepalive'),
     # Página de inicio / Panel de control principal
     path('', dashboard, name='dashboard'),
     # Gestión de sesiones (Inicio y cierre de sesión)
