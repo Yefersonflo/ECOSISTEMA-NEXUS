@@ -252,7 +252,7 @@ def _bloque_calidad(lienzo, enc: EncabezadoTRD) -> None:
     # El divisor solo parte la fila de fechas: la version va centrada completa.
     lienzo.line(X_DIVISOR_FECHAS, Y_FECHAS_FIN, X_DIVISOR_FECHAS, Y_CODIGO_FIN)
 
-    _texto(lienzo, X_CELDA_TITULOS + 4.0, 553.4, "CÓDIGO:", NEGRITA, TAM_SUBTITULO)
+    _texto(lienzo, X_CELDA_TITULOS + 4.0, 553.8, "CÓDIGO:", NEGRITA, TAM_SUBTITULO)
     _texto(lienzo, X_CELDA_TITULOS + 48.0, 553.8, CODIGO_FORMATO, NORMAL, TAM_SUBTITULO)
 
     _fecha(lienzo, X_CELDA_TITULOS, X_DIVISOR_FECHAS, "Fecha creación", enc.fecha_creacion)
@@ -262,7 +262,7 @@ def _bloque_calidad(lienzo, enc: EncabezadoTRD) -> None:
     ancho_etiqueta = pdfmetrics.stringWidth("Versión: ", NEGRITA, TAM_SUBTITULO)
     ancho_valor = pdfmetrics.stringWidth(VERSION_FORMATO, NORMAL, TAM_SUBTITULO)
     x = centro_derecha - (ancho_etiqueta + ancho_valor) / 2
-    _texto(lienzo, x, 519.0, "Versión:", NEGRITA, TAM_SUBTITULO)
+    _texto(lienzo, x, 517.8, "Versión:", NEGRITA, TAM_SUBTITULO)
     _texto(lienzo, x + ancho_etiqueta, 517.8, VERSION_FORMATO, NORMAL, TAM_SUBTITULO)
 
 

@@ -57,17 +57,24 @@ def generar_xlsx(encabezado: EncabezadoTRD, items: Iterable[ItemTRD]) -> BytesIO
         TextBlock(f_norm_9, CODIGO_FORMATO),
     ])
     ws["L3"] = CellRichText([
-        TextBlock(f_bold_10, "Fecha creación \n"),
-        TextBlock(f_norm_10, encabezado.fecha_creacion or "02/01/2012"),
+        TextBlock(f_bold_9, "Fecha creación\n"),
+        TextBlock(f_norm_9, encabezado.fecha_creacion or "02/01/2012"),
     ])
     ws["M3"] = CellRichText([
-        TextBlock(f_bold_10, "Fecha ajuste \n"),
-        TextBlock(f_norm_10, encabezado.fecha_ajuste or "30/08/2024"),
+        TextBlock(f_bold_9, "Fecha ajuste\n"),
+        TextBlock(f_norm_9, encabezado.fecha_ajuste or "30/08/2024"),
     ])
+    ws["L3"].alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws["M3"].alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.row_dimensions[3].height = 28.0
+
     ws["L4"] = CellRichText([
         TextBlock(f_bold_9, "Versión: "),
         TextBlock(f_norm_9, VERSION_FORMATO),
     ])
+
+    # Repetir encabezado institucional y títulos de tabla (filas 1 a 13) en todas las páginas al imprimir
+    ws.print_title_rows = "1:13"
 
     # 2. Preparar filas para los items de la TRD
     lista_items = list(items)
