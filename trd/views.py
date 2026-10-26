@@ -51,69 +51,93 @@ def _entero(valor):
     except (TypeError, ValueError):
         return 0
 
+def _clave_codigo(codigo):
+    partes = []
+    for p in str(codigo or '').split('.'):
+        partes.append(int(p) if p.isdigit() else p)
+    return partes
+
 def agrupar_items_jerarquia(items):
     series = []
-    serie_actual = None
-    subserie_actual = None
     series_map = {}
     subseries_map = {}
 
-    for i in items:
-        nivel_norm = (i.nivel or '').strip().upper()
-        if nivel_norm == NIVEL_SERIE:
-            serie_nodo = {
-                "serie": i,
-                "subseries": [],
+    items_lista = list(items)
+
+    # 1. Registrar todas las SERIES primero (ordenadas por c?digo num?rico)
+    series_items = [i for i in items_lista if (i.nivel or '').strip().upper() == NIVEL_SERIE]
+    series_items.sort(key=lambda x: (_clave_codigo(x.codigo), x.id or 0))
+    for i in series_items:
+        serie_nodo = {
+            "serie": i,
+            "subseries": [],
+            "tipos_directos": [],
+            "total_hijos": 0,
+        }
+        series.append(serie_nodo)
+        if i.id:
+            series_map[i.id] = serie_nodo
+
+    # 2. Registrar todas las SUBSERIES bajo su serie padre (ordenadas por orden, c?digo, id)
+    subseries_items = [i for i in items_lista if (i.nivel or '').strip().upper() == NIVEL_SUBSERIE]
+    subseries_items.sort(key=lambda x: (x.orden or 0, _clave_codigo(x.codigo), x.id or 0))
+    for i in subseries_items:
+        sub_nodo = {
+            "subserie": i,
+            "tipos": [],
+        }
+        target_serie = series_map.get(i.parent_id)
+        if target_serie:
+            target_serie["subseries"].append(sub_nodo)
+            target_serie["total_hijos"] += 1
+        else:
+            serie_virtual = {
+                "serie": ItemTRD(
+                    codigo=i.codigo.rsplit(".", 1)[0] if "." in i.codigo else i.codigo,
+                    nivel=NIVEL_SERIE,
+                    nombre="SERIE",
+                    id=None,
+                ),
+                "subseries": [sub_nodo],
                 "tipos_directos": [],
-                "total_hijos": 0,
+                "total_hijos": 1,
             }
-            series.append(serie_nodo)
-            if i.id:
-                series_map[i.id] = serie_nodo
-            serie_actual = serie_nodo
-            subserie_actual = None
-        elif nivel_norm == NIVEL_SUBSERIE:
-            sub_nodo = {
-                "subserie": i,
-                "tipos": [],
-            }
-            target_serie = series_map.get(i.parent_id) if i.parent_id else serie_actual
+            series.append(serie_virtual)
+        if i.id:
+            subseries_map[i.id] = sub_nodo
+
+    # 3. Registrar todos los TIPOS DOCUMENTALES bajo su subserie o serie padre (ordenados por orden, id)
+    tipos_items = [i for i in items_lista if (i.nivel or '').strip().upper() == NIVEL_TIPO]
+    tipos_items.sort(key=lambda x: (x.orden or 0, x.id or 0))
+    for i in tipos_items:
+        target_sub = subseries_map.get(i.parent_id)
+        if target_sub:
+            target_sub["tipos"].append(i)
+            parent_serie_id = getattr(target_sub["subserie"], "parent_id", None)
+            if parent_serie_id in series_map:
+                series_map[parent_serie_id]["total_hijos"] += 1
+        else:
+            target_serie = series_map.get(i.parent_id)
             if target_serie:
-                target_serie["subseries"].append(sub_nodo)
+                target_serie["tipos_directos"].append(i)
                 target_serie["total_hijos"] += 1
-            else:
-                serie_virtual = {
-                    "serie": ItemTRD(
-                        codigo=i.codigo.rsplit(".", 1)[0] if "." in i.codigo else i.codigo,
-                        nivel=NIVEL_SERIE,
-                        nombre="SERIE",
-                        id=None,
-                    ),
-                    "subseries": [sub_nodo],
-                    "tipos_directos": [],
-                    "total_hijos": 1,
-                }
-                series.append(serie_virtual)
-                target_serie = serie_virtual
-            if i.id:
-                subseries_map[i.id] = sub_nodo
-            subserie_actual = sub_nodo
-        elif nivel_norm == NIVEL_TIPO:
-            target_sub = subseries_map.get(i.parent_id) if i.parent_id else subserie_actual
-            if target_sub:
-                target_sub["tipos"].append(i)
-                if serie_actual:
-                    serie_actual["total_hijos"] += 1
-            else:
-                target_serie = series_map.get(i.parent_id) if i.parent_id else serie_actual
-                if target_serie:
-                    target_serie["tipos_directos"].append(i)
-                    target_serie["total_hijos"] += 1
-                elif series:
-                    series[-1]["tipos_directos"].append(i)
-                    series[-1]["total_hijos"] += 1
+            elif series:
+                series[-1]["tipos_directos"].append(i)
+                series[-1]["total_hijos"] += 1
 
     return series
+
+def ordenar_items_jerarquicamente(items):
+    arbol = agrupar_items_jerarquia(items)
+    resultado = []
+    for nodo in arbol:
+        if nodo["serie"].id is not None:
+            resultado.append(nodo["serie"])
+        for sub_nodo in nodo["subseries"]:
+            resultado.append(sub_nodo["subserie"])
+            resultado.extend(sub_nodo["tipos"])
+        resultado.extend(nodo["tipos_directos"])
+    return resultado
 
 @login_required
 def inicio(request):
@@ -196,7 +220,7 @@ def diligenciar(request):
 @login_required
 def editar_trd(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
-    items = list(encabezado.items.all().order_by('orden', 'codigo'))
+    items = ordenar_items_jerarquicamente(encabezado.items.all())
     
     try:
         datos_ccd = catalogo_ccd.obtener_datos_oficina(encabezado.oficina_productora)
@@ -328,7 +352,7 @@ def eliminar_oficina(request, oficina_id):
 @login_required
 def exportar(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
-    items = list(encabezado.items.all().order_by('orden', 'codigo'))
+    items = ordenar_items_jerarquicamente(encabezado.items.all())
     
     try:
         flujo = generar_xlsx(encabezado, items)
@@ -341,7 +365,7 @@ def exportar(request, enc_id):
 @login_required
 def exportar_pdf(request, enc_id):
     encabezado = get_object_or_404(EncabezadoTRD, id=enc_id)
-    items = list(encabezado.items.all().order_by('orden', 'codigo'))
+    items = ordenar_items_jerarquicamente(encabezado.items.all())
     
     try:
         flujo = generar_pdf(encabezado, items)
