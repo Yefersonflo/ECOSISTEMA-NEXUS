@@ -63,7 +63,7 @@ Y_PIE = 60.7             # borde inferior del marco
 
 X_CELDA_LOGO, X_CELDA_TITULOS = 130.5, 600.5
 Y_TITULOS_MEDIO = 530.3  # separa "Sistema de gestion" de "Tabla de retencion"
-Y_CODIGO_FIN, Y_FECHAS_FIN = 548.6, 529.6
+Y_CODIGO_FIN, Y_FECHAS_FIN = 549.6, 526.5
 X_DIVISOR_FECHAS = 683.5
 X_DIVISOR_CONVENCIONES = 635.0
 
@@ -156,12 +156,9 @@ def _renderizar_trd_en_lienzo(lienzo, encabezado: EncabezadoTRD, items: Iterable
     total_paginas = len(paginas_trd) + paginas_extra
 
     for numero, pagina in enumerate(paginas_trd, start=1):
-        if numero == 1:
-            _dibujar_marco(lienzo, encabezado)
-            tope = Y_CABECERA_FIN
-        else:
-            tope = Y_TOPE
-        fin_tabla = _dibujar_filas(lienzo, pagina, tope=tope)
+        _dibujar_marco(lienzo, encabezado)
+        tope = Y_CABECERA_FIN
+        fin_tabla = _dibujar_filas(lienzo, pagina, tope=tope) if pagina else tope
         if numero == len(paginas_trd):
             y_fin_firmas = _dibujar_firmas(lienzo, encabezado, fin_tabla)
             _dibujar_flujo_instructivo(
@@ -256,7 +253,7 @@ def _bloque_calidad(lienzo, enc: EncabezadoTRD) -> None:
     lienzo.line(X_DIVISOR_FECHAS, Y_FECHAS_FIN, X_DIVISOR_FECHAS, Y_CODIGO_FIN)
 
     _texto(lienzo, X_CELDA_TITULOS + 4.0, 553.4, "CÓDIGO:", NEGRITA, TAM_SUBTITULO)
-    _texto(lienzo, X_CELDA_TITULOS + 48.0, 553.4, CODIGO_FORMATO, NORMAL, TAM_SUBTITULO)
+    _texto(lienzo, X_CELDA_TITULOS + 48.0, 553.8, CODIGO_FORMATO, NORMAL, TAM_SUBTITULO)
 
     _fecha(lienzo, X_CELDA_TITULOS, X_DIVISOR_FECHAS, "Fecha creación", enc.fecha_creacion)
     _fecha(lienzo, X_DIVISOR_FECHAS, X_DER, "Fecha ajuste", enc.fecha_ajuste)
@@ -266,14 +263,14 @@ def _bloque_calidad(lienzo, enc: EncabezadoTRD) -> None:
     ancho_valor = pdfmetrics.stringWidth(VERSION_FORMATO, NORMAL, TAM_SUBTITULO)
     x = centro_derecha - (ancho_etiqueta + ancho_valor) / 2
     _texto(lienzo, x, 519.0, "Versión:", NEGRITA, TAM_SUBTITULO)
-    _texto(lienzo, x + ancho_etiqueta, 519.0, VERSION_FORMATO, NORMAL, TAM_SUBTITULO)
+    _texto(lienzo, x + ancho_etiqueta, 517.8, VERSION_FORMATO, NORMAL, TAM_SUBTITULO)
 
 
 def _fecha(lienzo, x_ini: float, x_fin: float, etiqueta: str, valor: str) -> None:
     """Rotulo en negrita con su fecha debajo, centrados en la subcelda."""
     centro = (x_ini + x_fin) / 2
-    _texto_centrado(lienzo, centro, 543.8, etiqueta, NEGRITA, TAM_TEXTO)
-    _texto_centrado(lienzo, centro, 533.5, valor or "-", NORMAL, TAM_TEXTO)
+    _texto_centrado(lienzo, centro, 540.2, etiqueta, NEGRITA, TAM_SUBTITULO)
+    _texto_centrado(lienzo, centro, 530.6, valor or "-", NORMAL, TAM_SUBTITULO)
 
 
 def _oficina_y_convenciones(lienzo, enc: EncabezadoTRD) -> None:
@@ -385,17 +382,15 @@ def _alto_bloque(bloque: list[ItemTRD]) -> float:
 
 def _paginar(items: list[ItemTRD]) -> list[list[list[ItemTRD]]]:
     """Reparte los recuadros de serie por pagina sin partirlos.
-    La pagina 1 lleva cabecera (disponible = Y_CABECERA_FIN - Y_PIE).
-    Las paginas 2 en adelante usan la pagina completa (disponible = Y_TOPE - Y_PIE).
+    Todas las paginas llevan cabecera completa (disponible = Y_CABECERA_FIN - Y_PIE).
     """
     paginas, actual, usado = [], [], 0.0
+    disponible = Y_CABECERA_FIN - Y_PIE
     for bloque in _agrupar_por_serie(items):
         alto = _alto_bloque(bloque)
-        disponible = (Y_CABECERA_FIN - Y_PIE) if not paginas else (Y_TOPE - Y_PIE)
         if actual and usado + alto > disponible:
             paginas.append(actual)
             actual, usado = [], 0.0
-            disponible = Y_TOPE - Y_PIE
         actual.append(bloque)
         usado += alto
     paginas.append(actual)
@@ -407,7 +402,7 @@ def _reservar_espacio_de_firmas(
 ) -> list[list[list[ItemTRD]]]:
     """Garantiza que el bloque de firmas quepa debajo de la tabla de la ultima pagina."""
     usado = sum(_alto_bloque(b) for b in paginas[-1])
-    disponible = (Y_CABECERA_FIN - Y_PIE) if len(paginas) == 1 else (Y_TOPE - Y_PIE)
+    disponible = Y_CABECERA_FIN - Y_PIE
     if usado + ALTO_FIRMAS <= disponible or not paginas[-1]:
         return paginas
     return paginas + [[]]
@@ -778,7 +773,7 @@ def _planificar_paginas_instructivo(y_inicio: float, ancho_max: float) -> tuple[
     y = y_inicio
     paginas_extra = 0
     y_minimo = Y_PIE + 10.0
-    y_tope_nueva = Y_TOPE
+    y_tope_nueva = Y_CALIDAD_FIN - 10.0
 
     for l in lineas:
         espacio = l.espacio_previo + l.salto
@@ -801,7 +796,7 @@ def _dibujar_flujo_instructivo(
     """Dibuja el instructivo en flujo continuo full-width sobre la tabla o en paginas nuevas."""
     y = y_inicio
     y_minimo = Y_PIE + 10.0
-    y_tope_nueva = Y_TOPE
+    y_tope_nueva = Y_CALIDAD_FIN - 10.0
     num_pag = pagina_actual
 
     for l in lineas:
@@ -809,6 +804,9 @@ def _dibujar_flujo_instructivo(
         if y - espacio < y_minimo:
             _dibujar_pie(lienzo, num_pag, total_paginas)
             lienzo.showPage()
+            lienzo.setLineWidth(0.7)
+            _bloque_calidad(lienzo, enc)
+            _imagen(lienzo, VIGILADO, VIGILADO_CAJA)
             num_pag += 1
             y = y_tope_nueva
 
