@@ -387,7 +387,7 @@ def api_ccd_oficina(request, nombre_oficina):
 @require_POST
 def api_guardar_ccd_personalizado(request):
     if not is_trd_admin(request.user):
-        return JsonResponse({'success': False, 'error': 'Permiso denegado.'}, status=403)
+        return JsonResponse({'ok': False, 'error': 'Permiso denegado.'}, status=403)
 
     try:
         data = json.loads(request.body)

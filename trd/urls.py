@@ -24,9 +24,13 @@ urlpatterns = [
     path('<int:enc_id>/item/<int:item_id>/editar', views_crud.editar_campo_inline, name='editar_campo_inline'),
     path('<int:enc_id>/item/<int:item_id>/eliminar', views_crud.eliminar_item, name='eliminar_item'),
 
-    # API endpoints
+    # API endpoints (con y sin barra final para evitar fallos en POST fetch)
     path('api/ccd/oficina/<path:nombre_oficina>/', views.api_ccd_oficina, name='api_ccd_oficina'),
+    path('api/ccd/oficina/<path:nombre_oficina>', views.api_ccd_oficina),
     path('api/ccd/guardar_personalizado/', views.api_guardar_ccd_personalizado, name='api_guardar_ccd_personalizado'),
+    path('api/ccd/guardar_personalizado', views.api_guardar_ccd_personalizado),
     path('api/ccd/actualizar/', views.api_actualizar_ccd, name='api_actualizar_ccd'),
+    path('api/ccd/actualizar', views.api_actualizar_ccd),
     path('api/ccd/eliminar/', views.api_eliminar_ccd, name='api_eliminar_ccd'),
+    path('api/ccd/eliminar', views.api_eliminar_ccd),
 ]

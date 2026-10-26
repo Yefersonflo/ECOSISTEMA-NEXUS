@@ -2412,7 +2412,7 @@ function formTRDData() {
                 return;
             }
             try {
-                const resp = await fetch('/trd/api/ccd/actualizar', {
+                const resp = await fetch('/trd/api/ccd/actualizar/', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -2437,7 +2437,7 @@ function formTRDData() {
         async eliminarSerieCatalogo(s) {
             if (!confirm(`¿Estás seguro de eliminar la serie '${s.nombre}' del catálogo?`)) return;
             try {
-                const resp = await fetch('/trd/api/ccd/eliminar', {
+                const resp = await fetch('/trd/api/ccd/eliminar/', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -2471,7 +2471,7 @@ function formTRDData() {
 
             this.guardandoCatalogo = true;
             try {
-                const resp = await fetch('/trd/api/ccd/guardar_personalizado', {
+                const resp = await fetch('/trd/api/ccd/guardar_personalizado/', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
