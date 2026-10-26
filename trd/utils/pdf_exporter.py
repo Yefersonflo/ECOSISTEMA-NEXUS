@@ -82,7 +82,7 @@ Y_CONVENCIONES_FILAS = (490.7, 482.8, 474.1, 465.5)
 
 # Bloque de firmas (A33:K36 en Excel)
 FIRMAS_X = (25.5, 65.5, 231.7, 271.7, 483.0, 523.0, 766.5)  # etiqueta|valor de cada columna
-FIRMAS_ALTOS = (11.0, 13.0, 13.0, 14.0)       # titulo, Nombre, Cargo, Firma
+FIRMAS_ALTOS = (11.0, 13.0, 13.0)             # titulo, Nombre, Cargo
 FIRMAS_SEPARACION = 12.0                       # aire entre la tabla y el bloque
 TITULO_RESPONSABLE = "Responsable del área de gestión documental de la entidad"
 TITULO_SUPERIOR = "Subdirectora Administrativa y financiera"
@@ -675,7 +675,6 @@ def _dibujar_firmas(lienzo, enc: EncabezadoTRD, tope: float) -> None:
     renglones = (
         ("Nombre:", enc.responsable_gestion_documental, enc.responsable_area, enc.superior_jerarquico),
         ("Cargo:", enc.cargo_responsable_gestion_documental, enc.cargo_responsable_area, enc.cargo_superior_jerarquico),
-        ("Firma", "", "", ""),
     )
     y -= alto_titulo
     lienzo.line(izquierda, y, derecha, y)
@@ -752,8 +751,8 @@ INSTRUCTIVO_CONTENIDO = (
     ("PARRAFO", "", "Registrar el hecho o documento a partir del cual se empiezan a contar los tiempos de retención documental para las series, o subseries documentales", 0.0, 3.0),
     ("PARRAFO", "", "Para las series y subseries documentales que se marca “Reproducción técnica del papel” indicar en qué momento del Ciclo vital del documento se realizará dicha reproducción.", 0.0, 3.0),
     ("SECCION", "RESPONSABLES:", "", 0.0, 8.0),
-    ("PARRAFO", "Responsable del área gestión documental de la entidad:", "Se escribirán los nombres y apellidos, cargo, firma del responsable del área gestión documental de la entidad.", 0.0, 4.0),
-    ("PARRAFO", "Superior jerarquía:", "Se escribirán los nombres y apellidos, cargo, firma del funcionario(a) administrativo de superior jerarquía.", 0.0, 4.0),
+    ("PARRAFO", "Responsable del área gestión documental de la entidad:", "Se escribirán los nombres y apellidos y cargo del responsable del área gestión documental de la entidad.", 0.0, 4.0),
+    ("PARRAFO", "Superior jerarquía:", "Se escribirán los nombres y apellidos y cargo del funcionario(a) administrativo de superior jerarquía.", 0.0, 4.0),
     ("SECCION", "FECHAS:", "", 0.0, 8.0),
     ("PARRAFO", "Fecha de Aprobación:", "consignar la fecha de aprobación las Tablas de Retención Documental – TRD.", 0.0, 4.0),
     ("PARRAFO", "Versión de Tabla:", "consignar la versión de las Tablas de Retención Documental – TRD. (Si aplica)", 0.0, 4.0),

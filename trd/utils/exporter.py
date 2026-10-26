@@ -268,9 +268,14 @@ def generar_xlsx(encabezado: EncabezadoTRD, items: Iterable[ItemTRD]) -> BytesIO
             ws.cell(row=r_firmas, column=col).fill = fill_gris
             ws.cell(row=r_firmas, column=col).border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
-    # Nombres, Cargos, Firmas (cajas blancas con bordes)
-    etiquetas = ["Nombre:", "Cargo:", "Firma:"]
-    for row_offset in (1, 2, 3):
+    # Limpiar fila +3 (antigua fila de Firma en la plantilla)
+    for col in range(1, 14):
+        ws.cell(row=r_firmas + 3, column=col, value="")
+        ws.cell(row=r_firmas + 3, column=col).border = Border()
+
+    # Nombres y Cargos (cajas blancas con bordes, sin fila de Firma)
+    etiquetas = ["Nombre:", "Cargo:"]
+    for row_offset in (1, 2):
         r_current = r_firmas + row_offset
         
         # Etiqueta en la primera columna de cada bloque
