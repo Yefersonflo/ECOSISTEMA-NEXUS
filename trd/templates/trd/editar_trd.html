@@ -2064,7 +2064,7 @@ function formTRDData() {
             const val = (this.modalSub_nuevoTipoDoc || '').trim();
             if (!val) return;
             this.modalSub_tipos.push({
-                nombre: this.toTitleCase(val),
+                nombre: val,
                 soporte_papel: false,
                 soporte_electronico: false,
                 extensiones: ''
@@ -2240,7 +2240,7 @@ function formTRDData() {
             const val = (this.subForm_nuevoTipoDoc || '').trim();
             if (!val) return;
             this.subForm_tiposDocumentales.push({
-                nombre: this.toTitleCase(val),
+                nombre: val,
                 soporte_papel: false,
                 soporte_electronico: false,
                 extensiones: ''
@@ -2361,7 +2361,7 @@ function formTRDData() {
             const val = this.nuevoTipoDoc.trim();
             if (val.length === 0) return;
             this.tiposDocumentales.push({
-                nombre: this.toTitleCase(val),
+                nombre: val,
                 soporte_papel: false,
                 soporte_electronico: false,
                 extensiones: ''

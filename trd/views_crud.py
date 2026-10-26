@@ -1,3 +1,4 @@
+from django.db.models import Max
 
 import json
 from django.shortcuts import render, redirect, get_object_or_404
@@ -190,39 +191,59 @@ def crear_item(request, enc_id):
                 orden=sub_idx
             )
 
-        for t_idx, td_data in enumerate(sub_data.get("tipos_documentales", [])):
+        max_ord_sub = ItemTRD.objects.filter(parent_id=sub_item.id, nivel="TIPO DOCUMENTAL").aggregate(Max('orden'))['orden__max'] or 0
+        for td_data in sub_data.get("tipos_documentales", []):
             td_nom = str(td_data.get("nombre", "")).strip()
             if not td_nom: continue
             td_elec = bool(td_data.get("soporte_electronico", False))
+            td_papel = bool(td_data.get("soporte_papel", False))
+            if not td_papel and not td_elec:
+                td_papel = True
             td_ext = str(td_data.get("extensiones", "")).strip() if td_elec else ""
-            ItemTRD.objects.update_or_create(
-                encabezado=encabezado, parent_id=sub_item.id, nombre=td_nom, nivel="TIPO DOCUMENTAL",
-                defaults={
-                    "codigo": sub_cod,
-                    "soporte_papel": bool(td_data.get("soporte_papel", True)),
-                    "soporte_electronico": td_elec,
-                    "extensiones": td_ext,
-                    "disposicion_final": "C",
-                    "orden": t_idx
-                }
-            )
+            existente_td = ItemTRD.objects.filter(encabezado=encabezado, parent_id=sub_item.id, nombre=td_nom, nivel="TIPO DOCUMENTAL").first()
+            if existente_td:
+                existente_td.soporte_papel = td_papel
+                existente_td.soporte_electronico = td_elec
+                existente_td.extensiones = td_ext
+                existente_td.save()
+            else:
+                max_ord_sub += 1
+                ItemTRD.objects.create(
+                    encabezado=encabezado, parent_id=sub_item.id, nombre=td_nom, nivel="TIPO DOCUMENTAL",
+                    codigo=f"{sub_cod}.{max_ord_sub}",
+                    soporte_papel=td_papel,
+                    soporte_electronico=td_elec,
+                    extensiones=td_ext,
+                    disposicion_final="C",
+                    orden=max_ord_sub
+                )
             
-    for t_idx, td_data in enumerate(tipos_serie):
+    max_ord_serie = ItemTRD.objects.filter(parent_id=serie.id, nivel="TIPO DOCUMENTAL").aggregate(Max('orden'))['orden__max'] or 0
+    for td_data in tipos_serie:
         td_nom = str(td_data.get("nombre", "")).strip()
         if not td_nom: continue
         td_elec = bool(td_data.get("soporte_electronico", False))
+        td_papel = bool(td_data.get("soporte_papel", False))
+        if not td_papel and not td_elec:
+            td_papel = True
         td_ext = str(td_data.get("extensiones", "")).strip() if td_elec else ""
-        ItemTRD.objects.update_or_create(
-            encabezado=encabezado, parent_id=serie.id, nombre=td_nom, nivel="TIPO DOCUMENTAL",
-            defaults={
-                "codigo": serie_cod,
-                "soporte_papel": bool(td_data.get("soporte_papel", True)),
-                "soporte_electronico": td_elec,
-                "extensiones": td_ext,
-                "disposicion_final": "C",
-                "orden": t_idx
-            }
-        )
+        existente_td = ItemTRD.objects.filter(encabezado=encabezado, parent_id=serie.id, nombre=td_nom, nivel="TIPO DOCUMENTAL").first()
+        if existente_td:
+            existente_td.soporte_papel = td_papel
+            existente_td.soporte_electronico = td_elec
+            existente_td.extensiones = td_ext
+            existente_td.save()
+        else:
+            max_ord_serie += 1
+            ItemTRD.objects.create(
+                encabezado=encabezado, parent_id=serie.id, nombre=td_nom, nivel="TIPO DOCUMENTAL",
+                codigo=f"{serie_cod}.{max_ord_serie}",
+                soporte_papel=td_papel,
+                soporte_electronico=td_elec,
+                extensiones=td_ext,
+                disposicion_final="C",
+                orden=max_ord_serie
+            )
         
     try:
         if tiene_subserie:
@@ -271,7 +292,7 @@ def agregar_subserie_directa(request, enc_id, serie_id):
         disposicion_final=normalizar_disposicion(request.POST.get("disposicion_final", "")),
         reproduccion_tecnica=request.POST.get("reproduccion_tecnica", "").strip().upper(),
         procedimiento=request.POST.get("procedimiento", "").strip(),
-        orden=ItemTRD.objects.filter(parent_id=serie.id, nivel="SUBSERIE").count()
+        orden=(ItemTRD.objects.filter(parent_id=serie.id, nivel="SUBSERIE").aggregate(Max("orden"))["orden__max"] or 0) + 1
     )
     
     messages.success(request, f"Subserie '{sub_nom}' agregada exitosamente.")
@@ -291,13 +312,17 @@ def agregar_tipo_documental(request, enc_id, padre_id):
     td_elec = request.POST.get("soporte_electronico") in ("1", "true", "on")
     td_ext = request.POST.get("extensiones", "").strip() if td_elec else ""
     
+    sig_orden = (ItemTRD.objects.filter(parent_id=padre.id, nivel="TIPO DOCUMENTAL").aggregate(Max("orden"))["orden__max"] or 0) + 1
+    td_papel = request.POST.get("soporte_papel") in ("1", "true", "on")
+    if not td_papel and not td_elec:
+        td_papel = True
     ItemTRD.objects.create(
-        encabezado=encabezado, parent_id=padre.id, codigo=padre.codigo, nombre=td_nom, nivel="TIPO DOCUMENTAL",
-        soporte_papel=request.POST.get("soporte_papel") in ("1", "true", "on"),
+        encabezado=encabezado, parent_id=padre.id, codigo=f"{padre.codigo}.{sig_orden}", nombre=td_nom, nivel="TIPO DOCUMENTAL",
+        soporte_papel=td_papel,
         soporte_electronico=td_elec,
         extensiones=td_ext,
         disposicion_final="C",
-        orden=ItemTRD.objects.filter(parent_id=padre.id, nivel="TIPO DOCUMENTAL").count()
+        orden=sig_orden
     )
     
     messages.success(request, f"Tipo documental '{td_nom}' agregado.")
