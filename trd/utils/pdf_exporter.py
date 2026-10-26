@@ -146,7 +146,7 @@ def _renderizar_trd_en_lienzo(lienzo, encabezado: EncabezadoTRD, items: Iterable
     ancho_instructivo = X_DER - X_IZQ
 
     # Estimar posicion inferior de la tabla en la ultima pagina
-    usado_ultima = sum(_alto_bloque(b) for b in paginas_trd[-1])
+    usado_ultima = _alto_pagina_filas(paginas_trd[-1])
     fin_tabla_estimado = Y_CABECERA_FIN - usado_ultima
     y_firmas_fin_estimado = fin_tabla_estimado - FIRMAS_SEPARACION - sum(FIRMAS_ALTOS) - ALTO_FECHAS
 
@@ -337,38 +337,23 @@ RELLENO = 3.0
 SANGRIA_TIPO = 8.0
 
 
-def _agrupar_por_serie(items: list[ItemTRD]) -> list[list[ItemTRD]]:
-    """El formato imprime un recuadro por SERIE con sus subseries y tipos dentro."""
-    bloques: list[list[ItemTRD]] = []
-    for item in items:
-        if item.nivel == NIVEL_SERIE or not bloques:
-            bloques.append([item])
-        else:
-            bloques[-1].append(item)
-    return bloques
+class _FilaTabla:
+    """Unidad at?mica de paginaci?n: representa un ?tem (Serie, Subserie o Tipo)
+    o una l?nea adicional de procedimiento, permitiendo flujo continuo entre p?ginas."""
+    __slots__ = ("item", "lineas_nombre", "lineas_proc", "divisor_arriba", "num_lineas")
 
-
-def _lineas_de_item(item: ItemTRD) -> int:
-    del_nombre = len(_ajustar(_nombre(item), _ancho_nombre(item), TAM_TEXTO, _fuente(item)))
-    return max(del_nombre, 1)
-
-
-def _lineas_de_bloque(bloque: list[ItemTRD]) -> int:
-    """Cuantas lineas de texto ocupa el recuadro de una serie."""
-    total_lineas = 0
-    g_nom = 0
-    g_proc = 0
-
-    for item in bloque:
-        if item.nivel in (NIVEL_SERIE, NIVEL_SUBSERIE):
-            total_lineas += max(g_nom, g_proc)
-            g_nom = _lineas_de_item(item)
-            g_proc = len(_ajustar(item.procedimiento or "", _ancho(10), TAM_TEXTO)) if item.procedimiento else 0
-        else:
-            g_nom += _lineas_de_item(item)
-
-    total_lineas += max(g_nom, g_proc)
-    return total_lineas
+    def __init__(
+        self,
+        item: ItemTRD | None,
+        lineas_nombre: list[str],
+        lineas_proc: list[tuple[str, bool]],
+        divisor_arriba: bool = False,
+    ):
+        self.item = item
+        self.lineas_nombre = lineas_nombre
+        self.lineas_proc = lineas_proc
+        self.divisor_arriba = divisor_arriba
+        self.num_lineas = max(len(lineas_nombre), len(lineas_proc), 1)
 
 
 def _ancho_nombre(item: ItemTRD) -> float:
@@ -376,122 +361,187 @@ def _ancho_nombre(item: ItemTRD) -> float:
     return _ancho(1) - (SANGRIA_TIPO if item.nivel == NIVEL_TIPO else 0.0)
 
 
-def _alto_bloque(bloque: list[ItemTRD]) -> float:
-    return _lineas_de_bloque(bloque) * ALTO_LINEA + 2 * RELLENO
+def _construir_filas_tabla(items: list[ItemTRD]) -> list[_FilaTabla]:
+    """Convierte la lista jer?rquica de ?tems en filas at?micas continuas."""
+    grupos: list[tuple[ list[ItemTRD], bool ]] = []
+    subseries_en_serie = 0
+
+    for idx, item in enumerate(items):
+        if item.nivel == NIVEL_SERIE:
+            subseries_en_serie = 0
+            grupos.append(([item], idx > 0))
+        elif item.nivel == NIVEL_SUBSERIE:
+            subseries_en_serie += 1
+            divisor = (subseries_en_serie > 1) or (not grupos)
+            grupos.append(([item], divisor))
+        else:
+            if not grupos:
+                grupos.append(([item], False))
+            else:
+                grupos[-1][0].append(item)
+
+    filas: list[_FilaTabla] = []
+    for grupo_items, divisor_grupo in grupos:
+        lider = grupo_items[0]
+        proc_raw = (lider.procedimiento or "") if lider.nivel != NIVEL_TIPO else ""
+        lineas_p_str = _ajustar(proc_raw, _ancho(10), TAM_TEXTO) if proc_raw else []
+        lineas_p: list[tuple[str, bool]] = [
+            (linea, i == len(lineas_p_str) - 1) for i, linea in enumerate(lineas_p_str)
+        ]
+        cursor_p = 0
+
+        for idx_it, it in enumerate(grupo_items):
+            fuente = _fuente(it)
+            l_nom = _ajustar(_nombre(it), _ancho_nombre(it), TAM_TEXTO, fuente)
+            n_nom = max(len(l_nom), 1)
+            slice_p = lineas_p[cursor_p : cursor_p + n_nom]
+            cursor_p += n_nom
+            filas.append(
+                _FilaTabla(
+                    item=it,
+                    lineas_nombre=l_nom,
+                    lineas_proc=slice_p,
+                    divisor_arriba=(divisor_grupo if idx_it == 0 else False),
+                )
+            )
+
+        # Si el procedimiento tiene m?s l?neas que los ?tems del grupo, agregarlas como filas de continuaci?n
+        while cursor_p < len(lineas_p):
+            filas.append(
+                _FilaTabla(
+                    item=None,
+                    lineas_nombre=[],
+                    lineas_proc=[lineas_p[cursor_p]],
+                    divisor_arriba=False,
+                )
+            )
+            cursor_p += 1
+
+    return filas
 
 
-def _paginar(items: list[ItemTRD]) -> list[list[list[ItemTRD]]]:
-    """Reparte los recuadros de serie por pagina sin partirlos.
-    Todas las paginas llevan cabecera completa (disponible = Y_CABECERA_FIN - Y_PIE).
-    """
-    paginas, actual, usado = [], [], 0.0
+def _alto_pagina_filas(filas_pag: list[_FilaTabla]) -> float:
+    """Calcula el alto exacto en puntos que ocupan las filas de una p?gina."""
+    if not filas_pag:
+        return 0.0
+    alto = 2 * RELLENO
+    for idx, f in enumerate(filas_pag):
+        if idx > 0 and f.divisor_arriba:
+            alto += 2 * RELLENO
+        alto += f.num_lineas * ALTO_LINEA
+    return alto
+
+
+def _paginar(items: list[ItemTRD]) -> list[list[_FilaTabla]]:
+    """Reparte las filas de manera continua p?gina por p?gina hasta agotar el espacio disponible."""
+    filas = _construir_filas_tabla(items)
+    if not filas:
+        return [[]]
+
     disponible = Y_CABECERA_FIN - Y_PIE
-    for bloque in _agrupar_por_serie(items):
-        alto = _alto_bloque(bloque)
-        if actual and usado + alto > disponible:
+    paginas: list[list[_FilaTabla]] = []
+    actual: list[_FilaTabla] = []
+    usado = 2 * RELLENO
+
+    for f in filas:
+        extra_div = (2 * RELLENO) if (actual and f.divisor_arriba) else 0.0
+        alto_f = extra_div + f.num_lineas * ALTO_LINEA
+
+        if actual and (usado + alto_f > disponible):
             paginas.append(actual)
-            actual, usado = [], 0.0
-        actual.append(bloque)
-        usado += alto
-    paginas.append(actual)
+            actual = [f]
+            usado = 2 * RELLENO + f.num_lineas * ALTO_LINEA
+        else:
+            actual.append(f)
+            usado += alto_f
+
+    if actual:
+        paginas.append(actual)
     return paginas
 
 
 def _reservar_espacio_de_firmas(
-    paginas: list[list[list[ItemTRD]]],
-) -> list[list[list[ItemTRD]]]:
-    """Garantiza que el bloque de firmas quepa debajo de la tabla de la ultima pagina."""
-    usado = sum(_alto_bloque(b) for b in paginas[-1])
+    paginas: list[list[_FilaTabla]],
+) -> list[list[_FilaTabla]]:
+    """Garantiza que el bloque de firmas quepa debajo de la tabla de la ?ltima p?gina."""
+    usado = _alto_pagina_filas(paginas[-1])
     disponible = Y_CABECERA_FIN - Y_PIE
     if usado + ALTO_FIRMAS <= disponible or not paginas[-1]:
         return paginas
     return paginas + [[]]
 
 
-def _dibujar_filas(lienzo, bloques: list[list[ItemTRD]], tope: float = Y_CABECERA_FIN) -> float:
-    """Dibuja los recuadros de serie de una pagina y devuelve el borde inferior."""
-    y = tope
-    for bloque in bloques:
-        alto = _alto_bloque(bloque)
-        _dibujar_bloque(lienzo, bloque, y, alto)
-        y -= alto
-        lienzo.line(X_IZQ, y, X_DER, y)
+def _dibujar_filas(lienzo, filas_pag: list[_FilaTabla], tope: float = Y_CABECERA_FIN) -> float:
+    """Dibuja las filas continuas de una p?gina y devuelve la coordenada Y del borde inferior."""
+    if not filas_pag:
+        return tope
 
-    lienzo.rect(X_IZQ, y, X_DER - X_IZQ, tope - y)
-    for x in COLUMNAS_X[1:-1]:
-        lienzo.line(x, y, x, tope)
-    return y
+    y_cursor = tope - RELLENO
+    ancho_proc = _ancho(10)
+    x_proc = COLUMNAS_X[10] + RELLENO
 
+    for idx, fila in enumerate(filas_pag):
+        if idx > 0 and fila.divisor_arriba:
+            y_cursor -= RELLENO
+            lienzo.line(X_IZQ, y_cursor, X_DER, y_cursor)
+            y_cursor -= RELLENO
 
-def _dibujar_bloque(lienzo, bloque: list[ItemTRD], tope: float, alto: float) -> None:
-    """Un recuadro de serie: codigos, nombres jerarquicos y datos de cada item."""
-    y_start = tope - RELLENO - TAM_TEXTO
-    subseries_en_bloque = 0
+        y_primera_linea = y_cursor - TAM_TEXTO
+        item = fila.item
 
-    g_y_inicio = y_start
-    g_nom = 0
-    g_proc = 0
+        if item is not None:
+            fuente = _fuente(item)
+            if item.nivel != NIVEL_TIPO:
+                _texto(lienzo, COLUMNAS_X[0] + RELLENO, y_primera_linea, item.codigo, NORMAL, TAM_TEXTO)
 
-    for idx, item in enumerate(bloque):
-        if item.nivel in (NIVEL_SERIE, NIVEL_SUBSERIE):
-            if idx > 0:
-                y_start = g_y_inicio - max(g_nom, g_proc) * ALTO_LINEA
-                g_y_inicio = y_start
-                g_nom = 0
-                g_proc = 0
-
-        if item.nivel == NIVEL_SUBSERIE:
-            subseries_en_bloque += 1
-            if subseries_en_bloque > 1:
-                # El separador de subserie va arriba de este grupo, tomando en cuenta TAM_TEXTO y RELLENO
-                y_separador = g_y_inicio + TAM_TEXTO + RELLENO
-                lienzo.line(X_IZQ, y_separador, X_DER, y_separador)
-
-        item_lineas = _lineas_de_item(item)
-        fuente = _fuente(item)
-        
-        y_item = g_y_inicio - g_nom * ALTO_LINEA
-
-        # Columna 0: Codigo alineado a la izquierda (los tipos documentales no llevan codigo segun normativa)
-        if item.nivel != NIVEL_TIPO:
-            _texto(lienzo, COLUMNAS_X[0] + RELLENO, y_item, item.codigo, NORMAL, TAM_TEXTO)
-
-        # Columna 1: Nombre con sangria
-        sangria = SANGRIA_TIPO if item.nivel == NIVEL_TIPO else 0.0
-        y_nom_dibujo = y_item
-        for linea in _ajustar(_nombre(item), _ancho_nombre(item), TAM_TEXTO, fuente):
-            _texto(lienzo, COLUMNAS_X[1] + RELLENO + sangria, y_nom_dibujo, linea, fuente, TAM_TEXTO)
-            y_nom_dibujo -= ALTO_LINEA
-
-        # Columnas 2-3: Soportes (Aplica para Series, Subseries y Tipos Documentales)
-        _centrado(lienzo, 2, y_item, "X" if item.soporte_papel else "", NORMAL)
-        if item.soporte_electronico:
-            _texto(lienzo, COLUMNAS_X[3] + RELLENO, y_item, item.extensiones or "X", NORMAL, TAM_TEXTO)
-
-        # Columnas 4-10: Retencion, Disposicion, Reproduccion y Procedimiento (Solo Series y Subseries)
-        if item.nivel != NIVEL_TIPO:
-            if item.retencion_gestion:
-                _centrado(lienzo, 4, y_item, str(item.retencion_gestion), NORMAL)
-            if item.retencion_central:
-                _centrado(lienzo, 5, y_item, str(item.retencion_central), NORMAL)
-            for desplazamiento, sigla in enumerate("CSE"):
-                _centrado(
+            sangria = SANGRIA_TIPO if item.nivel == NIVEL_TIPO else 0.0
+            for i_nom, linea_nom in enumerate(fila.lineas_nombre):
+                _texto(
                     lienzo,
-                    6 + desplazamiento,
-                    y_item,
-                    "X" if item.disposicion_final == sigla else "",
-                    NORMAL,
+                    COLUMNAS_X[1] + RELLENO + sangria,
+                    y_primera_linea - i_nom * ALTO_LINEA,
+                    linea_nom,
+                    fuente,
+                    TAM_TEXTO,
                 )
-            if item.reproduccion_tecnica:
-                _centrado(lienzo, 9, y_item, "X", NORMAL)
 
-            # Columna 10: Procedimiento
-            if item.procedimiento:
-                _justificado(lienzo, 10, y_item, item.procedimiento)
-                g_proc = len(_ajustar(item.procedimiento, _ancho(10), TAM_TEXTO))
+            _centrado(lienzo, 2, y_primera_linea, "X" if item.soporte_papel else "", NORMAL)
+            if item.soporte_electronico:
+                _texto(lienzo, COLUMNAS_X[3] + RELLENO, y_primera_linea, item.extensiones or "X", NORMAL, TAM_TEXTO)
 
-        g_nom += item_lineas
+            if item.nivel != NIVEL_TIPO:
+                if item.retencion_gestion:
+                    _centrado(lienzo, 4, y_primera_linea, str(item.retencion_gestion), NORMAL)
+                if item.retencion_central:
+                    _centrado(lienzo, 5, y_primera_linea, str(item.retencion_central), NORMAL)
+                for desplazamiento, sigla in enumerate("CSE"):
+                    _centrado(
+                        lienzo,
+                        6 + desplazamiento,
+                        y_primera_linea,
+                        "X" if item.disposicion_final == sigla else "",
+                        NORMAL,
+                    )
+                if item.reproduccion_tecnica:
+                    _centrado(lienzo, 9, y_primera_linea, "X", NORMAL)
 
+        for i_proc, (linea_p, es_ultima_p) in enumerate(fila.lineas_proc):
+            _linea_justificada(
+                lienzo,
+                x_proc,
+                y_primera_linea - i_proc * ALTO_LINEA,
+                linea_p,
+                ancho_proc,
+                es_ultima_p,
+            )
+
+        y_cursor -= fila.num_lineas * ALTO_LINEA
+
+    y_fin = y_cursor - RELLENO
+    lienzo.rect(X_IZQ, y_fin, X_DER - X_IZQ, tope - y_fin)
+    for x in COLUMNAS_X[1:-1]:
+        lienzo.line(x, y_fin, x, tope)
+    return y_fin
 
 
 def _fuente(item: ItemTRD) -> str:

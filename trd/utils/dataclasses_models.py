@@ -71,13 +71,16 @@ def formatear_nombre(nombre: str, nivel: str) -> str:
     """Aplica la regla institucional de formato segun el nivel documental:
     - SERIE: MAYUSCULAS SOSTENIDAS
     - SUBSERIE: Tipo Titulo (Primera Letra De Cada Palabra En Mayuscula)
-    - TIPO DOCUMENTAL: Tipo Titulo (Primera Letra De Cada Palabra En Mayuscula)
+    - TIPO DOCUMENTAL: Respeta el texto exacto ingresado (capitalizando solo la primera letra si esta en minuscula)
     """
     if not nombre:
         return ""
-    if nivel == NIVEL_SERIE:
-        return nombre.strip().upper()
-    return formatear_titulo(nombre)
+    limpio = nombre.strip()
+    if (nivel or "").strip().upper() == NIVEL_SERIE:
+        return limpio.upper()
+    if (nivel or "").strip().upper() == NIVEL_TIPO:
+        return (limpio[0].upper() + limpio[1:]) if limpio else ""
+    return formatear_titulo(limpio)
 
 
 # --- Encabezado de la TRD ----------------------------------------------------
