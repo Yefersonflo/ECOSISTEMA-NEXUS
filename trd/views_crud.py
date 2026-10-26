@@ -102,42 +102,94 @@ def crear_item(request, enc_id):
     subseries_lista = data.get("subseries", []) if tiene_subserie else []
     tipos_serie = data.get("tipos_documentales", []) if not tiene_subserie else []
     
-    # Check if serie exists
-    serie, created = ItemTRD.objects.get_or_create(
-        encabezado=encabezado, codigo=serie_cod, nivel="Serie",
-        defaults={
-            "nombre": serie_nom, "parent_id": None, "soporte_papel": True, "disposicion_final": "C"
-        }
-    )
-    if not created:
+    from trd.utils import oficinas
+    pref = oficinas.prefijo_de(encabezado.oficina_productora)
+    if pref and serie_cod and not serie_cod.startswith(pref + "."):
+        serie_cod = f"{pref}.{serie_cod}"
+    serie_nom = serie_nom.upper()
+
+    serie_papel = bool(data.get("serie_soporte_papel", False))
+    serie_elec = bool(data.get("serie_soporte_electronico", False))
+    serie_ext = str(data.get("serie_extensiones", "")).strip() if serie_elec else ""
+    serie_ret_g = _entero(data.get("serie_retencion_gestion", 0))
+    serie_ret_c = _entero(data.get("serie_retencion_central", 0))
+    serie_disp_raw = str(data.get("serie_disposicion_final", "")).strip()
+    serie_disp = normalizar_disposicion(serie_disp_raw) if serie_disp_raw else ""
+    serie_rep = str(data.get("serie_reproduccion_tecnica", "")).strip().upper()
+    serie_proc = str(data.get("procedimiento", "")).strip()
+
+    serie = ItemTRD.objects.filter(encabezado=encabezado, codigo=serie_cod, parent_id__isnull=True).first()
+    if serie:
+        serie.nivel = "SERIE"
         serie.nombre = serie_nom
+        serie.soporte_papel = serie_papel
+        serie.soporte_electronico = serie_elec
+        serie.extensiones = serie_ext
+        serie.retencion_gestion = serie_ret_g
+        serie.retencion_central = serie_ret_c
+        serie.disposicion_final = serie_disp
+        serie.reproduccion_tecnica = serie_rep
+        serie.procedimiento = serie_proc
         serie.save()
-        
+    else:
+        serie = ItemTRD.objects.create(
+            encabezado=encabezado,
+            parent_id=None,
+            codigo=serie_cod,
+            nivel="SERIE",
+            nombre=serie_nom,
+            soporte_papel=serie_papel,
+            soporte_electronico=serie_elec,
+            extensiones=serie_ext,
+            retencion_gestion=serie_ret_g,
+            retencion_central=serie_ret_c,
+            disposicion_final=serie_disp,
+            reproduccion_tecnica=serie_rep,
+            procedimiento=serie_proc,
+        )
+
     for sub_idx, sub_data in enumerate(subseries_lista):
         sub_cod = str(sub_data.get("codigo", "")).strip()
         sub_nom = str(sub_data.get("nombre", "")).strip()
         if not sub_cod or not sub_nom: continue
-        
+        if pref and not sub_cod.startswith(pref + "."):
+            sub_cod = f"{pref}.{sub_cod}"
+
         sub_elec = bool(sub_data.get("soporte_electronico", False))
-        sub_papel = bool(sub_data.get("soporte_papel", True))
+        sub_papel = bool(sub_data.get("soporte_papel", False))
         sub_ext = str(sub_data.get("extensiones", "")).strip() if sub_elec else ""
-        
-        sub_item, _ = ItemTRD.objects.update_or_create(
-            encabezado=encabezado, codigo=sub_cod, parent_id=serie.id, nivel="Subserie",
-            defaults={
-                "nombre": sub_nom,
-                "soporte_papel": sub_papel,
-                "soporte_electronico": sub_elec,
-                "extensiones": sub_ext,
-                "retencion_gestion": _entero(sub_data.get("retencion_gestion")),
-                "retencion_central": _entero(sub_data.get("retencion_central")),
-                "disposicion_final": normalizar_disposicion(sub_data.get("disposicion_final", "C")),
-                "reproduccion_tecnica": str(sub_data.get("reproduccion_tecnica", "")),
-                "procedimiento": str(sub_data.get("procedimiento", "")),
-                "orden": sub_idx
-            }
-        )
-        
+        sub_disp_raw = str(sub_data.get("disposicion_final", "")).strip()
+        sub_disp = normalizar_disposicion(sub_disp_raw) if sub_disp_raw else ""
+
+        sub_item = ItemTRD.objects.filter(encabezado=encabezado, codigo=sub_cod, parent_id=serie.id).first()
+        if sub_item:
+            sub_item.nivel = "SUBSERIE"
+            sub_item.nombre = sub_nom
+            sub_item.soporte_papel = sub_papel
+            sub_item.soporte_electronico = sub_elec
+            sub_item.extensiones = sub_ext
+            sub_item.retencion_gestion = _entero(sub_data.get("retencion_gestion"))
+            sub_item.retencion_central = _entero(sub_data.get("retencion_central"))
+            sub_item.disposicion_final = sub_disp
+            sub_item.reproduccion_tecnica = str(sub_data.get("reproduccion_tecnica", "")).strip().upper()
+            sub_item.procedimiento = str(sub_data.get("procedimiento", "")).strip()
+            sub_item.orden = sub_idx
+            sub_item.save()
+        else:
+            sub_item = ItemTRD.objects.create(
+                encabezado=encabezado, codigo=sub_cod, parent_id=serie.id, nivel="SUBSERIE",
+                nombre=sub_nom,
+                soporte_papel=sub_papel,
+                soporte_electronico=sub_elec,
+                extensiones=sub_ext,
+                retencion_gestion=_entero(sub_data.get("retencion_gestion")),
+                retencion_central=_entero(sub_data.get("retencion_central")),
+                disposicion_final=sub_disp,
+                reproduccion_tecnica=str(sub_data.get("reproduccion_tecnica", "")).strip().upper(),
+                procedimiento=str(sub_data.get("procedimiento", "")).strip(),
+                orden=sub_idx
+            )
+
         for t_idx, td_data in enumerate(sub_data.get("tipos_documentales", [])):
             td_nom = str(td_data.get("nombre", "")).strip()
             if not td_nom: continue
@@ -172,6 +224,25 @@ def crear_item(request, enc_id):
             }
         )
         
+    try:
+        if tiene_subserie:
+            for sub_data in subseries_lista:
+                catalogo_ccd.registrar_serie_o_subserie_personalizada(
+                    nombre_o_prefijo=encabezado.oficina_productora,
+                    serie_cod=serie_cod,
+                    serie_nom=serie_nom,
+                    sub_cod=str(sub_data.get("codigo", "")).strip(),
+                    sub_nom=str(sub_data.get("nombre", "")).strip(),
+                )
+        else:
+            catalogo_ccd.registrar_serie_o_subserie_personalizada(
+                nombre_o_prefijo=encabezado.oficina_productora,
+                serie_cod=serie_cod,
+                serie_nom=serie_nom,
+            )
+    except Exception:
+        pass
+
     messages.success(request, f"Serie '{serie_nom}' guardada exitosamente.")
     return redirect('trd:editar_trd', enc_id=enc_id)
 
@@ -191,7 +262,7 @@ def agregar_subserie_directa(request, enc_id, serie_id):
     sub_ext = request.POST.get("extensiones", "").strip() if sub_elec else ""
     
     ItemTRD.objects.create(
-        encabezado=encabezado, parent_id=serie.id, codigo=sub_cod, nombre=sub_nom, nivel="Subserie",
+        encabezado=encabezado, parent_id=serie.id, codigo=sub_cod, nombre=sub_nom, nivel="SUBSERIE",
         soporte_papel=request.POST.get("soporte_papel") in ("1", "true", "on"),
         soporte_electronico=sub_elec,
         extensiones=sub_ext,
@@ -200,7 +271,7 @@ def agregar_subserie_directa(request, enc_id, serie_id):
         disposicion_final=normalizar_disposicion(request.POST.get("disposicion_final", "")),
         reproduccion_tecnica=request.POST.get("reproduccion_tecnica", "").strip().upper(),
         procedimiento=request.POST.get("procedimiento", "").strip(),
-        orden=ItemTRD.objects.filter(parent_id=serie.id, nivel="Subserie").count()
+        orden=ItemTRD.objects.filter(parent_id=serie.id, nivel="SUBSERIE").count()
     )
     
     messages.success(request, f"Subserie '{sub_nom}' agregada exitosamente.")

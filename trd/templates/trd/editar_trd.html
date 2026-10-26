@@ -2412,7 +2412,7 @@ function formTRDData() {
                 return;
             }
             try {
-                const resp = await fetch('/api/ccd/actualizar', {
+                const resp = await fetch('/trd/api/ccd/actualizar', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -2437,7 +2437,7 @@ function formTRDData() {
         async eliminarSerieCatalogo(s) {
             if (!confirm(`¿Estás seguro de eliminar la serie '${s.nombre}' del catálogo?`)) return;
             try {
-                const resp = await fetch('/api/ccd/eliminar', {
+                const resp = await fetch('/trd/api/ccd/eliminar', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -2471,7 +2471,7 @@ function formTRDData() {
 
             this.guardandoCatalogo = true;
             try {
-                const resp = await fetch('/api/ccd/guardar_personalizado', {
+                const resp = await fetch('/trd/api/ccd/guardar_personalizado', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -2567,8 +2567,30 @@ function formTRDData() {
         },
 
         enviarFormulario() {
+            if (!this.tieneSubserie && (this.nuevoTipoDoc || '').trim()) {
+                this.agregarTipoDoc();
+            }
+            if (this.tieneSubserie) {
+                if ((this.subForm_nuevoTipoDoc || '').trim()) {
+                    this.agregarTipoASubForm();
+                }
+                if ((this.subForm_nombre || '').trim()) {
+                    if (!(this.subForm_codigo || '').trim() && (this.serieCodigo || '').trim()) {
+                        this.subForm_codigo = `${this.serieCodigo.trim()}.${this.subseries.length + 1}`;
+                    }
+                    if ((this.subForm_codigo || '').trim()) {
+                        this.guardarSubserieEnLista();
+                    }
+                }
+            }
+
             if (!this.validarCampos()) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const formEl = document.getElementById('formularioTRD') || this.$refs.formularioTRD;
+                if (formEl) {
+                    formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
                 return;
             }
 

@@ -59,7 +59,8 @@ def agrupar_items_jerarquia(items):
     subseries_map = {}
 
     for i in items:
-        if i.nivel == NIVEL_SERIE:
+        nivel_norm = (i.nivel or '').strip().upper()
+        if nivel_norm == NIVEL_SERIE:
             serie_nodo = {
                 "serie": i,
                 "subseries": [],
@@ -71,7 +72,7 @@ def agrupar_items_jerarquia(items):
                 series_map[i.id] = serie_nodo
             serie_actual = serie_nodo
             subserie_actual = None
-        elif i.nivel == NIVEL_SUBSERIE:
+        elif nivel_norm == NIVEL_SUBSERIE:
             sub_nodo = {
                 "subserie": i,
                 "tipos": [],
@@ -97,7 +98,7 @@ def agrupar_items_jerarquia(items):
             if i.id:
                 subseries_map[i.id] = sub_nodo
             subserie_actual = sub_nodo
-        elif i.nivel == NIVEL_TIPO:
+        elif nivel_norm == NIVEL_TIPO:
             target_sub = subseries_map.get(i.parent_id) if i.parent_id else subserie_actual
             if target_sub:
                 target_sub["tipos"].append(i)

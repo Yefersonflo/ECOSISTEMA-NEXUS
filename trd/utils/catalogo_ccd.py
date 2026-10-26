@@ -165,7 +165,7 @@ def registrar_serie_o_subserie_personalizada(nombre_o_prefijo: str, serie_cod: s
                 break
         
         if not sub_existente:
-            from models import formatear_titulo
+            from trd.utils.dataclasses_models import formatear_titulo
             subseries.append({
                 "codigo": cod_sub_limpio,
                 "nombre": formatear_titulo(sub_nom),
