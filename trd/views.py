@@ -57,6 +57,11 @@ def _clave_codigo(codigo):
         partes.append(int(p) if p.isdigit() else p)
     return partes
 
+def _clave_alfabetica(texto):
+    import unicodedata
+    limpio = unicodedata.normalize('NFD', str(texto or '').strip().upper())
+    return ''.join(c for c in limpio if unicodedata.category(c) != 'Mn')
+
 def agrupar_items_jerarquia(items):
     series = []
     series_map = {}
@@ -64,9 +69,9 @@ def agrupar_items_jerarquia(items):
 
     items_lista = list(items)
 
-    # 1. Registrar todas las SERIES primero (ordenadas por c?digo num?rico)
+    # 1. Registrar todas las SERIES primero (ordenadas alfabéticamente por nombre)
     series_items = [i for i in items_lista if (i.nivel or '').strip().upper() == NIVEL_SERIE]
-    series_items.sort(key=lambda x: (_clave_codigo(x.codigo), x.id or 0))
+    series_items.sort(key=lambda x: (_clave_alfabetica(x.nombre), _clave_codigo(x.codigo), x.id or 0))
     for i in series_items:
         serie_nodo = {
             "serie": i,

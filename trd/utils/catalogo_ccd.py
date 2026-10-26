@@ -21,6 +21,7 @@ def cargar_catalogo() -> list[dict[str, Any]]:
         if os.path.exists(RUTA_JSON):
             with open(RUTA_JSON, "r", encoding="utf-8") as f:
                 _CATALOGO_CACHE = json.load(f)
+            _ordenar_series_catalogo(_CATALOGO_CACHE)
         else:
             _CATALOGO_CACHE = []
     return _CATALOGO_CACHE
@@ -81,9 +82,16 @@ def obtener_series_oficina(nombre_o_prefijo: str) -> list[dict[str, Any]]:
     return []
 
 
+def _ordenar_series_catalogo(catalogo: list[dict[str, Any]]) -> None:
+    for of in catalogo:
+        if "series" in of and isinstance(of["series"], list):
+            of["series"].sort(key=lambda s: (_normalizar(s.get("nombre", "")), str(s.get("codigo", ""))))
+
+
 def guardar_catalogo(catalogo: list[dict[str, Any]]) -> None:
     """Guarda el catálogo actualizado en el archivo JSON."""
     global _CATALOGO_CACHE
+    _ordenar_series_catalogo(catalogo)
     _CATALOGO_CACHE = catalogo
     os.makedirs(os.path.dirname(RUTA_JSON), exist_ok=True)
     with open(RUTA_JSON, "w", encoding="utf-8") as f:
