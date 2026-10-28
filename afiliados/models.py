@@ -13,6 +13,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     rol = models.CharField(max_length=20, choices=ROLES, default='USER')
     acceso_web = models.BooleanField(default=False)
+    def get_rol_display(self):
+        if self.user_id and self.user.username.lower() == 'vivianal':
+            return 'Jefe de Administración Documental'
+        return dict(self.ROLES).get(self.rol, self.rol)
+
     def __str__(self): return f"{self.user.username} - {self.get_rol_display()}"
 
 import datetime
