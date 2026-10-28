@@ -64,7 +64,7 @@
             {% if user.profile.rol == 'SUPER' or user.profile.rol == 'JEFE' or user.is_superuser %}
             <a href="/" class="flex items-center space-x-3 p-3 rounded-xl text-white font-bold transition-all hover:bg-white/10 {% if request.path == '/' %}nav-item-active{% endif %}">
                 <i class="fas fa-house-chimney w-7 text-center text-lg text-comfaYellow"></i>
-                <span class="sidebar-text text-xs uppercase tracking-widest">Inicio / Dashboard</span>
+                <span class="sidebar-text text-xs uppercase tracking-widest">Inicio</span>
             </a>
             {% else %}
             <a href="{% url 'gestion_documental' %}" class="flex items-center space-x-3 p-3 rounded-xl text-white font-bold transition-all hover:bg-white/10 {% if request.path == '/gestion-documental/' %}nav-item-active{% endif %}">
