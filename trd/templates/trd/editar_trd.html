@@ -1719,48 +1719,54 @@
             <form method="POST" action="{% url 'trd:actualizar_encabezado_trd' enc_id=enc_id %}" class="flex-1 flex flex-col min-h-0 overflow-hidden">
 {% csrf_token %}
                 <div class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- DATOS BÁSICOS -->
-                        <div class="col-span-1 md:col-span-3 pb-2 border-b border-slate-100">
-                            <h4 class="text-xs font-black text-comfaBlue uppercase tracking-widest"><i class="fas fa-info-circle mr-2"></i> Identificación General</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 1. IDENTIFICACIÓN GENERAL Y REGISTRO DEL SISTEMA -->
+                        <div class="col-span-1 md:col-span-2 pb-2 border-b border-slate-100">
+                            <h4 class="text-xs font-black text-comfaBlue uppercase tracking-widest"><i class="fas fa-info-circle mr-2"></i> Identificación General y Fechas de Registro</h4>
                         </div>
                         
-                        <div class="space-y-2 col-span-1 md:col-span-3">
+                        <div class="space-y-2 col-span-1 md:col-span-2">
                             <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Entidad Productora</label>
                             <input type="text" name="entidad_productora" value="{{ encabezado.entidad_productora }}" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                         </div>
-                        <div class="space-y-2 col-span-1 md:col-span-1">
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Versión (Ej: 1.0)</label>
+                        <div class="space-y-2 col-span-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Versión en Sistema (Ej: 1.0)</label>
                             <input type="text" name="version" value="{{ encabezado.version }}" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                         </div>
-                        <div class="space-y-2 col-span-1 md:col-span-2">
+                        <div class="space-y-2 col-span-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Año de Vigencia</label>
                             <input type="text" name="vigencia_ano" value="{{ encabezado.vigencia_ano }}" placeholder="Opcional" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                         </div>
                         <input type="hidden" name="estado" value="{{ encabezado.estado|default:'VIGENTE' }}">
 
-                        <!-- FECHAS DE REGISTRO -->
-                        <div class="col-span-1 md:col-span-3 pb-2 border-b border-slate-100 mt-4">
-                            <h4 class="text-xs font-black text-comfaYellow uppercase tracking-widest"><i class="fas fa-calendar-alt mr-2"></i> Fechas de Registro</h4>
-                        </div>
-                        <div class="space-y-2">
+                        <div class="space-y-2 col-span-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase ml-2 flex items-center gap-1">
                                 <i class="fas fa-lock text-slate-400 text-[9px]"></i> Creación (Fija)
                             </label>
                             <input type="text" value="{{ encabezado.fecha_creacion|default:'-' }}" readonly class="w-full bg-slate-100 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-500 cursor-not-allowed outline-none select-none" title="Fecha fija establecida al crear la TRD">
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-2 col-span-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase ml-2 flex items-center gap-1">
                                 <i class="fas fa-lock text-slate-400 text-[9px]"></i> Ajuste (Fija)
                             </label>
                             <input type="text" value="{{ encabezado.fecha_ajuste|default:'-' }}" readonly class="w-full bg-slate-100 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-500 cursor-not-allowed outline-none select-none" title="Fecha fija de ajuste">
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Aprobación (Opcional)</label>
+
+                        <!-- 2. CONVALIDACIÓN Y APROBACIÓN OFICIAL (FORMATO FADO-004) -->
+                        <div class="col-span-1 md:col-span-2 pb-2 border-b border-slate-100 mt-4">
+                            <h4 class="text-xs font-black text-comfaYellow uppercase tracking-widest"><i class="fas fa-file-signature mr-2"></i> Aprobación y Convalidación Oficial (Formato FADO-004)</h4>
+                            <p class="text-[10px] text-slate-400 font-medium mt-0.5">Datos que se imprimen en el pie de página y bloque de firmas del formato oficial institucional.</p>
+                        </div>
+                        <div class="space-y-2 col-span-1">
+                            <label class="text-[10px] font-black text-slate-600 uppercase ml-2 flex items-center gap-1.5">
+                                <i class="fas fa-calendar-check text-comfaBlue text-xs"></i> Aprobación <span class="text-slate-400 font-bold normal-case tracking-normal">(opcional)</span>
+                            </label>
                             <input type="text" name="fecha_aprobacion" value="{{ encabezado.fecha_aprobacion }}" placeholder="AAAA-MM-DD" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                         </div>
-                        <div class="space-y-2 col-span-1 md:col-span-3">
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Versión de Tabla <span class="text-slate-400 font-bold normal-case tracking-normal">(opcional)</span></label>
+                        <div class="space-y-2 col-span-1">
+                            <label class="text-[10px] font-black text-slate-600 uppercase ml-2 flex items-center gap-1.5">
+                                <i class="fas fa-stamp text-comfaBlue text-xs"></i> Versión de Tabla <span class="text-slate-400 font-bold normal-case tracking-normal">(opcional)</span>
+                            </label>
                             <input type="text" name="fecha_convalidacion" value="{{ encabezado.fecha_convalidacion }}" placeholder="Ej. 1.0" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:border-comfaBlue outline-none transition-all">
                         </div>
                     </div>
