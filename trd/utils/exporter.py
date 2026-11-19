@@ -99,6 +99,7 @@ def generar_xlsx(encabezado: EncabezadoTRD, items: Iterable[ItemTRD]) -> BytesIO
 
     align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
     align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
+    align_proc = Alignment(horizontal="justify", vertical="top", wrap_text=True)
 
     # Identificar qué subseries son la 2da o posterior dentro de su serie
     subseries_por_serie_count = 0
@@ -182,7 +183,7 @@ def generar_xlsx(encabezado: EncabezadoTRD, items: Iterable[ItemTRD]) -> BytesIO
             if item.procedimiento:
                 cL = ws.cell(row=r, column=12, value=item.procedimiento)
                 cL.font = font_normal
-                cL.alignment = align_left
+                cL.alignment = align_proc
 
         # Calcular altura dinámica de la fila para que todo el texto sea 100% visible
         import math
@@ -223,6 +224,9 @@ def generar_xlsx(encabezado: EncabezadoTRD, items: Iterable[ItemTRD]) -> BytesIO
 
     for r_inicio, r_fin in grupos:
         ws.merge_cells(start_row=r_inicio, start_column=12, end_row=r_fin, end_column=13)
+        for r_m in range(r_inicio, r_fin + 1):
+            for c_m in (12, 13):
+                ws.cell(row=r_m, column=c_m).alignment = align_proc
         # Garantizar que la suma de alturas del grupo soporte el texto del procedimiento
         proc_lines = lineas_proc_dict.get(r_inicio, 1)
         altura_necesaria = max(16.2, proc_lines * 13.5 + 4.0)
